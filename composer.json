@@ -1,0 +1,19 @@
+{
+    "name": "luciusdigital/openlucius",
+    "type": "drupal-profile",
+    "description": "OpenLucius",
+    "license": "GPL-2.0-or-later",
+
+    "repositories": {
+        "drupal": {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        },
+        "assets": {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+}
