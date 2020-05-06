@@ -1,0 +1,8 @@
+name: 'lus_stream'
+type: module
+description: 'Lus Stream'
+core_version_requirement: ^9
+package: 'OL app'
+dependencies:
+  - ol_main
+  - ol_members

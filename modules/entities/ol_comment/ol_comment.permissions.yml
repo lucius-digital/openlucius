@@ -1,0 +1,20 @@
+add ol comment entities:
+  title: 'Create new OL Comment entities'
+
+administer ol comment entities:
+  title: 'Administer OL Comment entities'
+  description: 'Allow to access the administration form to configure OL Comment entities.'
+  restrict access: true
+
+delete ol comment entities:
+  title: 'Delete OL Comment entities'
+
+edit ol comment entities:
+  title: 'Edit OL Comment entities'
+
+view published ol comment entities:
+  title: 'View published OL Comment entities'
+
+view unpublished ol comment entities:
+  title: 'View unpublished OL Comment entities'
+

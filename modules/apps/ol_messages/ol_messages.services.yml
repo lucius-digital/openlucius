@@ -1,0 +1,4 @@
+services:
+  olmessages.messages:
+    class: Drupal\ol_messages\Services\OlMessages
+    arguments: ['@current_route_match','@olmembers.members','@olstream.stream','@olmain.mail', '@olmain.groups','@olmain.comments','@olmain.files']

@@ -1,0 +1,35 @@
+name: ol_base
+type: theme
+version: VERSION
+core_version_requirement: ^9
+base theme: false
+description: 'OpenLucius theme'
+libraries:
+  - ol_base/global
+regions:
+  sidebar_header: 'Sidebar Header'
+  sidebar_user: 'Sidebar User'
+  sidebar_global_menu: 'Sidebar Global Menu'
+  sidebar_groups_menu: 'Sidebar Groups Menu'
+  main_header: 'Main Header'
+  main_sections: 'Main Sections'
+  content: Content
+libraries-override:
+  system/base: false
+stylesheets-remove:
+  - core/themes/stable/css/contextual/contextual.module.css
+  - core/themes/stable/css/tour/tour.module.css
+  - core/themes/stable/css/contextual/contextual.toolbar.css
+  - core/themes/stable/css/contextual/contextual.icons.theme.css
+  - core/themes/seven/css/components/quickedit.css
+  - core/themes/stable/css/quickedit/quickedit.module.css
+  - core/themes/stable/css/toolbar/toolbar.module.css
+  - core/themes/stable/css/toolbar/toolbar.menu.css
+  - core/themes/stable/css/contextual/contextual.theme.css
+  - core/themes/stable/css/quickedit/quickedit.theme.css
+  - core/themes/stable/css/quickedit/quickedit.icons.theme.css
+  - core/themes/stable/css/user/user.icons.admin.css
+  - core/themes/stable/css/shortcut/shortcut.theme.css
+  - core/themes/stable/css/shortcut/shortcut.icons.theme.css
+  - core/themes/base/theme.css
+  - core/assets/vendor/jquery.ui/themes/base/theme.css

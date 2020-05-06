@@ -1,0 +1,4 @@
+services:
+  olfiles.folders:
+    class: Drupal\ol_files\Services\OlFolders
+    arguments: ['@current_route_match', '@database','@messenger','@current_user','@olmembers.members','@olstream.stream']

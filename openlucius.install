@@ -1,0 +1,47 @@
+<?php
+
+/**
+ * @file
+ * Install and uninstall functions for the OpenLucius installation profile.
+ */
+
+/**
+ * Implements hook_install_tasks().
+ */
+function openlucius_install_tasks() {
+  $tasks = [];
+
+  $tasks['openlucius_set_front_page'] = [];
+  $tasks['openlucius_add_first_group'] = [];
+  $tasks['openlucius_set_default_theme'] = [];
+
+  return $tasks;
+}
+/**
+ * Sets the front page path to /node.
+ */
+function openlucius_set_front_page() {
+  Drupal::configFactory()
+    ->getEditable('system.site')
+    ->set('page.front', '/ol_home')
+    ->save(TRUE);
+}
+
+/**
+ * Adds first group.
+ */
+function openlucius_add_first_group() {
+  $group = \Drupal::service('olmain.groups');
+  $group->addGroup('General', 1, false);
+}
+
+/**
+ * Sets the default and administration themes.
+ */
+function openlucius_set_default_theme() {
+  Drupal::configFactory()
+    ->getEditable('system.theme')
+    ->set('default', 'ol_base')
+    ->set('admin', 'seven')
+    ->save(TRUE);
+}

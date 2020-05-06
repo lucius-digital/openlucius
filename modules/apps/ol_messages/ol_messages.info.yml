@@ -1,0 +1,9 @@
+name: 'lus_message'
+type: module
+description: 'Lus Messages'
+core_version_requirement: ^9
+package: 'OL app'
+dependencies:
+  - ol_members
+  - ol_stream
+  - ol_main

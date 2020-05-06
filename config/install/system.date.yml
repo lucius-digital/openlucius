@@ -1,0 +1,9 @@
+country:
+  default: NL
+first_day: 0
+timezone:
+  default: Europe/Amsterdam
+  user:
+    configurable: true
+    warn: false
+    default: 0

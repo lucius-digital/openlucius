@@ -1,0 +1,26 @@
+{% if vars.no_item_here == false %}
+  {{ vars.load_more }}
+{% endif %}
+
+<span id="last_message_timestamp">{{ vars.last_message_timestamp }}</span>
+<span id="last_message_timestamp_db">testing</span>
+{#Mobile: <span id="mobile_check">mobile?</span>
+Tablet: <span id="tablet_check">tablet?</span>
+IOS: <span id="ios_check">ios?</span>#}
+<div class="container stream-wrapper">
+  <div class="row">
+    <div class="col-12 stream-bar">
+      <div class="stream-list-holder">
+          <ul class="list-unstyled stream-list" id="message-container">
+            <span id="append_here"></span>
+            <div id="stream-items-container">
+              <div class="loader"></div>
+              <br />
+                {{ 'Loading messages...'|t }}
+            </div>
+          </ul>
+      </div>
+      {{ vars.stream_form }}
+    </div>
+  </div>
+</div>

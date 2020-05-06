@@ -1,0 +1,91 @@
+<!--- Message-->
+<div class="card ol-card">
+
+  <!-- Header-->
+  <div class="card-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="mr-2">
+          <img class="rounded-circle" src="{{ vars.user_picture }}" alt="user thumbnail" height="30">
+        </div>
+        <div class="ml-2">
+          <div class="h5 m-0"><a href="/user/{{ vars.user_id }}/profile">{{ vars.username }}</a></div>
+          <div class="h7 text-muted"><span class="badge badge-light"><i class="fas fa-clock"></i> {{ vars.created|date("D d-m-Y H:i") }} </span></div>
+        </div>
+      </div>
+      {% if vars.owner == TRUE %}
+      <div>
+        <div class="dropdown">
+          <button class="btn btn-link dropdown-toggle" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             <i class="fa fa-ellipsis-h"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="ol-drop2">
+              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editMessageModal_{{ vars.id }}">{{ 'Edit'|t }} </a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <!-- / Header-->
+
+  <!-- Message body -->
+  <div class="card-body">
+    <div class="message-card-body">
+        <p>{{ vars.body|raw }}</p>
+    </div>
+  </div>
+  <!-- / Message body -->
+
+  <!-- Files -->
+  {% if vars.files %}
+    <div class="files_wrapper">
+      {{ vars.files|raw }}
+    </div>
+  {% endif %}
+  <!-- / Files -->
+
+  <!-- Footer -->
+  <div class="card-footer">
+    <div class="row">
+      <div class="col-lg-8 like-wrapper">
+        {{ vars.like_button }}
+      </div>
+      <div class="col-lg-4 comment-link-wrapper text-right">
+        <a id="comment_list"></a>
+        {% if vars.comment_count == 1 %}
+          {% set var_comment = 'Comment' %}
+          <a href="{{ vars.link }}#comment_list" class="card-link"><i class="fa fa-comment"></i> {{ vars.comment_count }} {{ var_comment|t }}</a>
+        {% elseif vars.comment_count == 0 %}
+          {% set var_comment = 'Be the first to comment' %}
+          <a href="{{ vars.link }}#comment_list" class="card-link"><i class="fa fa-comment"></i> {{ var_comment|t }}</a>
+        {% else %}
+          {% set var_comment = 'Comments' %}
+          <a href="{{ vars.link }}#comment_list" class="card-link"><i class="fa fa-comment"></i> {{ vars.comment_count }} {{ var_comment|t }} </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <!-- / Footer -->
+
+</div>
+<!-- / Message-->
+
+{% if vars.owner == TRUE %}
+  <!-- Edit modal -->
+  <div class="modal fade bd-example-modal-lg" id="editMessageModal_{{ vars.id }}" role="dialog" aria-labelledby="editMessageLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-edit"></i> {{ 'Edit message'|t }}  </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+          {{ vars.message_edit_form }}
+      </div>
+    </div>
+  </div>
+  <!-- / Edit modal  -->
+{% endif %}
+

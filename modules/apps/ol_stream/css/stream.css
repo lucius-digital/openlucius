@@ -1,0 +1,77 @@
+.stream-wrapper{
+  background-color: #fff;
+  padding-top:20px;
+  height: 100% !important;
+}
+#message-container{
+  overflow:auto;
+  height:100%;
+}
+#stream-item-form {
+  position: fixed;
+  margin-bottom: 30px;
+  bottom: 0;
+}
+#message-input {
+  flex-grow: 1;
+}
+#edit-message{
+  margin-top:0;
+}
+.stream-list .media-body {
+  font-size: 1em;
+  color: #252729;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.stream-list .mb-1{
+  font-weight: 600;
+}
+.stream-item-files-wrapper{
+  margin-top:10px;
+}
+.stream-item-files-wrapper a {
+  padding-left: 0 !important;
+}
+.stream-item-files-wrapper .media-body{
+  margin-bottom: 5px;
+}
+#edit-offset {
+  display: none;
+}
+#load-previous-form{
+  margin-bottom: 5px;
+}
+.plupload_filelist li.plupload_droptext {
+  font-size: .6rem !important;
+}
+.loader {
+  border: 16px solid #f3f3f3;
+  border-top: 16px solid #3498db;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  animation: spin 2s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+#edit-message-body-value-format{
+  display: none;
+}
+.messages__item a{
+  text-decoration: underline;
+  font-weight: bold;
+}
+.messages-list-wrapper .message-card-body p{
+  /*color: #737373;*/
+  line-height: 1.3em;
+}
+.messages-list-wrapper .message-card-body h6{
+  font-size:1.15rem;
+}
+#last_message_timestamp,
+#last_message_timestamp_db{
+  display: none;
+}

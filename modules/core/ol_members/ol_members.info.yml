@@ -1,0 +1,5 @@
+name: 'ol_members'
+type: module
+description: 'OL Members Module'
+package: 'OL Core'
+core_version_requirement: ^9

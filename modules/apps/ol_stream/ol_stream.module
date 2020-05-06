@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * Contains lus_stream.module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function ol_stream_theme() {
+  return [
+    'stream_wrapper' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'stream-wrapper',
+    ],
+    'stream_item' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'stream-item',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_add_ol_section()
+ * @param $sections
+ */
+function ol_stream_add_ol_section(&$sections){
+  $sections['stream'] = array('label' => t('Stream'), 'path' => t('stream'), 'weight' => 0);
+}

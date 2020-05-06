@@ -1,0 +1,5 @@
+ol_messages:
+  version: 1.x
+  css:
+    theme:
+      css/ol_messages.css: {}

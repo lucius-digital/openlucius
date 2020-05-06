@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * @file
+ * Contains ol_file_reference.module.
+ */
+
+use Drupal\ol_file_reference\Entity\OlFileReference;
+
+/**
+ * Implements hook_add_ol_section()
+ * @param $sections
+ */
+function ol_files_add_ol_section(&$sections){
+  $sections['files'] = array('label' => t('Files'), 'path' => t('files'), 'weight' => 80);
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ol_files_theme() {
+  return [
+    'file_item_list_page' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'file-item-list-page',
+    ],
+    'files_list' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'files-list',
+    ],
+    'file_modal_put_in_folder' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'file-modal-put-in-folder',
+    ],
+    'file_modal_remove_folder' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'file-modal-remove-folder',
+    ],
+  ];
+}

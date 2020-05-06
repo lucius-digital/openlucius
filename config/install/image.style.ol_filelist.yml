@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies: {  }
+name: ol_filelist
+label: ol_filelist
+effects:
+  17147d96-f0ff-4e97-a706-b374836f8b71:
+    uuid: 17147d96-f0ff-4e97-a706-b374836f8b71
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 30
+      height: 30
+      anchor: center-center

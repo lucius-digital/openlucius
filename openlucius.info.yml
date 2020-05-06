@@ -1,0 +1,40 @@
+name: OpenLucius
+core_version_requirement: ^9
+type: profile
+description: 'A lean, fast social productivity Drupal distribution.'
+install:
+  - admin_toolbar
+  - admin_toolbar_tools
+  - block
+  - breakpoint
+  - ckeditor
+  - dblog
+  - dynamic_page_cache
+  - editor
+  - field
+  - field_ui
+  - file
+  - filter
+  - image
+  - node
+  - page_cache
+  - path_alias
+  - system
+  - text
+  - toolbar
+  - user
+  - ol_members
+  - ol_comment
+  - ol_file
+  - ol_folder
+  - ol_group
+  - ol_group_user
+  - ol_message
+  - ol_stream_item
+  - ol_main
+  - ol_stream
+  - ol_files
+  - ol_messages
+themes:
+  - seven
+  - ol_base

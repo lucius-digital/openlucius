@@ -1,0 +1,22 @@
+lus_message.messages:
+  path: '/group/{gid}/messages'
+  defaults:
+    _controller: '\Drupal\ol_messages\Controller\MessageController::getMessageList'
+    _title: 'Messages'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _group_access_check: 'TRUE'
+    _permission: 'access ol content'
+    group_id: '[0-9]+'
+lus_message.message:
+  path: '/group/{gid}/messages/{id}'
+  defaults:
+    _controller: '\Drupal\ol_messages\Controller\MessageController::getMessage'
+    _title: 'Message'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _group_access_check: 'TRUE'
+    _permission: 'access ol content'
+    id: '[0-9]+'

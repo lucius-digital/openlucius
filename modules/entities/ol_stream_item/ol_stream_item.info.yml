@@ -1,0 +1,5 @@
+name: 'OL Stream Item'
+type: module
+description: 'OL Stream Item'
+core_version_requirement: ^9
+package: 'OL app'

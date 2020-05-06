@@ -1,0 +1,78 @@
+.comments h2 {
+  font-size: 1.5rem;
+  color: #687177;
+  margin: 10px 0 15px 10px;
+}
+
+.badge.badge-light.comment {
+  font-size: 0.7em;
+  font-weight: normal;
+  color:#A6A6A6;
+}
+h5.add_comment {
+  font-size: 1.2rem;
+  color: #687177;
+  margin: 10px 0 15px 5px;
+}
+.form-group.comment-body{
+  margin-bottom:0.5rem;
+}
+.user-status-comment{
+  font-size: 0.7rem;
+}
+.card-body.comment {
+  padding: 0.1rem 1.3rem;
+}
+.files_wrapper.comment a {
+  font-size: 0.75rem;
+}
+p.comment {
+  font-size: 0.8rem;
+  line-height: 1.5em;
+  margin-bottom: 0.4rem;
+}
+.comment .text-muted.filename {
+  font-size: 0.9em;
+  margin-left: 0px;
+}
+.write-comment-picture {
+  padding-left: 25px;
+  padding-top: 10px;
+}
+.card-header.comment {
+  padding: .55rem 1.25rem .35rem .75rem;
+}
+.comment-form{
+  margin-bottom: 15px;
+  padding-top:10px;
+}
+.comment-wrapper .plupload_filelist {
+  height: 45px;
+}
+.first-comment-message{
+  padding:20px;
+}
+p.comment {
+  font-size: 0.85rem;
+  line-height: 1.3em;
+}
+.comment-link-wrapper{
+  margin-top: 2px;
+}
+.card-footer.comment{
+  padding: 0.5rem 1rem;
+}
+.comment-wrapper .card{
+  margin-bottom: 10px;
+}
+.comment-link-wrapper {
+  color: #848181;
+  font-size: 0.8rem;
+}
+.add-comment.card {
+  padding: 20px;
+}
+.add-comment.card h4{
+  color: #616a71;
+}
+

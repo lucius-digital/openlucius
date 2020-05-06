@@ -1,0 +1,20 @@
+add ol file entities:
+  title: 'Create new Ol file entities'
+
+administer ol file entities:
+  title: 'Administer Ol file entities'
+  description: 'Allow to access the administration form to configure Ol file entities.'
+  restrict access: true
+
+delete ol file entities:
+  title: 'Delete Ol file entities'
+
+edit ol file entities:
+  title: 'Edit Ol file entities'
+
+view published ol file entities:
+  title: 'View published Ol file entities'
+
+view unpublished ol file entities:
+  title: 'View unpublished Ol file entities'
+

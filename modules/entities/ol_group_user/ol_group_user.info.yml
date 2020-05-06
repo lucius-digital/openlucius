@@ -1,0 +1,5 @@
+name: 'OL Group User'
+type: module
+description: 'OL Group User'
+core_version_requirement: ^9
+package: 'OL core'

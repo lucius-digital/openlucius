@@ -1,0 +1,254 @@
+<?php
+
+/**
+ * @file
+ * Contains main.module.
+ */
+
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+
+
+/**
+ * Implements hook_theme().
+ */
+function ol_main_theme() {
+  return [
+    'sidebar_header_block' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'sidebar-header-block',
+    ],
+    'sidebar_user_block' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'sidebar-user-block',
+    ],
+    'sidebar_global_block' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'sidebar-global-block',
+    ],
+    'sidebar_groups_block' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'sidebar-groups-block',
+    ],
+    'main_header_block' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'main-header-block',
+    ],
+    'main_sections_block' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'main-sections-block',
+    ],
+    'sidebar_pm_block' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'sidebar-pm-block',
+    ],
+    'group_config_page' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'group-config-page',
+    ],
+    'comment_item' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'comment-item',
+    ],
+    'file_item' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'file-item',
+    ],
+    'file_modal_remove' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'file-modal-remove',
+    ],
+  ];
+}
+
+
+/**
+ * Implements hook_mail().
+ *
+ */
+function ol_main_mail($key, &$message, $params) {
+
+  $site_name = \Drupal::config('system.site')->get('name');
+  $site_mail = \Drupal::config('system.site')->get('mail');
+
+  // Options, needed for mulitlangual mails.
+/*  $options = array(
+    'langcode' => $message['langcode'],
+  ); */
+  switch ($key) {
+    case 'ol_main_mail':
+      $message['headers']['Reply-To'] = \Drupal::config('system.site')->get('mail');
+      //$message['from'] = '[' .$site_name .'] ' .$params['sender_name'] .' <' . $site_mail . '>';
+      $message['subject'] = $params['subject'];
+      $message['body'][] = $params['body'];
+      $message['body'][] = $params['url'];
+      break;
+  }
+}
+
+/**
+ * @param $uri
+ *
+ * @return array
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+ */
+function ol_main_file_download($uri) {
+
+  // Get vars.
+  $user_id = \Drupal::currentUser()->id();
+  // Security hardening for anonymous users.
+  if ($user_id == 0 || empty($user_id)) {
+    throw new AccessDeniedHttpException();
+  }
+
+  // Check for result: belongs current user to organization and group of uploaded file?
+  $query = \Drupal::database()->select('ol_file', 'file');
+  $query->addField('file', 'file_id');
+  $query->join('ol_group_user', 'group_user', 'group_user.group_id = file.group_id');
+  $query->join('file_managed', 'file_man', 'file_man.fid = file.file_id');
+  $query->condition('group_user.member_uid', $user_id);
+  $query->condition('file_man.uri', $uri);
+  $access = $query->execute()->fetchField();
+
+  // Check if this maybe is a user picture.
+  // Provide access to user picture if current user is somewhere in a group with requested user picture.
+  // This way we are also prepared for 'external' role.
+  if(empty($access)){
+    // Get all groups user picture owner is in.
+    $query = \Drupal::database()->select('file_managed', 'file');
+    $query->addField('ogu', 'group_id');
+    $query->join('ol_group_user', 'ogu', 'ogu.member_uid = file.uid');
+    $query->condition('file.uri', $uri);
+    $group_ids = $query->execute()->fetchCol();
+    // Get all groups current user is in.
+    $group_ids_current_user = getUserGroups($user_id);
+    // Grant access if they have a common group.
+    $access = !empty(array_intersect($group_ids, $group_ids_current_user));
+  }
+
+  // Results, grant access to file.
+  if (!empty($access)) {
+    $files = \Drupal::entityTypeManager()
+      ->getStorage('file')
+      ->loadByProperties(['uri' => $uri]);
+    $file = reset($files);
+
+    return file_get_content_headers($file);
+  }
+  // No results, deny access to file.
+  else {
+    throw new AccessDeniedHttpException();
+  }
+}
+
+/**
+ * Todo: find out where file_usage is for.
+ *
+ * Somehow the records Drupal inserts in the file_usage table blocks private image fields
+ * downloads from controlling it with hook_file_download.
+ * We need this for control over user images downloads.
+ *
+ * So we delete these records for now :s
+ *
+ * implements hook_ENTITY_update()
+ *
+ */
+function ol_main_user_update($account){
+  // Get current user id.
+  $user_id = \Drupal::currentUser()->id();
+  // Delete the records, again :s
+  \Drupal::database()->delete('file_usage')
+    ->condition('id', $account->id())
+    ->condition('type', 'user')
+    ->execute();
+  // Log it.
+  \Drupal::logger('ol_main_user_update')->info(
+    'Deleted from file_usage. $uid:'.$user_id .' | $account->id(): '.$account->id());
+}
+
+/**
+ * @return mixed
+ */
+function getUserGroups($user_id){
+  // Get user data.
+  $query = \Drupal::database()->select('ol_group_user', 'gr');
+  $query->addField('gr', 'group_id');
+  $query->condition('gr.status', 1);
+  $query->condition('gr.member_uid', $user_id);
+  return $query->execute()->fetchCol();
+}
+/**
+ * @param $x
+ * @param $y
+ * @return mixed
+ */
+function sortByWeight($x, $y) {
+  return $x['weight'] - $y['weight'];
+}
+/**
+ * @param $string
+ * @param $max_characters
+ * @param int $start
+ * @return string
+ */
+function shortenString($string, $max_characters, $start = 0){
+  return strlen($string) > $max_characters ? substr($string, $start, $max_characters).'...' : $string;
+}
+/**
+ * @param $datetime
+ * @param bool $full
+ * @return string
+ * @throws Exception
+ *
+ * From: https://stackoverflow.com/questions/1416697/converting-timestamp-to-time-ago-in-php-e-g-1-day-ago-2-days-ago
+ */
+function time_elapsed_string($datetime, $full = false) {
+  $now = new DateTime;
+  $ago = new DateTime($datetime);
+  $diff = $now->diff($ago);
+
+  $diff->w = floor($diff->d / 7);
+  $diff->d -= $diff->w * 7;
+
+  $string = array(
+    'y' => t('year'),
+    'm' => t('month'),
+    'w' => t('week'),
+    'd' => t('day'),
+    'h' => t('hour'),
+    'i' => t('minute'),
+    's' => t('second'),
+  );
+  foreach ($string as $k => &$v) {
+    if ($diff->$k) {
+      $v = $diff->$k . ' ' . t($v . ($diff->$k > 1 ? 's' : ''));
+    } else {
+      unset($string[$k]);
+    }
+  }
+
+  if (!$full) $string = array_slice($string, 0, 1);
+  return $string ? implode(', ', $string) . t(' ago') : t('just now');
+}

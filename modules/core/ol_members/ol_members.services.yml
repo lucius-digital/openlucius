@@ -1,0 +1,4 @@
+services:
+  olmembers.members:
+    class: Drupal\ol_members\Services\OlMembers
+    arguments: ['@current_route_match', '@database','@messenger','@current_user','@entity_type.manager','@renderer']

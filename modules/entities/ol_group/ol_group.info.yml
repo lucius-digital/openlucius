@@ -1,0 +1,5 @@
+name: 'OL Group'
+type: module
+description: 'OL Group Module'
+core_version_requirement: ^9
+package: 'OL core'

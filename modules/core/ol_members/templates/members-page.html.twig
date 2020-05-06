@@ -1,0 +1,62 @@
+{% if vars.members_form %}
+<!-- Action buttons -->
+<div class="row">
+  <div class="col text-right">
+    <div class="form-group">
+      <button class="btn btn-success" data-toggle="modal" data-target="#addMembersModal">
+        <i class="fa fa-plus"></i> {{ 'Add Group Members'|t }}
+      </button>
+    </div>
+  </div>
+</div>
+<!-- / Action buttons -->
+{% endif %}
+
+<!-- Member cards -->
+{% if vars.member_cards is not empty %}
+  {{ vars.member_cards|raw }}
+{% else %}
+  No members added yet.
+{% endif %}
+<!-- / Member cards -->
+
+<!-- Modal add member -->
+<div class="modal fade" id="addMembersModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-plus"></i> {{ 'Add Group Members'|t }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% if vars.members_form %}
+        {{ vars.members_form }}
+      {% else %}
+        <div class="modal-body"><i>{{ 'Sorry, you\'re not allowed to add users'|t }}</i></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<!-- / Modal -->
+
+<!-- Modal remove member -->
+<div class="modal fade" id="removeMembersModal" tabindex="-1" role="dialog" aria-labelledby="removeMembersModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{ 'Remove Member'|t }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary">{{ 'Yes, remove'|t }}</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'No, don\'t remove'|t }}</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- / Modal -->

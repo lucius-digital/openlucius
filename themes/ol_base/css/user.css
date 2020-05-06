@@ -1,0 +1,38 @@
+.user #content {
+  background: #fff;;
+  padding: 0 10px;
+  max-width: 780px;
+  border: 1px solid  #ccc;
+}
+.user #user-form .form-item {
+  padding:10px;
+}
+.user{
+  font-size:0.9rem;
+  color:#606060;
+  font-family: 'Roboto', sans-serif;
+}
+.user #user-form #edit-pass{
+  border-bottom:0;
+  padding-left:0;
+  margin-top: -10px;
+}
+.user #edit-submit {
+  margin-top:20px;
+  margin-left:10px;
+  padding: 10px 30px;
+}
+#user-form label{
+  margin-bottom: 0;
+  font-weight: bold;
+}
+#edit-language summary {
+  display: none;
+}
+#edit-account .description {
+  font-size: 0.7rem;
+  color: #c0c0c0;
+}
+#useroptions-drop {
+  padding-left: 0;
+}

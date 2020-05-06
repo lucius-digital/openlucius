@@ -1,0 +1,20 @@
+add ol message entities:
+  title: 'Create new OL Message entities'
+
+administer ol message entities:
+  title: 'Administer OL Message entities'
+  description: 'Allow to access the administration form to configure OL Message entities.'
+  restrict access: true
+
+delete ol message entities:
+  title: 'Delete OL Message entities'
+
+edit ol message entities:
+  title: 'Edit OL Message entities'
+
+view published ol message entities:
+  title: 'View published OL Message entities'
+
+view unpublished ol message entities:
+  title: 'View unpublished OL Message entities'
+

@@ -1,0 +1,20 @@
+add ol folder entities:
+  title: 'Create new OL Folder entities'
+
+administer ol folder entities:
+  title: 'Administer OL Folder entities'
+  description: 'Allow to access the administration form to configure OL Folder entities.'
+  restrict access: true
+
+delete ol folder entities:
+  title: 'Delete OL Folder entities'
+
+edit ol folder entities:
+  title: 'Edit OL Folder entities'
+
+view published ol folder entities:
+  title: 'View published OL Folder entities'
+
+view unpublished ol folder entities:
+  title: 'View unpublished OL Folder entities'
+

@@ -1,0 +1,48 @@
+{#
+/**
+* @file
+* Theme implementation to display block with groups in left sidebar.
+*
+* @ingroup themeable
+*/
+#}
+<ul class="list-unstyled components groups">
+  <h2 class="your-groups"><i class="fas fa-users"></i> {{ 'Your Groups'|t }}
+    <button class="btn btn-link dropdown-toggle" type="button" id="groups-drop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <i class="fa fa-ellipsis-h"></i>
+    </button>
+    <div class="dropdown-menu dropdown-menu-left" aria-labelledby="groups-drop">
+      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addGroupModal">{{ 'Add Group'|t }}</a>
+    </div>
+  </h2>
+  {# Nasty active styling for now #}
+  {% for group in vars.groups  %}
+    {% if group.id == vars.active_gid %}
+      {% set active="active" %}
+    {% else %}
+      {% set active="" %}
+    {% endif %}
+  <li class="{{ active }}">
+    <a href="/group/{{ group.id }}/{{ group.landing }}">{{ group.name }}</a>
+  </li>
+  {% endfor %}
+  {% if vars.groups is empty %}
+  <li><a href="#" data-toggle="modal" data-target="#addGroupModal"><i class="fa fa-plus"></i> {{  'Add your first group'|t }}</a></li>
+  {% endif %}
+</ul>
+
+<!-- Modal -->
+<div class="modal fade" id="addGroupModal" tabindex="-1" role="dialog" aria-labelledby="addGroupModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-plus-square"></i> {{ 'Add a new group'|t }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {{ vars.add_group_form }}
+    </div>
+  </div>
+</div>
+<!-- / Modal -->

@@ -1,0 +1,56 @@
+ol_members.all_members:
+  path: '/members'
+  defaults:
+    _controller: '\Drupal\ol_members\Controller\MembersController::getMembersAll'
+    _title: 'Members'
+  requirements:
+    _permission: 'access ol content'
+  options:
+    no_cache: 'TRUE'
+ol_members.user_manager_add:
+  path: '/members/user_manager_add/{uid}'
+  defaults:
+    _controller: '\Drupal\ol_members\Controller\MembersController::makeUserManager'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _permission: 'administer ol users'
+    uid: '[0-9]+'
+ol_members.user_manager_remove:
+  path: '/members/user_manager_remove/{uid}'
+  defaults:
+    _controller: '\Drupal\ol_members\Controller\MembersController::removeUserManager'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _permission: 'administer ol users'
+    uid: '[0-9]+'
+ol_members.block:
+  path: '/members/block/{uid}'
+  defaults:
+    _controller: '\Drupal\ol_members\Controller\MembersController::blockMember'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _permission: 'administer ol users'
+    uid: '[0-9]+'
+ol_members.group_members:
+  path: '/group/{gid}/members'
+  defaults:
+    _controller: '\Drupal\ol_members\Controller\MembersController::getMembersGroup'
+    _title: 'Members'
+  requirements:
+    _group_access_check: 'TRUE'
+    gid: '[0-9]+'
+  options:
+    no_cache: 'TRUE'
+ol_members.group_members_remove:
+  path: '/group/{gid}/members/remove/{uid}'
+  defaults:
+    _controller: '\Drupal\ol_members\Controller\MembersController::removeMemberFromGroup'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _group_access_check: 'TRUE'
+    gid: '[0-9]+'
+    uid: '[0-9]+'

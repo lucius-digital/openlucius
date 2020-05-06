@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - ol_main
+  theme:
+    - ol_base
+id: mainheaderblock
+theme: ol_base
+region: main_header
+weight: 0
+provider: null
+plugin: main_header_block
+settings:
+  id: main_header_block
+  label: 'Main header block'
+  provider: ol_main
+  label_display: '0'
+visibility: {  }

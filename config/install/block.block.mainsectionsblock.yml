@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - ol_main
+  theme:
+    - ol_base
+id: mainsectionsblock
+theme: ol_base
+region: main_sections
+weight: 0
+provider: null
+plugin: main_sections
+settings:
+  id: main_sections
+  label: 'Main Sections block'
+  provider: ol_main
+  label_display: '0'
+visibility: {  }

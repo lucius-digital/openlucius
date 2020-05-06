@@ -1,0 +1,21 @@
+{#
+/**
+* @file
+* Theme implementation to display block with groups in left sidebar.
+*
+* @ingroup themeable
+*/
+#}
+<ul class="list-unstyled components global">
+  {# Nasty active styling for now #}
+  {% for item in vars.menu_items  %}
+    {% if item.path == vars.active_menu_item %}
+      {% set active="active" %}
+    {% else %}
+      {% set active="" %}
+    {% endif %}
+  <li class="{{ active }}">
+    <a href="/{{ item.path }}"><i class="fa fa-{{ item.icon }}"></i> {{ item.label }}</a>
+  </li>
+  {% endfor %}
+</ul>

@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+id: standard_user
+label: 'Standard User'
+weight: 2
+is_admin: null
+permissions: {  }

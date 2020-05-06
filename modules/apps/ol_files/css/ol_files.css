@@ -1,0 +1,57 @@
+.files-list-page .table td {
+  border-bottom: 1px solid #dee2e6;
+  border-top:0;
+}
+.files-list-page .mt-0 {
+  margin: 0;
+}
+.files-list-page .fa-file {
+  color: #ccc;
+  margin: 0 20px 0 5px;
+  font-size: 1.5rem;
+}
+.files-list-page .mt-0 a{
+  color: #4a4a4a;
+  font-size: 1rem;
+}
+.col-lg-4.folders {
+  margin-bottom: 20px;
+}
+.files-list-page .btn-link {
+  margin: 0;
+  padding: 0;
+}
+.folder-link:hover{
+ text-decoration: underline;
+}
+.folder-left .btn-link {
+  padding: 0;
+}
+.files_wrapper .fa-ellipsis-h{
+  color: #dad5d5;
+}
+.files-list-page .text-muted.filename {
+  margin-left: 0;
+}
+.files-list-page  .mt-0 {
+  font-size: 1rem;
+  margin-bottom: 0;
+  color: #616a71;
+}
+.files-list-page .table td{
+  border-top:0;
+  border-bottom: 1px solid #dee2e6;
+}
+.files-list-page .table tr{
+  width: 100%;
+}
+.files-list-page .svg-inline--fa.fa-file.fa-w-12 {
+  margin-right: 25px;
+}
+.manage-folder,
+.folder-left{
+  margin-bottom:20px
+}
+#files-navigation-form .form-item-name .form-text{
+  margin-top:0;
+}

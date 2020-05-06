@@ -1,0 +1,20 @@
+add ol stream item entities:
+  title: 'Create new OL Stream Item entities'
+
+administer ol stream item entities:
+  title: 'Administer OL Stream Item entities'
+  description: 'Allow to access the administration form to configure OL Stream Item entities.'
+  restrict access: true
+
+delete ol stream item entities:
+  title: 'Delete OL Stream Item entities'
+
+edit ol stream item entities:
+  title: 'Edit OL Stream Item entities'
+
+view published ol stream item entities:
+  title: 'View published OL Stream Item entities'
+
+view unpublished ol stream item entities:
+  title: 'View unpublished OL Stream Item entities'
+

@@ -1,0 +1,49 @@
+<tr>
+  <td>
+    <div class="media">
+      {% if vars.thumbnail_url %}
+        <a href="{{ vars.url }}" target="_blank"><img class="mr-3 rounded" src="{{ vars.thumbnail_url }}" alt="tn"></a>
+      {% else %}
+        <i class="fas fa-file"></i>
+      {% endif %}
+      <div class="media-body">
+        <h5 class="mt-0"><a href="{{ vars.url }}" target="_blank">{{ vars.filename }}</a></h5>
+        <span class="text-muted">
+          <span class="badge badge-light"> {{ 'by'|t }}: {{ vars.user_name }} </span>
+          <span class="badge badge-light"> {{ vars.created|date("d M Y H:i") }} </span>
+          <span class="badge badge-light"> {{ vars.file_size }} </span>
+          {% if vars.foldername %}
+            <span class="badge badge-light"><i class="fas fa-folder"></i> {{ vars.foldername }}</a></span>
+          {% endif %}
+        </span>
+        {% if vars.owner == TRUE %}
+            <button class="btn btn-link dropdown-toggle" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-ellipsis-h"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="ol-drop2">
+              {% if vars.has_folders %}
+                <button class="dropdown-item" data-toggle="modal" data-target="#putFileInFolderModal"
+                    data-name="{{ vars.filename }}"
+                    data-folder_id="{{ vars.folder_id }}"
+                    data-file_id="{{ vars.file_id }}"
+                ><i class="fas fa-folder-plus"></i> {{ 'Put in Folder'|t }}</button>
+              {% endif %}
+              {% if vars.id_folder %}
+                <button class="dropdown-item" data-toggle="modal" data-target="#removeFileFromFolder"
+                    data-file_id="{{ vars.file_id }}"
+                    data-file_name="{{ vars.filename }}"
+                    data-folder_name="{{ vars.foldername }}"
+                ><i class="fas fa-folder-minus"></i> {{  'Remove From'|t }} '{{ vars.foldername }}'</button>
+              {% endif %}
+              <button class="dropdown-item" data-toggle="modal" data-target="#removeFile"
+                    data-name="{{ vars.filename }}"
+                    data-file_id="{{ vars.file_id }}"
+              ><i class="fas fa-times"></i> {{ 'Remove File'|t }}</button>
+            </div>
+        {% endif %}
+      </div>
+    </div>
+  </td>
+</tr>
+
+

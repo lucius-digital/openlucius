@@ -1,0 +1,12 @@
+ol_comments:
+  version: 1.x
+  css:
+    theme:
+      css/ol_comments.css: {}
+ol_attached_files:
+  version: 1.x
+  css:
+    theme:
+      css/ol_attached_files.css: {}
+  js:
+    js/ol_attached_files.js: {  }

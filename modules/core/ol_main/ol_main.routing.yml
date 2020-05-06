@@ -1,0 +1,40 @@
+ol_main.home:
+  path: '/ol_home'
+  defaults:
+    _controller: '\Drupal\ol_main\Controller\MainController::getHome'
+    _title: 'Home'
+  requirements:
+    _permission: 'access ol content'
+  options:
+    no_cache: 'TRUE'
+ol_main.group_settings:
+  path: '/group/{gid}/settings'
+  defaults:
+    _controller: '\Drupal\ol_main\Controller\MainController::getGroupSettings'
+    _title: 'Group settings'
+  requirements:
+    _group_admin_access_check: 'TRUE'
+    _permission: 'access ol content'
+  options:
+    no_cache: 'TRUE'
+
+# Main config dropdown.
+ol_main.ol_config:
+  path: '/admin/config/openlucius'
+  defaults:
+    _form: '\Drupal\ol_main\Form\AdminConfigForm'
+    _title: 'OpenLucius configuration'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    _admin_route: TRUE
+
+ol_main.ol_config_form:
+  path: '/admin/config/openlucius/ol_adminsettings'
+  defaults:
+    _form: '\Drupal\ol_main\Form\AdminConfigForm'
+    _title: 'OpenLucius configuration'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    _admin_route: TRUE

@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - ol_main
+  theme:
+    - ol_base
+id: sidebaruserblock
+theme: ol_base
+region: sidebar_user
+weight: 0
+provider: null
+plugin: sidebar_user_block
+settings:
+  id: sidebar_user_block
+  label: 'Sidebar user block'
+  provider: ol_main
+  label_display: '0'
+visibility: {  }

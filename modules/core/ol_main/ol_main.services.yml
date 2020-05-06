@@ -1,0 +1,35 @@
+services:
+  olmain.main.subscriber:
+    class: Drupal\ol_main\EventSubscriber\OLMainSubscriber
+    tags:
+      - { name: event_subscriber }
+  olmain.access_checker:
+    class: Drupal\ol_main\Access\GroupAccessChecker
+    arguments: ['@current_user']
+    tags:
+      - { name: access_check, applies_to: _group_access_check}
+  olmain.uuid_access_checker:
+    class: Drupal\ol_main\Access\GroupUuidAccessChecker
+    arguments: ['@current_user']
+    tags:
+      - { name: access_check, applies_to: _group_uuid_access_check}
+  olmain.group_admin_access_checker:
+    class: Drupal\ol_main\Access\GroupAdminAccessChecker
+    arguments: ['@current_user']
+    tags:
+      - { name: access_check, applies_to: _group_admin_access_check}
+  olmain.sections:
+    class: Drupal\ol_main\Services\OlSections
+    arguments: []
+  olmain.groups:
+    class: Drupal\ol_main\Services\OlGroups
+    arguments: ['@current_route_match','@messenger','@current_user']
+  olmain.files:
+    class: Drupal\ol_main\Services\OlFiles
+    arguments: ['@current_route_match','@olmembers.members','@current_user']
+  olmain.comments:
+    class: Drupal\ol_main\Services\OlComments
+    arguments: ['@current_route_match','@olmembers.members','@olmain.files']
+  olmain.mail:
+    class: Drupal\ol_main\Services\OlMail
+    arguments: ['@plugin.manager.mail','@current_user','@olmembers.members']

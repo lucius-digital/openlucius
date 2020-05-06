@@ -1,0 +1,41 @@
+  <!-- Filters -->
+  <div class="row title">
+    <div class="col text-right">
+      <div class="form-group">
+        <button class="btn btn-success" data-toggle="modal" data-target="#addMessageModal">
+          <i class="fa fa-plus"></i> {{ 'Message'|t }}
+        </button>
+      </div>
+    </div>
+  </div>
+    {% if vars.messages is not empty %}
+      <div class="messages-list-wrapper">
+      {{ vars.messages|raw }}
+      </div>
+    {% else %}
+  <div class="card ol-card">
+    <div class="card-header">
+      <p>
+        <i>{{ 'Be the first to add a message.'|t }}</i><br />
+      </p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Modal add message -->
+  <div class="modal fade bd-example-modal-lg" id="addMessageModal" role="dialog" aria-labelledby="addMessageModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-plus-square"></i> {{ 'Add message'|t }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        {{ vars.message_form }}
+
+      </div>
+    </div>
+  </div>
+  <!-- / Modal add message  -->

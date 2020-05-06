@@ -1,0 +1,20 @@
+add ol group user entities:
+  title: 'Create new OL Group User entities'
+
+administer ol group user entities:
+  title: 'Administer OL Group User entities'
+  description: 'Allow to access the administration form to configure OL Group User entities.'
+  restrict access: true
+
+delete ol group user entities:
+  title: 'Delete OL Group User entities'
+
+edit ol group user entities:
+  title: 'Edit OL Group User entities'
+
+view published ol group user entities:
+  title: 'View published OL Group User entities'
+
+view unpublished ol group user entities:
+  title: 'View unpublished OL Group User entities'
+

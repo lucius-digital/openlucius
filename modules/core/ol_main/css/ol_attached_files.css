@@ -1,0 +1,23 @@
+.text-muted.filename {
+  font-size: 0.9em;
+  margin-left: 10px;
+}
+.files_wrapper {
+  margin: 0 30px 10px 20px;
+}
+.files_wrapper a:hover {
+  text-decoration:underline;
+}
+.media .fa-file{
+  color:#ccc;
+}
+.files_wrapper .fa-file{
+  font-size: 1rem;
+  margin-left: 9px;
+}
+.files_wrapper .file_icon{
+  margin-right: 8px;
+}
+.attached-file{
+  margin-bottom: 2px;
+}

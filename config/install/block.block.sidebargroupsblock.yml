@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - ol_main
+  theme:
+    - ol_base
+id: sidebargroupsblock
+theme: ol_base
+region: sidebar_groups_menu
+weight: 0
+provider: null
+plugin: sidebar_groups_block
+settings:
+  id: sidebar_groups_block
+  label: 'Sidebar groups block'
+  provider: ol_main
+  label_display: '0'
+visibility: {  }

@@ -1,0 +1,39 @@
+{#
+/**
+* @file
+* Default theme implementation to display a block.
+*
+* @see template_preprocess_block()
+*
+* @ingroup themeable
+*/
+#}
+
+<nav class="navbar navbar-expand-sm navbar-light bg-light">
+  <!-- Toogle menu buttons -->
+  <button type="button" id="sidebarCollapse" class="btn btn-secondary" data-toggle="collapse" data-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle sidebar">
+    <i class="fas fa-align-left"></i> Menu
+  </button>
+    <!-- Main menu -->
+  <div class="navbar-collapse justify-content-center" id="navbarSupportedContent">
+    <ul class="nav navbar-nav text-center">
+      {% for section in vars.sections %}
+        {# Nasty active styling for now #}
+        {% if section.path == vars.active_section %}
+          {% set active = 'active' %}
+        {% else %}
+          {% set active = '' %}
+        {% endif %}
+        {# Yeah, this is not a good way to build url, needs work #}
+        <li class="nav-item {{ active }}">
+          <a class="nav-link" href="{{ host }}/group/{{ vars.gid }}/{{ section.path }}">{{ section.path|capitalize }} </a>
+        </li>
+      {% endfor %}
+      {% if vars.is_group_admin %}
+      <li class="nav-item {{ active }}">
+        <a class="nav-link" href="/group/{{ vars.gid }}/settings"><i class="fas fa-cog"></i> </a>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>

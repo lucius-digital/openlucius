@@ -1,0 +1,10 @@
+ol_main.ol_config:
+  title: 'OpenLucius'
+  route_name: ol_main.ol_config
+  description: 'Lus configuration'
+  parent: system.admin_config
+ol_main.ol_config_form:
+  title: 'OpenLucius Configuration'
+  route_name: ol_main.ol_config_form
+  description: 'Configure global settings for this installation'
+  parent: ol_main.ol_config

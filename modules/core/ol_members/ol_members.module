@@ -1,0 +1,39 @@
+<?php
+
+use Drupal\user\Entity\User;
+
+/**
+ * Implements hook_theme().
+ */
+function ol_members_theme() {
+  return [
+    'members_page' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'members-page',
+    ],
+    'members_card' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'members-card',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_add_ol_section()
+ * @param $sections
+ */
+function ol_members_add_ol_section(&$sections){
+  $sections['members'] = array('label' => t('Members'), 'path' => t('members'), 'weight' => 100);
+}
+
+/**
+ * Implements hook_add_global_menu_item()
+ * @param $sections
+ */
+function ol_members_add_global_menu_item(&$sections){
+  $sections['members'] = array('label' => t('Everybody'), 'path' => t('members'), 'icon'=> 'building', 'weight' => 100);
+}

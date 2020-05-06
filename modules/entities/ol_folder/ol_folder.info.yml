@@ -1,0 +1,5 @@
+name: 'OL Folder'
+type: module
+description: 'OL Folder'
+core_version_requirement: ^9
+package: 'OL core'

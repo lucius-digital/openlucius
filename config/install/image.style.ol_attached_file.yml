@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies: {  }
+name: ol_attached_file
+label: 'OL Attached File'
+effects:
+  7c227534-94b0-476a-8d08-44ce119da396:
+    uuid: 7c227534-94b0-476a-8d08-44ce119da396
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 30
+      height: 30
+      anchor: center-center
