@@ -5,7 +5,6 @@
     "license": "GPL-2.0-or-later",
     "require": {
         "drupal/admin_toolbar": "^2.2",
-        "drupal/core-project-message": "^9",
         "drupal/core-recommended": "^9"
     },
     "repositories": {
