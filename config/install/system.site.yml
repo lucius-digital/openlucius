@@ -1,10 +1,10 @@
-name: 'OpenLucius D9'
-mail: yourmail@domain.com
+name: OpenLucius
+mail: mail@yourdomain.com
 slogan: ''
 page:
   403: ''
   404: ''
-  front: /home
+  front: /ol_home
 admin_compact_mode: false
 weight_select_max: 100
 langcode: en

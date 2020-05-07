@@ -8,7 +8,7 @@ dependencies:
 id: ol_base_messages
 theme: ol_base
 region: content
-weight: -3
+weight: -2
 provider: null
 plugin: system_messages_block
 settings:

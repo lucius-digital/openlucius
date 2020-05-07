@@ -3,6 +3,7 @@ status: true
 dependencies:
   module:
     - ol_main
+    - user
   theme:
     - ol_base
 id: sidebaruserblock
@@ -16,4 +17,11 @@ settings:
   label: 'Sidebar user block'
   provider: ol_main
   label_display: '0'
-visibility: {  }
+visibility:
+  user_role:
+    id: user_role
+    roles:
+      authenticated: authenticated
+    negate: false
+    context_mapping:
+      user: '@user.current_user_context:current_user'
