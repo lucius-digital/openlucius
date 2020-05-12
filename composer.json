@@ -61,7 +61,9 @@
                 "<bg=yellow;fg=black>                </>",
                 "  * Install guide: https://www.getlucius.com/en/product/open-source-install-guide",
                 "  * End-user guide: https://www.getlucius.com/en/product/groups-channels",
-                "  * Get support: https://www.drupal.org/project/openlucius",
+                "  * Get support: https://www.drupal.org/project/issues/openlucius",
+                "  * Post feature requests: https://www.drupal.org/project/issues/openlucius",
+                "  * Commercial support via: https://www.getlucius.com",
                 "  * Remove the plugin that prints this message:",
                 "      composer remove drupal/core-project-message",
                 ""
