@@ -1,21 +1,20 @@
 <?php
-
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element\PasswordConfirm;
-
 /**
  * @file
  * Functions to support themings.
  */
 
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element\PasswordConfirm;
 
 /**
- * Implements hook_form_alter().
- * We use this to style fields on default user/{user}/edit page
+ * Style fields on user/{user}/edit page
  *
  * @param $form
  * @param FormStateInterface $form_state
  * @param $form_id
+ *
+ * Implements hook_form_alter()
  */
 function ol_base_form_user_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   $form['account']['name']['#attributes']['class'][] = 'form-control';
@@ -25,14 +24,32 @@ function ol_base_form_user_form_alter(&$form, \Drupal\Core\Form\FormStateInterfa
   $form['account']['field_picture']['#attributes']['class'][] = 'form-control';
   $form['language']['preferred_langcode']['#attributes']['class'][] = 'form-control';
   $form['actions']['submit']['#attributes']['class'][] = 'btn btn-success btn-lg';
-
 }
+
+/**
+ * Style fields on user/login/ page
+ *
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ * @param $form_id
+ *
+ * Implements hook_form_alter()
+ */
 function ol_base_form_user_login_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   $form['name']['#attributes']['class'][] = 'form-control col-md-6';
   $form['pass']['#attributes']['class'][] = 'form-control col-md-6';
   $form['actions']['submit']['#attributes']['class'][] = 'btn btn-success btn-lg';
-
 }
+
+/**
+ * Style fields on user/password page
+ *
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ * @param $form_id
+ *
+ * Implements hook_form_alter()
+ */
 function ol_base_form_user_pass_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   $form['name']['#attributes']['class'][] = 'form-control col-md-6';
   $form['pass']['#attributes']['class'][] = 'form-control col-md-6';
@@ -79,13 +96,4 @@ function ol_base_preprocess_html(&$variables) {
       });
     }
   }
-}
-
-/**
- * @param $variables
- */
-function ol_base_preprocess(&$variables) {
-  $variables['base_path'] = base_path();
-  $config = \Drupal::config('system.site');
-  $variables['site_name'] = $config->get('name');
 }

@@ -26,7 +26,7 @@ services:
     arguments: ['@current_route_match','@messenger','@current_user']
   olmain.files:
     class: Drupal\ol_main\Services\OlFiles
-    arguments: ['@current_route_match','@olmembers.members','@current_user','@olfiles.folders']
+    arguments: ['@current_route_match','@olmembers.members','@current_user']
   olmain.comments:
     class: Drupal\ol_main\Services\OlComments
     arguments: ['@current_route_match','@olmembers.members','@olmain.files']

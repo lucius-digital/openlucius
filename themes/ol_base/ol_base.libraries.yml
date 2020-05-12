@@ -9,7 +9,6 @@ global:
       css/tabs.css: {}
       css/user.css: {}
       css/style.css: {}
-      css/style_extras.css: {}
   js:
     '//use.fontawesome.com/releases/v5.10.1/js/solid.js': { type: external }
     '//use.fontawesome.com/releases/v5.10.1/js/fontawesome.js': { type: external }

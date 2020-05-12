@@ -1,12 +1,21 @@
+.resize-active * {
+  -webkit-transition: none !important;
+  transition: none !important;
+}
 html, body {
   max-width: 100%;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 body {
   font-family: 'Roboto', sans-serif;
   background: #f2f2f2;
   font-size: 0.9em;
+  min-height: 100vh;
+}
+body > .dialog-off-canvas-main-canvas {
+  min-height: 100vh;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -19,6 +28,9 @@ p, li {
   line-height: 1.7em;
   color: #252729;
   font-weight: 500;
+}
+p{
+  margin-bottom: 0.7rem;
 }
 
 ul ul a {
@@ -45,7 +57,7 @@ p a {
 }
 p a:hover {
   text-decoration: underline;
-  color:#0a6eb4;
+  color: #0a6eb4;
 }
 hr {
   border-top: 0;
@@ -110,6 +122,9 @@ hr {
     font-size: 16px;
   }
 }
+.detailpage {
+  min-height: 100vh;
+}
 
 .wrapper {
   display: flex;
@@ -148,6 +163,26 @@ hr {
     padding: 0;
   }
 }
+
+.container, .container-lg, .container-md, .container-sm {
+  max-width: 960px;
+}
+
+@media (min-width: 769px) {
+  .detailpage {
+    padding-left: 250px;
+  }
+}
+@media (max-width: 768px)
+{
+  .detailpage #sidebar.collapse.show + .container-fluid
+  {
+    -webkit-transform: translateX(250px);
+    -ms-transform: translateX(250px);
+    transform: translateX(250px);
+  }
+}
+
 
 /* ---------------------------------------------------
 SIDEBAR
@@ -220,7 +255,7 @@ a[data-toggle="collapse"] {
 
 #sidebar h2 {
   font-size: 0.8rem;
-  padding:0 0 0 10px;
+  padding: 0 0 0 10px;
 }
 
 #sidebar .your-groups {
@@ -258,7 +293,7 @@ a[data-toggle="collapse"] {
   }
 }
 
-@media (min-width: 769px) {
+@media (min-width: 768px) {
   #sidebarCollapse {
     display: none;
   }
@@ -269,8 +304,54 @@ a[data-toggle="collapse"] {
   color: #afafaf;
 }
 
-#sidebar .btn.dropdown-toggle{
-  padding:0;
+#sidebar .btn.dropdown-toggle {
+  padding: 0;
+}
+
+.detailpage #sidebar {
+  position: fixed;
+  z-index: 1050;
+  top: 0;
+  left: 0;
+  overflow: auto;
+  height: 100vh;
+}
+
+.detailpage .container-fluid {
+  -webkit-transition: all .3s ease;
+  transition: all .3s ease;
+}
+
+.detailpage .container-fluid .row:nth-child(2) {
+  margin-bottom: auto;
+}
+#sidebar .username {
+  color: #fff;
+  font-size: 1.05rem;
+}
+
+#sidebar .username:hover {
+  text-decoration: underline;
+}
+
+#sidebar .username .fa-chevron-down {
+  color: #8a8787;
+}
+
+#sidebar .groupname {
+  color: #fff;
+  font-size: 1rem;
+}
+
+#sidebar ul li.unread-messages > a {
+  color: #fff;
+  font-style: italic;
+  font-weight: bold;
+}
+
+#sidebar .svg-inline--fa.fa-certificate.fa-w-16 {
+  font-size: 10px;
+  color: #2578c2;
 }
 
 /* ---------------------------------------------------
@@ -287,7 +368,7 @@ a[data-toggle="collapse"] {
 }
 
 #content .btn-link {
-  color: #cccccc;
+  color: #ccc;
 }
 
 /* ---------------------------------------------------
@@ -357,7 +438,6 @@ button #sidebarCollapse {
   margin: 10px 0 10px 20px;
 }
 
-
 .navbar {
   background: #fff !important;
   border-bottom: 1px solid #ccc;
@@ -366,7 +446,6 @@ button #sidebarCollapse {
 }
 
 .navbar-light .navbar-nav .active > .nav-link {
-  /*.navbar-light .navbar-nav .nav-link:hover{*/
   border-bottom: 1px #000 solid;
   font-weight: bold;
 }
@@ -383,26 +462,31 @@ button #sidebarCollapse {
   color: #636363;
 }
 
-ul.media-list {
-  padding-left: 0px;
-  margin: 0px;
-}
-
-.comment-wrapper .media-body {
+.navbar-group-name {
   margin-left: 10px;
 }
 
-.heading h1 {
-  position: absolute;
-  left: 0;
-  top: 35px;
-  right: 0;
-  bottom: 0;
-  margin: auto;
-  width: max-content;
-  /*height: max-content;*/
-  font-size: 1.5rem;
-  color: #fff;
+@media (min-width: 768px) {
+  .navbar-brand {
+    padding: 5px 20px 8px 20px;
+    white-space: nowrap;
+    border-right: 1px dotted #ccc;
+  }
+}
+.navbar-brand {
+  font-size: 1rem;
+}
+.navbar {
+  white-space: nowrap;
+}
+.navbar-toggler {
+  margin-right: 20px;
+}
+.nav-link {
+  text-align: right;
+}
+.navbar-nav .nav-link {
+  padding-right: 30px;
 }
 
 button#sidebarCollapse {
@@ -413,6 +497,33 @@ button#group-apps-collapse {
   margin: 10px 20px;
 }
 
+/* ---------------------------------------------------
+    MAIN / CONTENT
+----------------------------------------------------- */
+
+@media (max-width: 768px) {
+  #content {
+    padding: 0;
+  }
+}
+
+ul.media-list {
+  padding-left: 0px;
+  margin: 0px;
+}
+
+.heading h1 {
+  position: absolute;
+  left: 0;
+  top: 35px;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  width: max-content;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
 .title h2 {
   font-size: 1.5rem;
   margin-left: 10px;
@@ -420,10 +531,6 @@ button#group-apps-collapse {
   margin-bottom: 10px;
   color: #616a71;
   min-height: 40px;
-}
-
-.landing_wrapper .card-title {
-  color: #616a71;
 }
 
 .list h2 {
@@ -440,30 +547,7 @@ button#group-apps-collapse {
 
 .badge.badge-light {
   font-weight: normal;
-  color: #A09C9C;
-}
-
-.comment-wrapper li.plupload_droptext {
-  line-height: 25px;
-}
-
-p {
-  margin-bottom: 0.7rem;
-}
-
-.culture-questions-config-form .form-control::placeholder {
-  color: #d3d3d3;
-  font-weight: normal;
-}
-
-.container, .container-lg, .container-md, .container-sm {
-  max-width: 960px;
-}
-
-@media (max-width: 768px) {
-  #content {
-    padding: 0px;
-  }
+  color: #a09c9c;
 }
 
 .badge {
@@ -475,30 +559,17 @@ p {
 }
 
 .fieldset-legend,
-.form-item label{
+.form-item label {
   color: #555d64;
   font-size: 0.9rem;
   font-weight: bold;
 }
-.form-item .option{
+.form-item .option {
   font-weight: normal;
 }
 
 .fieldset-wrapper {
   padding: 0 5px;
-}
-
-#sidebar .username {
-  color: #fff;
-  font-size: 1.05rem;
-}
-
-#sidebar .username:hover {
-  text-decoration: underline;
-}
-
-#sidebar .username .fa-chevron-down {
-  color: #8a8787;
 }
 
 .navigation-form .form-submit {
@@ -536,6 +607,11 @@ nav.pager {
   display: none;
 }
 
+.cke_dialog_ui_textarea,
+.cke_dialog_ui_html {
+  display: none;
+}
+
 .h5.m-0 a:hover,
 .m-0 a:hover {
   text-decoration: underline;
@@ -549,14 +625,6 @@ nav.pager {
 
 .heading .img-fluid {
   height: 100%
-}
-
-.beta {
-  font-size: 0.7rem;
-}
-
-.social-sidebar-menu {
-  padding: 0 20px 0 20px;
 }
 
 .groups .dropdown-toggle {
@@ -577,11 +645,6 @@ nav.pager {
   margin-right: 3px;
 }
 
-.cke_dialog_ui_textarea,
-.cke_dialog_ui_html {
-  display: none;
-}
-
 .group_selector {
   margin: 1.55rem 1rem 0.5rem 1.25rem;
 }
@@ -595,53 +658,41 @@ nav.pager {
   background-color: #41474c;
   border-color: #5a626a;
 }
-
-#sidebar .groupname {
-  color: #fff;
-  font-size: 1rem;
-}
-
 #edit-role--description {
   margin-top: 5px;
 }
-
-#sidebar ul li.unread-messages > a {
-  color: #fff;
-  font-style: italic;
-  font-weight: bold;
-}
-
-#sidebar .svg-inline--fa.fa-certificate.fa-w-16 {
-  font-size: 10px;
-  color: #2578c2;
-}
-.group-settings{
+.group-settings {
   background: #fff;;
   padding: 20px 10px;
   max-width: 780px;
-  border: 1px solid  #ccc;
+  border: 1px solid #ccc;
 }
 .modal-title {
   color: #252729;
 }
-.register .last_name{
+.register .last_name {
   display: none;
 }
-.register .birthday{
+.register .birthday {
   display: none;
 }
 #user-login-form #edit-name--description,
-#user-login-form #edit-pass--description{
+#user-login-form #edit-pass--description {
   display: none;
 }
-#edit-pass{
-  margin-bottom:20px;
+#edit-pass {
+  margin-bottom: 20px;
 }
-#user-login-form label{
-  margin-top:10px;
-  margin-bottom:5px;
+#user-login-form label {
+  margin-top: 10px;
+  margin-bottom: 5px;
 }
 #user-pass,
-#user-login-form{
- margin-top:20px;
+#user-login-form {
+  margin-top: 20px;
+}
+.global-message{
+  background-color: #d27238;
+  color: #fff;
+  padding: 5px 10px;
 }

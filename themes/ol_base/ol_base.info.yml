@@ -1,4 +1,4 @@
-name: ol_base
+name: OpenLucius
 type: theme
 version: VERSION
 core_version_requirement: ^9

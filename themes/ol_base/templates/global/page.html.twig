@@ -59,15 +59,17 @@
     {{ page.sidebar_groups_menu }}
   </nav>
 
-  <!-- Main screen right -->
+  <!-- Main container right -->
   <div class="container-fluid">
 
-    <!-- header image and title-->
+    {% if page.main_header %}
+    <!-- Main header -->
     <div class="row">
       {{ page.main_header }}
     </div>
+    {% endif %}
 
-    <!-- Main Menu-->
+    <!-- Main Header Menu -->
     <div class="row ">
       <div class="col-md-12 px-0">
         {{ page.main_sections }}
@@ -82,15 +84,8 @@
             {{ page.content }}
           </div>
         </div>
-        <!-- Row /////  -->
       </div>
-      <!-- Container-fluid ///// -->
-    </div>
-    <!-- id=content /////  -->
-  </div>
-  <!-- class=container-fluid /////  -->
+    </div> <!-- / Content -->
 
-
-
-</div>
-<!-- Wrapper //// -->
+  </div> <!-- / Main container  -->
+</div> <!-- / Wrapper -->

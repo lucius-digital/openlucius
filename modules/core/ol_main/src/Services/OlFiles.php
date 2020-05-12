@@ -28,20 +28,14 @@ class OlFiles{
    */
   protected $current_user;
 
-  /**
-   * @var $folders
-   */
-  protected $folders;
-
-  /**
+    /**
    * OlMembers constructor.
    * @param $route
    */
-  public function __construct($route, $members, $current_user, $folders) {
+  public function __construct($route, $members, $current_user) {
     $this->route = $route;
     $this->members = $members;
     $this->current_user = $current_user;
-    $this->folders = $folders;
   }
 
   /**
@@ -188,11 +182,14 @@ class OlFiles{
     $style_ol_filelist = ImageStyle::load('ol_filelist');
     $id_folder =  Html::escape(\Drupal::request()->query->get('folder'));
     $path = \Drupal::request()->getpathInfo();
+    // We can't have this as dependency, else install profile will bitch during install.
+    // So for now, procedural use of this service.
+    $folders = \Drupal::service('olfiles.folders');
 
     // Needed to redirect to current folder, after removing a file from a folder.
     $file_row_data['current_path'] = $path .'?folder='.$id_folder;
     // Needed to show/hide folder options in drop down.
-    $file_row_data['has_folders'] = !empty($this->folders->getFolders());
+    $file_row_data['has_folders'] = !empty($folders->getFolders());
     $file_row_data['owner'] = false;
     // Loop through files and build html.
     foreach ($file_list_data as $file_data) {
