@@ -3,7 +3,6 @@
 namespace Drupal\ol_members\Services;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Render\Renderer;
 use Drupal\Core\Url;
 use Drupal\ol_group_user\Entity\OlGroupUser;
 use Drupal\user\Entity\User;
@@ -84,7 +83,7 @@ class OlMembers{
       // Needed to show drop down item.
       $members_row_data['current_is_user_admin'] = $is_user_manager == true;
       // Needed for 'group admin' badge.
-      $members_row_data['is_group_admin'] = $member->uid == $group_admin_uid;
+      $members_row_data['is_group_admin'] = $member->uid == $this->getGroupAdminUid();
       $members_row_data['user_picture'] = $this->getUserPictureUrl($member->uid);
       $user = User::load($member->uid);
       $members_row_data['is_user_admin'] = $user->hasPermission('administer ol users');
@@ -144,13 +143,21 @@ class OlMembers{
   public function deleteUserGroupRelation($uid){
     // Get current group id.
     $gid = $this->route->getParameter('gid');
-    // Remove user from group.
-    $this->database->delete('ol_group_user')
-      ->condition('group_id', $gid)
-      ->condition('member_uid', $uid)
-      ->execute();
-    // Message and redirect.
-    $this->messenger->addStatus(t( 'Member successfully removed from this group'));
+    // Check if uid is group admin, that can't be removed.
+    $group_admin_uid = $this->isGroupAdmin($uid);
+    // Only remove if it's not group admin.
+    if ($group_admin_uid == null) {
+      // Remove user from group.
+      $this->database->delete('ol_group_user')
+        ->condition('group_id', $gid)
+        ->condition('member_uid', $uid)
+        ->execute();
+      // Message and redirect.
+      $this->messenger->addStatus(t('Member successfully removed from this group'));
+    }
+    if (is_numeric($group_admin_uid)){
+      \Drupal::messenger()->addWarning( t('You can\'t remove group administrator from a group'));
+    }
     $path = Url::fromRoute('ol_members.group_members',['gid' => $gid])->toString();
     $response = new RedirectResponse($path);
     $response->send();
@@ -212,13 +219,6 @@ class OlMembers{
       return $account->getAccountName();
     }
   }
-  /**
-   * @return mixed
-   */
-  public function getUserId(){
-   return $this->current_user->id();
-  }
-
   /**
    * @param $email
    * @param $language
@@ -330,6 +330,22 @@ class OlMembers{
   }
 
   /**
+   * @param null $uid
+   *
+   * @return mixed
+   */
+  public function isUserManager($uid = null){
+    $uid = empty($uid) ? $this->current_user->id() : $uid;
+    $user = User::load($uid);
+    return $user->hasPermission('administer ol users');
+  }
+
+  public function getUserId(){
+    return $this->current_user->id();
+  }
+
+
+  /**
    * @param $uid
    *
    * @return mixed
@@ -342,6 +358,16 @@ class OlMembers{
     $query->condition('user.uid', $uid);
     $members_data = $query->execute()->fetchObject();
     return $members_data;
+  }
+
+  private function getGroupAdminUid($gid = null){
+    // Get $gid if not provided.
+    $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
+    // Query if current user is group admin.
+    $query = \Drupal::database()->select('ol_group', 'gr');
+    $query->addField('gr', 'user_id');
+    $query->condition('gr.id', $gid);
+    return $query->execute()->fetchField();
   }
 
 }

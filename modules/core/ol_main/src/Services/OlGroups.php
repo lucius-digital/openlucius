@@ -137,7 +137,9 @@ class OlGroups{
    * @param $gid
    * @return mixed
    */
-  public function getGroupName($gid) {
+  public function getGroupName($gid = null) {
+    // Get current gid if not provided.
+    $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
     // Query if current user is group admin.
     $query = \Drupal::database()->select('ol_group', 'gr');
     $query->addField('gr', 'name');

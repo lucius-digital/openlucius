@@ -133,9 +133,9 @@ class OlComments{
       $comment_row_data['files'] = $this->files->getAttachedFiles('comment', $comment->id);
       // Render HTML.
       $render = ['#theme' => 'comment_item',
-        '#vars' => $comment_row_data,
-        '#attached' => ['library' => 'ol_main/ol_comments',],
-      ]; // Library renders multiple times, but only 1 css visible, that's good. But not too much unneeded load?
+                  '#vars' => $comment_row_data,
+                  '#attached' => ['library' => 'ol_main/ol_comments',],
+                ]; // Library renders multiple times, but only 1 css visible, that's good. But not too much unneeded load?
       $comments_html .= \Drupal::service('renderer')->render($render);
     }
     // Build render array.

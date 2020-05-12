@@ -5,7 +5,5 @@ stream:
     theme:
       css/stream.css: {}
   js:
-    http://localhost:3000/socket.io/socket.io.js: { type: external, weight: -20, attributes: { defer: true }  }
     js/stream.js: { weight: -10, attributes: { defer: true}  }
     js/stream_layout.js: { weight: -10, attributes: { defer: true} }
-  dependencies:

@@ -9,25 +9,29 @@
 */
 #}
 
-<nav class="navbar navbar-expand-sm navbar-light bg-light">
-  <!-- Toogle menu buttons -->
+<nav class="navbar navbar-expand-md navbar-light bg-light">
   <button type="button" id="sidebarCollapse" class="btn btn-secondary" data-toggle="collapse" data-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle sidebar">
     <i class="fas fa-align-left"></i> Menu
   </button>
-    <!-- Main menu -->
-  <div class="navbar-collapse justify-content-center" id="navbarSupportedContent">
-    <ul class="nav navbar-nav text-center">
+  {% if vars.sections is not empty %}
+  <span class="navbar-brand" >{{ vars.group_name|length > 20 ? vars.group_name|slice(0, 20) ~ '..' : vars.group_name  }}  </span>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  {% endif %}
+  <div class="collapse navbar-collapse text-align-right" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
       {% for section in vars.sections %}
-        {# Nasty active styling for now #}
-        {% if section.path == vars.active_section %}
-          {% set active = 'active' %}
-        {% else %}
-          {% set active = '' %}
-        {% endif %}
-        {# Yeah, this is not a good way to build url, needs work #}
-        <li class="nav-item {{ active }}">
-          <a class="nav-link" href="{{ host }}/group/{{ vars.gid }}/{{ section.path }}">{{ section.path|capitalize }} </a>
-        </li>
+      {# Nasty active styling for now #}
+      {# Link building also needs attention #}
+      {% if section.path == vars.active_section %}
+        {% set active = 'active' %}
+      {% else %}
+        {% set active = '' %}
+      {% endif %}
+      <li class="nav-item {{ active }}">
+        <a class="nav-link" href="{{ host }}/group/{{ vars.gid }}/{{ section.path }}">{{ section.path|capitalize }} </a>
+      </li>
       {% endfor %}
       {% if vars.is_group_admin %}
       <li class="nav-item {{ active }}">
@@ -37,3 +41,34 @@
     </ul>
   </div>
 </nav>
+
+{#<nav class="navbar navbar-expand-sm navbar-light bg-light">#}
+{#  <!-- Toogle menu buttons -->#}
+{#  <button type="button" id="sidebarCollapse" class="btn btn-secondary" data-toggle="collapse" data-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle sidebar">#}
+{#    <i class="fas fa-align-left"></i> Menu#}
+{#  </button>#}
+{#  <div class="navbar-group-name">{{ vars.group_name }}</div>#}
+{#    <!-- Main menu -->#}
+{#  <div class="navbar-collapse justify-content-center" id="navbarSupportedContent">#}
+{#    #}
+{#    <ul class="nav navbar-nav text-center">#}
+{#      {% for section in vars.sections %}#}
+{#        #}{# Nasty active styling for now #}
+{#        {% if section.path == vars.active_section %}#}
+{#          {% set active = 'active' %}#}
+{#        {% else %}#}
+{#          {% set active = '' %}#}
+{#        {% endif %}#}
+{#        #}{# Yeah, this is not a good way to build url, needs work #}
+{#        <li class="nav-item {{ active }}">#}
+{#          <a class="nav-link" href="{{ host }}/group/{{ vars.gid }}/{{ section.path }}">{{ section.path|capitalize }} </a>#}
+{#        </li>#}
+{#      {% endfor %}#}
+{#      {% if vars.is_group_admin %}#}
+{#      <li class="nav-item {{ active }}">#}
+{#        <a class="nav-link" href="/group/{{ vars.gid }}/settings"><i class="fas fa-cog"></i> </a>#}
+{#      </li>#}
+{#      {% endif %}#}
+{#    </ul>#}
+{#  </div>#}
+{#</nav>#}

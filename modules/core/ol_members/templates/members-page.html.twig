@@ -1,4 +1,4 @@
-{% if vars.members_form %}
+{% if vars.members_form and vars.can_add_members %}
 <!-- Action buttons -->
 <div class="row">
   <div class="col text-right">
@@ -20,6 +20,7 @@
 {% endif %}
 <!-- / Member cards -->
 
+{% if vars.members_form and vars.can_add_members %}
 <!-- Modal add member -->
 <div class="modal fade" id="addMembersModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
@@ -50,13 +51,12 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-
       <div class="modal-footer">
         <button type="button" class="btn btn-primary">{{ 'Yes, remove'|t }}</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'No, don\'t remove'|t }}</button>
       </div>
-
     </div>
   </div>
 </div>
 <!-- / Modal -->
+{%  endif %}

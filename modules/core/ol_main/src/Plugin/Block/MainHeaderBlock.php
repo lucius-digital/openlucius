@@ -19,9 +19,16 @@ class MainHeaderBlock extends BlockBase {
    */
   public function build() {
 
-    // Build build.
+    // Set global message.
+    $global_message = \Drupal::config('ol_main.admin_settings')->get('global_message');
+    // Return empty if global message is.
+    if(empty($global_message)) {
+      return array();
+    }
+
+    // Build.
     $theme_vars = [
-      'image' => 'test',
+      'global_message' => $global_message,
     ];
     $build = [
       '#theme' => 'main_header_block',

@@ -4,6 +4,7 @@ namespace Drupal\ol_main\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\ol_main\Services\OlGroups;
 use Drupal\ol_members\Services\OlMembers;
 use Drupal\ol_main\Services\OlSections;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -37,6 +38,11 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
   protected $members;
 
   /**
+   * @var $groups
+   */
+  protected $groups;
+
+  /**
    * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
    * @param array $configuration
    * @param string $plugin_id
@@ -51,7 +57,8 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
       $plugin_definition,
       $container->get('olmain.sections'),
       $container->get('current_route_match'),
-      $container->get('olmembers.members')
+      $container->get('olmembers.members'),
+      $container->get('olmain.groups')
     );
   }
 
@@ -61,11 +68,12 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
    * @param mixed $plugin_definition
    * @param $sections
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, OlSections $sections, CurrentRouteMatch $route, OlMembers $members) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, OlSections $sections, CurrentRouteMatch $route, OlMembers $members, OlGroups $groups) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->sections = $sections;
     $this->route = $route;
     $this->members = $members;
+    $this->groups = $groups;
   }
 
   /**
@@ -77,6 +85,7 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
     $gid = $this->route->getParameter('gid');
     $sections = $this->sections->getSectionsData();
     $is_group_admin = $this->members->isGroupAdmin();
+    $group_name = $this->groups->getGroupName();
     // Yeah.., this is not a good way to build url's, needs work.
     $themeable_sections = $this->makeSectionsThemeable($sections, $gid);
     $host = \Drupal::request()->getHost();
@@ -93,6 +102,7 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
       'gid' => $gid,
       'is_group_admin' => $is_group_admin,
       'host' => $host,
+      'group_name' => $group_name,
     ];
     $build = [
       '#theme' => 'main_sections_block',

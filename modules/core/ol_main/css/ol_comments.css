@@ -1,3 +1,7 @@
+.comment-wrapper .media-body {
+  margin-left: 10px;
+}
+
 .comments h2 {
   font-size: 1.5rem;
   color: #687177;
@@ -33,7 +37,7 @@ p.comment {
 }
 .comment .text-muted.filename {
   font-size: 0.9em;
-  margin-left: 0px;
+  margin-left: 0;
 }
 .write-comment-picture {
   padding-left: 25px;

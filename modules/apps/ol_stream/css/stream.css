@@ -1,11 +1,11 @@
-.stream-wrapper{
+.stream-wrapper {
   background-color: #fff;
-  padding-top:20px;
+  padding-top: 20px;
   height: 100% !important;
 }
-#message-container{
-  overflow:auto;
-  height:100%;
+#message-container {
+  overflow: auto;
+  height: 100%;
 }
 #stream-item-form {
   position: fixed;
@@ -15,8 +15,8 @@
 #message-input {
   flex-grow: 1;
 }
-#edit-message{
-  margin-top:0;
+#edit-message {
+  margin-top: 0;
 }
 .stream-list .media-body {
   font-size: 1em;
@@ -24,26 +24,23 @@
   font-weight: 500;
   margin-bottom: 10px;
 }
-.stream-list .mb-1{
+.stream-list .mb-1 {
   font-weight: 600;
 }
-.stream-item-files-wrapper{
-  margin-top:10px;
+.stream-item-files-wrapper {
+  margin-top: 10px;
 }
 .stream-item-files-wrapper a {
   padding-left: 0 !important;
 }
-.stream-item-files-wrapper .media-body{
+.stream-item-files-wrapper .media-body {
   margin-bottom: 5px;
 }
 #edit-offset {
   display: none;
 }
-#load-previous-form{
+#load-previous-form {
   margin-bottom: 5px;
-}
-.plupload_filelist li.plupload_droptext {
-  font-size: .6rem !important;
 }
 .loader {
   border: 16px solid #f3f3f3;
@@ -57,21 +54,134 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-#edit-message-body-value-format{
+#edit-message-body-value-format {
   display: none;
 }
-.messages__item a{
+.messages__item a {
   text-decoration: underline;
   font-weight: bold;
 }
-.messages-list-wrapper .message-card-body p{
+.messages-list-wrapper .message-card-body p {
   /*color: #737373;*/
   line-height: 1.3em;
 }
-.messages-list-wrapper .message-card-body h6{
-  font-size:1.15rem;
+.messages-list-wrapper .message-card-body h6 {
+  font-size: 1.15rem;
 }
 #last_message_timestamp,
-#last_message_timestamp_db{
+#last_message_timestamp_db {
   display: none;
+}
+#stream-item-form {
+  right: 0;
+  left: 0;
+
+  box-sizing: border-box;
+  max-width: 100%;
+  margin-bottom: 0;
+  padding-right: 16px;
+
+  background-color: #f2f2f2;
+}
+
+#stream-item-form > .container-md {
+  padding-top: 15px;
+  padding-bottom: 15px;
+
+  background-color: #f2f2f2;
+}
+
+#content.stream-holder {
+  height: auto;
+  min-height: auto;
+  padding-bottom: 130px;
+}
+
+#content.stream-holder .container-md {
+  margin-top: 0;
+}
+
+.stream-item-form .form-control {
+  line-height: 26px;
+
+  height: 36px;
+  padding: 4px 15px;
+}
+
+.stream-item-form .input-group .input-group-append {
+  width: 60px;
+}
+
+.stream-item-form .input-group .form-item {
+  width: calc(100% - 60px);
+}
+
+.stream-list-holder {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  width: 100%;
+  padding: 0;
+
+  -webkit-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
+  text-align: left;
+
+  direction: rtl;
+}
+
+.stream-list {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-flow: column;
+  flex-flow: column;
+  direction: ltr;
+}
+
+.stream-list#message-container {
+  overflow: hidden;
+
+  width: 100%;
+  margin: 0;
+
+  -webkit-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
+}
+@media (min-width: 769px)
+{
+  .detailpage
+  {
+    padding-left: 250px;
+  }
+
+  #stream-item-form
+  {
+    padding: 0 50px;
+    padding-left: 285px;
+
+    background-color: transparent;
+  }
+}
+@media (min-width: 992px)
+{
+  #stream-item-form > .container-md
+  {
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+
+  #content.stream-holder
+  {
+    padding-bottom: 115px;
+  }
+
 }

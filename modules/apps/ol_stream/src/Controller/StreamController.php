@@ -88,7 +88,10 @@ class StreamController extends ControllerBase {
     $build = [
       '#theme' => 'stream_wrapper',
       '#attached' => [
-        'library' => 'ol_stream/stream',
+        'library' => [
+          'ol_stream/node_server', // Build dynamically in ol_stream_library_info_build().
+          'ol_stream/stream',
+        ],
         'drupalSettings' => [
           'group_uuid' => $group_uuid,
           'node_server' => $node_server,

@@ -28,15 +28,20 @@ class OlFiles{
    */
   protected $current_user;
 
+  /**
+   * @var $folders
+   */
+  protected $folders;
 
   /**
    * OlMembers constructor.
    * @param $route
    */
-  public function __construct($route, $members, $current_user) {
+  public function __construct($route, $members, $current_user, $folders) {
     $this->route = $route;
     $this->members = $members;
     $this->current_user = $current_user;
+    $this->folders = $folders;
   }
 
   /**
@@ -126,8 +131,11 @@ class OlFiles{
       $file_ref_entity->delete();
       // Add stream item.
       if($show_in_stream) {
+        // We can't have this as dependency, else install profile will bitch during install.
+        // So for now, procedural use of this service.
+        $stream = \Drupal::service('olstream.stream');
         $stream_body = t('Removed a file: @file', ['@file' => $name]);
-        $this->stream->addStreamItem($gid, 'file_removed', $stream_body, 'file', $fid);
+        $stream->addStreamItem($gid, 'file_removed', $stream_body, 'file', $fid);
       }
       // Set message.
       \Drupal::messenger()->addStatus( $name .t(' successfully deleted.'));
@@ -184,8 +192,7 @@ class OlFiles{
     // Needed to redirect to current folder, after removing a file from a folder.
     $file_row_data['current_path'] = $path .'?folder='.$id_folder;
     // Needed to show/hide folder options in drop down.
-    $folders = \Drupal::service('olfiles.folders');
-    $file_row_data['has_folders'] = !empty($folders->getFolders());
+    $file_row_data['has_folders'] = !empty($this->folders->getFolders());
     $file_row_data['owner'] = false;
     // Loop through files and build html.
     foreach ($file_list_data as $file_data) {
@@ -295,10 +302,10 @@ class OlFiles{
       }
       // Render HTML.
       $render = ['#theme' => 'file_item',
-        '#vars' => $file_row_data,
-        '#attached' => ['library' => 'ol_main/ol_attached_files',],
-      ];  // Library renders multiple times, but only 1 css visible, that's good.
-      // But not too much unneeded load here..?
+                  '#vars' => $file_row_data,
+                  '#attached' => ['library' => 'ol_main/ol_attached_files',],
+                ];  // Library renders multiple times, but only 1 css visible, that's good.
+                    // But not too much unneeded load here..?
       $files_html .= \Drupal::service('renderer')->render($render);
     }
     // Render remove modal, only if user is owner of one of the files.
@@ -376,7 +383,7 @@ class OlFiles{
     $group_id = $this->route->getParameter('gid');
     $uid = $this->current_user->id();
     return $group_id .'/'.$entity_type.'/'.date('Y_W'.'/'.$uid);
-  }
+    }
 
   /**
    * @param $fid

@@ -3,20 +3,69 @@
     "type": "drupal-profile",
     "description": "A lean and fast social productity Drupal installation profile",
     "license": "GPL-2.0-or-later",
+    "homepage": "https://www.drupal.org/project/openlucius",
+	"repositories": {
+	    "drupal": {
+	        "type": "composer",
+	        "url": "https://packages.drupal.org/8"
+	    },
+	    "assets": {
+	        "type": "composer",
+	        "url": "https://asset-packagist.org"
+	    }
+	},
     "require": {
+        "composer/installers": "^1.2",
         "drupal/admin_toolbar": "^2.2",
-        "drupal/core-recommended": "^9"
+        "drupal/core-composer-scaffold": "^9",
+        "drupal/core-project-message": "^9",
+        "drupal/core-recommended": "^9",
+        "drush/drush": "^10.2",
     },
-    "repositories": {
-        "drupal": {
-            "type": "composer",
-            "url": "https://packages.drupal.org/8"
-        },
-        "assets": {
-            "type": "composer",
-            "url": "https://asset-packagist.org"
-        }
+    "require-dev": {
+    },
+    "conflict": {
+        "drupal/drupal": "*"
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "drupal-scaffold": {
+            "locations": {
+                "web-root": "web/"
+            }
+        },
+        "installer-paths": {
+            "web/core": ["type:drupal-core"],
+            "web/libraries/{$name}": ["type:drupal-library"],
+            "web/modules/contrib/{$name}": ["type:drupal-module"],
+            "web/profiles/contrib/{$name}": ["type:drupal-profile"],
+            "web/themes/contrib/{$name}": ["type:drupal-theme"],
+            "drush/Commands/contrib/{$name}": ["type:drupal-drush"],
+            "web/modules/custom/{$name}": ["type:drupal-custom-module"],
+            "web/themes/custom/{$name}": ["type:drupal-custom-theme"]
+        },
+        "drupal-core-project-message": {
+            "include-keys": ["homepage", "support"],
+            "post-create-project-cmd-message": [
+                "",
+                "<bg=blue;fg=white>                                                              </>",
+                "<bg=blue;fg=white>  Congratulations, you’ve installed the OpenLucius codebase!  </>",
+                "<bg=blue;fg=white>                                                              </>",
+                "",
+                "<bg=yellow;fg=black>                </>",
+                "<bg=yellow;fg=black>   Next steps   </>",
+                "<bg=yellow;fg=black>                </>",
+                "  * Install guide: https://www.getlucius.com/en/product/open-source-install-guide",
+                "  * End-user guide: https://www.getlucius.com/en/product/groups-channels",
+                "  * Get support: https://www.drupal.org/project/openlucius",
+                "  * Remove the plugin that prints this message:",
+                "      composer remove drupal/core-project-message",
+                ""
+            ]
+        }
+    }
 }

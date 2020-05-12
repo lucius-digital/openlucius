@@ -94,7 +94,7 @@ class MembersForm extends FormBase {
     // Handle new members permission.
     $disabled = true;
     $placeholder = t('(Disabled: only user managers can add new members)');
-    if($this->account->hasPermission('administer ol users') || TRUE) {
+    if($this->account->hasPermission('administer ol users')) {
       $disabled = false;
       $placeholder = t('Email address of new user...');
     }

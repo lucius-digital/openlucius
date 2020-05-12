@@ -50,11 +50,14 @@ class MembersController extends ControllerBase {
     $members_form = $this->form_builder->getForm(\Drupal\ol_members\Form\MembersForm::class);
     $members_list_data = $this->members->getUsersInGroup();
     $member_cards = $this->members->renderMembersCards($members_list_data, $gid, $group_admin_uid);
+    $is_user_manager = $this->members->isUserManager();
+    $can_add_members = is_numeric($group_admin_uid) || $is_user_manager;
 
     // Build it.
     $theme_vars = [
       'members_form' => $members_form,
       'member_cards' => $member_cards,
+      'can_add_members' => $can_add_members,
     ];
     $build = [
       '#theme' => 'members_page',

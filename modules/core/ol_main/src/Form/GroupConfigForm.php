@@ -131,8 +131,8 @@ class GroupConfigForm extends FormBase {
     if (strlen($name) < 2) {
       $form_state->setErrorByName('name', $this->t('Name not changed: it must be at least 2 characters long.'));
     }
-    if (strlen($name) > 100) {
-      $form_state->setErrorByName('name', $this->t('Group not added: name can not be more then 100 characters long.'));
+    if (strlen($name) > 20) {
+      $form_state->setErrorByName('name', $this->t('Group not added: name can not be more then 20 characters long.'));
     }
   }
 
