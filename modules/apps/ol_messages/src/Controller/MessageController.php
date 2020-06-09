@@ -6,6 +6,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Pager\PagerManager;
 use Drupal\Core\Pager\PagerParameters;
 use Drupal\ol_main\Services\OlComments;
+use Drupal\ol_main\Services\OlSections;
 use Drupal\ol_members\Services\OlMembers;
 use Drupal\ol_messages\Services\OlMessages;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -41,14 +42,27 @@ class MessageController extends ControllerBase {
   protected $members;
 
   /**
-   * Constructor
+   * @var $sections
    */
-  public function __construct(OlMessages $messages, PagerManager $pager, PagerParameters $pager_params, OlComments $comments, OlMembers $members) {
+  protected $sections;
+
+  /**
+   * Constructor
+   *
+   * @param \Drupal\ol_messages\Services\OlMessages $messages
+   * @param \Drupal\Core\Pager\PagerManager $pager
+   * @param \Drupal\Core\Pager\PagerParameters $pager_params
+   * @param \Drupal\ol_main\Services\OlComments $comments
+   * @param \Drupal\ol_members\Services\OlMembers $members
+   * @param \Drupal\ol_main\Services\OlSections $sections
+   */
+  public function __construct(OlMessages $messages, PagerManager $pager, PagerParameters $pager_params, OlComments $comments, OlMembers $members, OlSections $sections) {
     $this->messages = $messages;
     $this->pager = $pager;
     $this->pager_params = $pager_params;
     $this->comments = $comments;
     $this->members = $members;
+    $this->sections = $sections;
   }
 
   /**
@@ -60,8 +74,8 @@ class MessageController extends ControllerBase {
       $container->get('pager.manager'),
       $container->get('pager.parameters'),
       $container->get('olmain.comments'),
-      $container->get('olmembers.members')
-
+      $container->get('olmembers.members'),
+      $container->get('olmain.sections')
     );
   }
 
@@ -73,18 +87,18 @@ class MessageController extends ControllerBase {
    */
   public function getMessageList($gid){
 
-    // Pager initialize, also needed for getMessagesList query.
-    //$pager_parameters = \Drupal::service('pager.parameters');
+    // Pager init.
     $page = $this->pager_params->findPage();
     $num_per_page = 10;
     $offset = $num_per_page * $page;
 
-    // Get our messages data.
+    // Get messages data.
     $message_form = \Drupal::formBuilder()->getForm(\Drupal\ol_messages\Form\MessageForm::class);
     $message_list_data = $this->messages->getMessagesList(null, $num_per_page, $offset, null);
     $messages = $this->messages->renderMessagesList($message_list_data, 'list');
+    $page_title = $this->sections->getSectionOverrideTitle('messages', 'Messages');
 
-    // Pager, now that we have the total number of results, .
+    // Pager, now that we have the total number of results.
     $total_result = $this->messages->getMessagesList(null, null, null, true);
     $pager = $this->pager->createPager($total_result, $num_per_page);
     $pager->getCurrentPage();
@@ -93,8 +107,9 @@ class MessageController extends ControllerBase {
     $theme_vars = [
       'message_form' => $message_form,
       'messages' => $messages,
+      'page_title' => $page_title,
     ];
-    // Create a render array with the search results.
+    // Build render array.
     $render = [];
     $render[] = [
       '#theme' => 'messages_list',
@@ -106,10 +121,9 @@ class MessageController extends ControllerBase {
         ],
       ],
     ];
-    // Finally, add the pager to the render array, and return.
+    // Add pager and return.
     $render[] = ['#type' => 'pager'];
     return $render;
-
   }
 
   /**
@@ -147,7 +161,5 @@ class MessageController extends ControllerBase {
     ];
     return $build;
   }
-
-
 
 }

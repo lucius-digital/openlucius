@@ -205,14 +205,14 @@ class OlFolders{
    * @param $file_id
    * @param null $group_id
    */
-  function removeFileFromFolder($file_id, $group_id = null){
+  function removeFileFromFolder($id, $group_id = null){
     // Only remove if file owner or group admin
-    if($this->members->isGroupAdmin() || $this->isFileOwner($file_id) ){
+    if($this->members->isGroupAdmin() || $this->isFileOwner($id) ){
       $group_id = (empty($group_id)) ? $this->route->getParameter('gid') : $group_id;
       \Drupal::database()->update('ol_file')
         ->fields(['folder_id' => 0])
         ->condition('group_id', $group_id)
-        ->condition('file_id', $file_id)
+        ->condition('id', $id)
         ->execute();
       \Drupal::messenger()->addStatus(t('Your file was successfully removed from folder.'));
     }
@@ -226,10 +226,10 @@ class OlFolders{
    * @param $fid
    * @return bool
    */
-  private function isFileOwner($fid){
+  private function isFileOwner($id){
     $query = \Drupal::database()->select('ol_file', 'fr');
     $query->addField('fr', 'user_id');
-    $query->condition('fr.file_id', $fid);
+    $query->condition('fr.id', $id);
     $uid = $query->execute()->fetchField();
     return ($uid == $this->current_user->id());
   }
@@ -250,14 +250,14 @@ class OlFolders{
    * @param $fid
    * @param null $gid
    */
-  public function placeFileInFolder($id_folder, $fid, $gid = null){
+  public function placeFileInFolder($id_folder, $id, $gid = null){
     // Get gid if empty.
     $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
     // Update file record with folder id.
     \Drupal::database()->update('ol_file')
       ->fields(['folder_id' => $id_folder])
       ->condition('group_id', $gid)
-      ->condition('file_id', $fid)
+      ->condition('id', $id)
       ->execute();
     // Message.
     \Drupal::messenger()->addStatus(t('Your file was successfully moved.'));

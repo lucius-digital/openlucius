@@ -6,11 +6,17 @@ jQuery(window).on('load resize orientationchange', myEfficientFn)
 
 function initBlockHeight(){
     var formHeight = jQuery('.stream-item-form').height();
-    var headingImg = jQuery('.container-fluid .heading').height();
     var navBarHeading = jQuery('.load-previous-form').height();
-
-    var removeHeight = formHeight + headingImg + navBarHeading;
-    jQuery('.stream-list-holder').css('max-height', 'calc(100vh - 130px - ' + removeHeight + 'px)');
+    var headingMessage = jQuery('.container-fluid .heading').height();
+    var headingImg = jQuery('.header-image').height();
+    var removeHeight = formHeight + navBarHeading ;
+    if (headingMessage) {
+      removeHeight = removeHeight + headingMessage;
+    }
+    if (headingImg) {
+      removeHeight = removeHeight + headingImg;
+    }
+    jQuery('.chat-list-holder').css('max-height', 'calc(100vh - 130px - ' + removeHeight + 'px)');
 }
 
 function debounce(func, wait, immediate) {

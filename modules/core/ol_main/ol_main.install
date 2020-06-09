@@ -1,0 +1,37 @@
+<?php
+
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Adds the 'privacy' field in comment entity.
+ *
+ * implements hook_update()
+ * @param $sandbox
+ */
+function ol_main_update_9002(&$sandbox) {
+
+  $field_storage_definition = BaseFieldDefinition::create('integer')
+    ->setLabel(t('Private comment'))
+    ->setDescription(t('Weather the comments is private or not.'));
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('privacy', 'ol_comment', 'ol_comment', $field_storage_definition);
+
+}
+
+/**
+ * Adds the 'section_overrides' field.
+ *
+ * implements hook_update()
+ * @param $sandbox
+ */
+function ol_main_update_9001(&$sandbox) {
+
+  $field_storage_definition = BaseFieldDefinition::create('string_long')
+    ->setLabel(t('Overridden section names'))
+    ->setDescription(t('Overridden section names.'));
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('section_overrides', 'ol_group', 'ol_group', $field_storage_definition);
+
+}

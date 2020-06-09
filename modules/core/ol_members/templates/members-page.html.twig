@@ -1,22 +1,42 @@
-{% if vars.members_form and vars.can_add_members %}
 <!-- Action buttons -->
-<div class="row">
+<div class="row title">
+  <div class="col title">
+    <h2>
+      {% if vars.page_title %}
+      {{ vars.page_title }}
+      {% elseif vars.blocked_users == 1 %}
+        {{ 'Blocked Users'|t }}
+      {% elseif vars.all_members == 1 %}
+        {{ 'Everybody'|t }}
+      {% endif %}
+    </h2>
+  </div>
   <div class="col text-right">
     <div class="form-group">
-      <button class="btn btn-success" data-toggle="modal" data-target="#addMembersModal">
-        <i class="fa fa-plus"></i> {{ 'Add Group Members'|t }}
-      </button>
+      {% if vars.blocked_users == 1 %}
+        <a class="btn btn-success" href="{{ url('ol_members.all_members') }}">
+          <i class="fa fa-users"></i> {{ 'Active users'|t }}
+        </a>
+      {% elseif vars.members_form and vars.can_add_members %}
+        {# Add group members button #}
+        <button class="btn btn-success" data-toggle="modal" data-target="#addMembersModal">
+          <i class="fa fa-plus"></i> {{ 'Add Group Members'|t }}
+        </button>
+      {% elseif vars.all_members == 1 %}
+        <a class="btn btn-secondary" href="{{ url('ol_members.all_members_blocked') }}">
+          <i class="fa fa-users"></i> {{ 'Blocked users'|t }}
+        </a>
+      {% endif %}
     </div>
   </div>
 </div>
 <!-- / Action buttons -->
-{% endif %}
 
 <!-- Member cards -->
 {% if vars.member_cards is not empty %}
   {{ vars.member_cards|raw }}
 {% else %}
-  No members added yet.
+  No results.
 {% endif %}
 <!-- / Member cards -->
 
@@ -41,7 +61,7 @@
 </div>
 <!-- / Modal -->
 
-<!-- Modal remove member -->
+{#<!-- Modal remove member -->
 <div class="modal fade" id="removeMembersModal" tabindex="-1" role="dialog" aria-labelledby="removeMembersModal" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -58,5 +78,5 @@
     </div>
   </div>
 </div>
-<!-- / Modal -->
+<!-- / Modal -->#}
 {%  endif %}

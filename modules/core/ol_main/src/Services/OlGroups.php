@@ -31,16 +31,23 @@ class OlGroups{
   protected $current_user;
 
   /**
+   * @var $renderer
+   */
+  protected $renderer;
+
+  /**
    * OlMembers constructor.
    *
    * @param $route
    * @param $messenger
    * @param $current_user
+   * @param $renderer
    */
-  public function __construct($route, $messenger, $current_user) {
+  public function __construct($route, $messenger, $current_user, $renderer) {
     $this->route = $route;
     $this->messenger = $messenger;
     $this->current_user = $current_user;
+    $this->renderer = $renderer;
   }
 
   /**
@@ -85,21 +92,69 @@ class OlGroups{
   }
 
   /**
+   * @param int $status
    * @return mixed
    */
-  public function getGroups(){
+  public function getGroups($status = 1){
     // Get groups data.
     $uid = $this->current_user->id();
     $query = \Drupal::database()->select('ol_group', 'gr');
     $query->addField('gr', 'name');
     $query->addField('gr', 'id');
     $query->addField('gr', 'landing');
-    $query->condition('gr.status', 1);
+    $query->addField('gr', 'user_id');
+    $query->addField('gr', 'changed');
+    $query->addField('gr', 'created');
+    $query->condition('gr.status', $status);
     $query->condition('lgu.member_uid', $uid);
     $query->orderBy('gr.type', 'desc');
     $query->orderBy('gr.name', 'asc');
     $query->join('ol_group_user', 'lgu', 'lgu.group_id = gr.id');
     return $query->execute()->fetchAll();
+  }
+
+  /**
+   * @param $groups_data
+   * @return mixed
+   */
+  public function addActivityBadge($groups_data){
+    // Loop through groups objects, add badge count if needed.
+    foreach ($groups_data as $group_data) {
+      // Get current user id.
+      $uid = $this->current_user->id();
+      $gid = $group_data->id;
+      // Get timestamp user last visited group
+      $query = \Drupal::database()->select('ol_group_user', 'ogu');
+      $query->addField('ogu', 'changed');
+      $query->condition('ogu.group_id', $gid);
+      $query->condition('ogu.member_uid', $uid);
+      $timestamp_user_group =  $query->execute()->fetchField();
+      // Get timestamp last stream_item in group
+      $query = \Drupal::database()->select('ol_stream_item', 'osi');
+      $query->addField('osi', 'created');
+      $query->condition('osi.group_id', $gid);
+      $query->orderBy('osi.id', 'desc');
+      $timestamp_stream_item =  $query->execute()->fetchField();
+      // Get new items for this user, if timestamps differ.
+      if ($timestamp_stream_item > $timestamp_user_group) {
+        // Count query stream items where created > user_group_timestamp
+        // Non-chat
+        $query = \Drupal::database()->select('ol_stream_item', 'osi');
+        $query->addField('osi', 'id');
+        $query->condition('osi.group_id', $gid);
+        $query->condition('osi.created', $timestamp_user_group ,'>');
+        $query->condition('osi.entity_type', 'chat' ,'!=');
+        $group_data->non_chat_count =  $query->countQuery()->execute()->fetchField();
+        // Chat, needed for different badge, to prevent badge-cluttering.
+        $query = \Drupal::database()->select('ol_stream_item', 'osi');
+        $query->addField('osi', 'id');
+        $query->condition('osi.group_id', $gid);
+        $query->condition('osi.created', $timestamp_user_group ,'>');
+        $query->condition('osi.entity_type', 'chat');
+        $group_data->chat_count =  $query->countQuery()->execute()->fetchField();
+      }
+    }
+    return $groups_data;
   }
 
   /**
@@ -160,12 +215,18 @@ class OlGroups{
   }
 
   /**
-   * @param $name
-   * @param $sections
-   * @param $homepage
-   * @param null $gid
+   * @param null $form_state
+   * @param null $options
    */
-  public function saveGroupSettings($name, $sections, $homepage, $gid = null, $on_top = null){
+  public function saveGroupSettings($form_state = null, $options = null){
+    // Get form values.
+    $name = Html::escape($form_state->getValue('name'));
+    $sections = $form_state->getValue('sections');
+    $homepage = $form_state->getValue('homepage');
+    $on_top = $form_state->getValue('on_top')[1];
+    $status = $form_state->getValue('status')[1];
+    // Switch, because checked = 1 means archived, but status 0 is archived in dbase.
+    $status = ($status == 1) ? 0 : 1;
     // Handle on_top setting.
     $on_top = ($on_top) ? 99 : 1 ; // 99 = on top | 1 = default.
     // Get current gid.
@@ -177,13 +238,30 @@ class OlGroups{
         $enabled_sections_array[] = $key;
       }
     }
+    // Build array with section override names.
+    $sections_overrides = array();
+    foreach ($options as $key => $section){
+      if (!empty($section)){
+        // Get override name.
+        $override = $form_state->getValue('override_' .$key);
+        // Build array if override name is provided.
+        if(!empty($override)) {
+          $sections_overrides[$key] = $override;
+        }
+      }
+    }
+    // Encode to json format.
+    $sections_overrides_json = json_encode($sections_overrides);
+
     // Save group settings.
     \Drupal::database()->update('ol_group')
       ->fields([
         'name' => $name,
         'enabled_sections' => implode(',', $enabled_sections_array),
+        'section_overrides' => $sections_overrides_json,
         'landing' => $homepage,
         'type' => $on_top,
+        'status' => $status,
       ])
       ->condition('id', $gid, '=')
       ->execute();
@@ -191,11 +269,11 @@ class OlGroups{
   }
 
   /**
+   * Returns if group has 'on top' checked.
    * @return bool
    */
   public function isOnTop(){
     $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
-    // Query if current user is group admin.
     $query = \Drupal::database()->select('ol_group', 'gr');
     $query->addField('gr', 'id');
     $query->condition('gr.id', $gid);
@@ -204,7 +282,19 @@ class OlGroups{
   }
 
   /**
-   * @return bool
+   * Returns status of a group.
+   * @return mixed
+   */
+  public function isArchived(){
+    $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
+    $query = \Drupal::database()->select('ol_group', 'gr');
+    $query->addField('gr', 'status');
+    $query->condition('gr.id', $gid);
+    return $query->execute()->fetchField();
+  }
+
+  /**
+   * @return void
    */
   public function redirectToTopGroup(){
     // Get current uid.
@@ -229,4 +319,56 @@ class OlGroups{
     exit; // Stop here, needed to prevent Notice message.
   }
 
+  /**
+   * Returns fid of current group header image.
+   *
+   * @return integer
+   */
+  public function getHeaderImage() {
+    $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
+    // Query if current user is group admin.
+    $query = \Drupal::database()->select('ol_file', 'olf');
+    $query->addField('olf', 'file_id');
+    $query->condition('olf.group_id', $gid);
+    $query->condition('olf.entity_type', 'group_header');
+    return $query->execute()->fetchField();
+  }
+
+  /**
+   * @param $groups_data
+   *
+   * @return string
+   */
+  public function renderArchivedGroupsCards($groups_data){
+
+    // Initiate html var.
+    $groups_html = '';
+    // Loop through array and render HTML rows via twig file.
+    foreach ($groups_data as $group){
+      // Needed for 'group admin' badge.
+      $groups_row_data['name'] = $group->name;
+      $groups_row_data['id'] = $group->id;
+      $groups_row_data['landing'] = $group->landing;
+      $groups_row_data['admin_uid'] = $group->user_id;
+      $groups_row_data['admin_name'] = $this->getGroupAdminName($group->id, $group->user_id);
+      $groups_row_data['created'] = $group->created;
+      $groups_row_data['changed'] = $group->changed;
+      // Render the html row.
+      $render = ['#theme' => 'groups_card', '#vars' => $groups_row_data];
+      $groups_html .= $this->renderer->render($render);
+    }
+    return $groups_html;
+  }
+
+  /**
+   * @param $gid
+   * @return mixed
+   */
+  public function getGroupAdminName($gid, $uid){
+    $query = \Drupal::database()->select('ol_group', 'gr');
+    $query->addField('ufd', 'name');
+    $query->condition('gr.id', $gid);
+    $query->join('users_field_data', 'ufd','ufd.uid = gr.user_id');
+    return $query->execute()->fetchField();
+  }
 }

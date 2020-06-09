@@ -78,7 +78,7 @@ class StreamItemForm extends FormBase {
                             <div class="row">
                                 <div class="col-md-11">
                                     <div class="row">
-                                        <div class="col-12">
+                                        <div class="col-12 chat-col-12">
                                             <div class="input-group flex-nowrap mb-3 mb-lg-0">',
       '#type' => 'textfield',
       '#required' => true,

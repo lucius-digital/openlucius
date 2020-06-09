@@ -8,7 +8,11 @@ use Drupal\Core\Form\FormBuilder;
 use Drupal\Core\Pager\PagerManager;
 use Drupal\Core\Pager\PagerParameters;
 use Drupal\ol_files\Services\OlFolders;
+use Drupal\ol_files\Services\OlTextDocs;
+use Drupal\ol_main\Services\OlComments;
 use Drupal\ol_main\Services\OlFiles;
+use Drupal\ol_main\Services\OlSections;
+use Drupal\ol_members\Services\OlMembers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -43,14 +47,38 @@ class FilesController extends ControllerBase {
   protected $pager_params;
 
   /**
+   * @var $text_docs
+   */
+  protected $text_docs;
+
+  /**
+   * @var $comments
+   */
+  protected $comments;
+
+  /**
+   * @var $members
+   */
+  protected $members;
+
+  /**
+   * @var $sections
+   */
+  protected $sections;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(FormBuilder $form_builder, OlFiles $files, OlFolders $folders, PagerManager $pager, PagerParameters $pager_params) {
+  public function __construct(FormBuilder $form_builder, OlFiles $files, OlFolders $folders, PagerManager $pager, PagerParameters $pager_params, OlTextDocs $text_docs, OlComments $comments, OlMembers $members, OlSections $sections) {
     $this->form_builder = $form_builder;
     $this->files = $files;
     $this->folders = $folders;
     $this->pager = $pager;
     $this->pager_params = $pager_params;
+    $this->text_docs = $text_docs;
+    $this->comments = $comments;
+    $this->members = $members;
+    $this->sections = $sections;
   }
   /**
    * {@inheritdoc}
@@ -61,7 +89,11 @@ class FilesController extends ControllerBase {
       $container->get('olmain.files'),
       $container->get('olfiles.folders'),
       $container->get('pager.manager'),
-      $container->get('pager.parameters')
+      $container->get('pager.parameters'),
+      $container->get('olfiles.textdocs'),
+      $container->get('olmain.comments'),
+      $container->get('olmembers.members'),
+      $container->get('olmain.sections')
     );
   }
 
@@ -75,11 +107,13 @@ class FilesController extends ControllerBase {
     $folders = $this->folders->getFoldersData($gid);
     $path = \Drupal::request()->getpathInfo();
     $current_folder = Html::escape(\Drupal::request()->query->get('folder'));
+    $page_title = $this->sections->getSectionOverrideTitle('files', 'Docs & Files');
 
     // Get forms.
     $file_form = $this->form_builder->getForm(\Drupal\ol_files\Form\AddOlFileForm::class);
     $folder_form = $this->form_builder->getForm(\Drupal\ol_files\Form\AddFolderForm::class);
     $remove_from_folder = $this->form_builder->getForm(\Drupal\ol_files\Form\RemoveFileFromFolderForm::class);
+    $text_doc_form = $this->form_builder->getForm(\Drupal\ol_files\Form\TextDocForm::class);
 
     // Pager initialization.
     $page = $this->pager_params->findPage();
@@ -104,6 +138,8 @@ class FilesController extends ControllerBase {
       'path' => $path,
       'current_folder' => $current_folder,
       'remove_from_folder' => $remove_from_folder,
+      'text_doc_form' => $text_doc_form,
+      'page_title' => $page_title,
     ];
     // Build render array.
     $render[] = [
@@ -127,4 +163,32 @@ class FilesController extends ControllerBase {
     $this->folders->removeFolder();
   }
 
+  public function getTextDoc($id){
+    // Get data.
+    $data = $this->text_docs->getTextDocData($id);
+    $title = $this->text_docs->getTextDocTitle($data);
+    $text_doc = $this->text_docs->renderTextDoc($data);
+    $comment_form = \Drupal::formBuilder()->getForm(\Drupal\ol_main\Form\CommentForm::class, null, null, 'text_doc', $id);
+    $comment_items = $this->comments->getComments($id, 'text_doc', 'asc');
+    $current_user_picture = $this->members->getUserPictureUrl(); // Should move to CommentForm
+
+    // Build it.
+    $theme_vars = [
+      'text_doc' => $text_doc,
+      'title' => $title,
+      'comment_form' => $comment_form,
+      'comment_items' => $comment_items,
+      'current_user_picture' => $current_user_picture,
+    ];
+    return [
+      '#theme' => 'text_doc_page',
+      '#vars' => $theme_vars,
+      '#attached' => [
+        'library' => [
+          'ol_messages/ol_messages',
+          'ol_main/ol_comments'
+        ],
+      ],
+    ];
+  }
 }

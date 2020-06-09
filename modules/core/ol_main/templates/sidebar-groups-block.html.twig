@@ -7,12 +7,14 @@
 */
 #}
 <ul class="list-unstyled components groups">
-  <h2 class="your-groups"><i class="fas fa-users"></i> {{ 'Your Groups'|t }}
+  <h2 class="your-groups"><i class="fas fa-users"></i> {{ 'GROUPS'|t }}
     <button class="btn btn-link dropdown-toggle" type="button" id="groups-drop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       <i class="fa fa-ellipsis-h"></i>
     </button>
     <div class="dropdown-menu dropdown-menu-left" aria-labelledby="groups-drop">
-      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addGroupModal">{{ 'Add Group'|t }}</a>
+      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addGroupModal"><i class="fa fa-plus"></i> {{ 'Add Group'|t }}</a>
+      <div class="dropdown-divider"></div>
+      <a class="dropdown-item" href="/groups/archived"><i class="fa fa-archive"></i>{{ 'Archived Groups'|t }}</a>
     </div>
   </h2>
   {# Nasty active styling for now #}
@@ -23,7 +25,14 @@
       {% set active="" %}
     {% endif %}
   <li class="{{ active }}">
-    <a href="/group/{{ group.id }}/{{ group.landing }}">{{ group.name }}</a>
+    <a href="/group/{{ group.id }}/{{ group.landing }}">{{ group.name }}
+      {% if group.non_chat_count %}
+        <span class="badge badge-danger"> {{ group.non_chat_count }}</span>
+      {% endif %}
+      {% if group.chat_count %}
+      <span class="badge badge-info"><i class="fas fa-comment"></i>{{ group.chat_count }}</span>
+      {% endif %}
+    </a>
   </li>
   {% endfor %}
   {% if vars.groups is empty %}

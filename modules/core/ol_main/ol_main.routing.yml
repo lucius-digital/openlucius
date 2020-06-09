@@ -17,8 +17,15 @@ ol_main.group_settings:
     _permission: 'access ol content'
   options:
     no_cache: 'TRUE'
-
-# Main config dropdown.
+ol_main.group_archived:
+  path: '/groups/archived'
+  defaults:
+    _controller: '\Drupal\ol_main\Controller\MainController::getArchivedGroups'
+    _title: 'Archived Groups'
+  requirements:
+    _permission: 'access ol content'
+  options:
+    no_cache: 'TRUE'
 ol_main.ol_config:
   path: '/admin/config/openlucius'
   defaults:
@@ -28,7 +35,6 @@ ol_main.ol_config:
     _permission: 'access administration pages'
   options:
     _admin_route: TRUE
-
 ol_main.ol_config_form:
   path: '/admin/config/openlucius/ol_adminsettings'
   defaults:

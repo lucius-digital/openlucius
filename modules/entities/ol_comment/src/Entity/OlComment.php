@@ -186,6 +186,11 @@ class OlComment extends ContentEntityBase implements OlCommentInterface {
       ->setDescription(t('The body of the comment.'))
       ->setRequired(TRUE);
 
+    $fields['privacy'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('Private comment'))
+      ->setDescription(t('Weather the comments is private or not.'))
+      ->setStorageRequired(TRUE);
+
     $fields['group_id'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Group ID'))
       ->setDescription(t('The Group this comment belongs to.'))
@@ -200,6 +205,7 @@ class OlComment extends ContentEntityBase implements OlCommentInterface {
       ->setLabel(t('Entity type referenced'))
       ->setDescription(t('The referenced Entity type of the comment.'))
       ->setStorageRequired(TRUE);
+
 
     return $fields;
   }

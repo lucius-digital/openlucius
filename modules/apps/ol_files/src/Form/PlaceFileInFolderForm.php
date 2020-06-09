@@ -49,7 +49,7 @@ class PlaceFileInFolderForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    $form['fid'] = [
+    $form['id'] = [
       '#type' => 'hidden',
       '#attributes' => array('id' => array('edit-fid')),
     ];
@@ -86,10 +86,10 @@ class PlaceFileInFolderForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Get vars.
-    $fid = Html::escape($form_state->getValue('fid'));
+    $id = Html::escape($form_state->getValue('id'));
     $folder_id = Html::escape($form_state->getValue('folder_id'));
     // Place in folder.
-    $this->folders->placeFileInFolder($folder_id, $fid);
+    $this->folders->placeFileInFolder($folder_id, $id);
 
   }
 

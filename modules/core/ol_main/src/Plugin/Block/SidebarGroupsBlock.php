@@ -60,7 +60,8 @@ class SidebarGroupsBlock extends BlockBase implements ContainerFactoryPluginInte
 
     // Prepare data.
     $add_group_form = \Drupal::formBuilder()->getForm(\Drupal\ol_main\Form\AddGroupForm::class);
-    $groups = $this->groups->getGroups();
+    $groups_data = $this->groups->getGroups();
+    $groups = $this->groups->addActivityBadge($groups_data);
     $active_gid = $this->groups->getCurrentGroupId();
 
     // Build.

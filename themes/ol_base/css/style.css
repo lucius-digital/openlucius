@@ -10,7 +10,7 @@ html, body {
 
 body {
   font-family: 'Roboto', sans-serif;
-  background: #f2f2f2;
+  background: #eeeeee;
   font-size: 0.9em;
   min-height: 100vh;
 }
@@ -190,7 +190,7 @@ SIDEBAR
 #sidebar {
   min-width: 250px;
   max-width: 250px;
-  background: #252729;
+  background: #343648;
   color: #fff;
   transition: all 0.3s;
 }
@@ -216,7 +216,7 @@ SIDEBAR
 }
 
 #sidebar ul.components.global {
-  border-top: 1px solid #505050;
+  border-top: 1px solid #545977;
   padding: 30px 20px 10px 20px;
 }
 
@@ -229,7 +229,7 @@ SIDEBAR
   padding: 5px 0 8px 10px;
   font-size: 0.95em;
   display: block;
-  color: #767676;
+  color: #c1c0c0;
   font-weight: 100;
 }
 
@@ -280,7 +280,7 @@ a[data-toggle="collapse"] {
 
 #sidebar .sidebar-user {
   padding: 10px 0 10px 30px;
-  border-top: 1px solid #505050;
+  border-top: 1px solid #545977;
 }
 
 @media (max-width: 768px) {
@@ -444,12 +444,20 @@ button #sidebarCollapse {
   border-radius: 0;
   padding: 4px 0 0 0;
 }
-
-.navbar-light .navbar-nav .active > .nav-link {
-  border-bottom: 1px #000 solid;
-  font-weight: bold;
+.navbar-light .navbar-nav .nav-link{
+  color: #6a6d82;
+  border-bottom: 2px #fff solid;
 }
-
+.navbar-light .navbar-nav .active > .nav-link {
+  border-bottom: 2px #28a745 solid;
+  font-weight: bold;
+  /*font-size: 1.05rem;*/
+  color: #333;
+}
+.navbar-light .navbar-nav .nav-link:hover {
+  border-bottom: 2px #28a745 solid;
+  color:#646984;
+}
 .navbar .container-fluid {
   padding-right: 5px;
   padding-left: 5px;
@@ -462,9 +470,9 @@ button #sidebarCollapse {
   color: #636363;
 }
 
-.navbar-group-name {
-  margin-left: 10px;
-}
+.navbar-light .navbar-brand {
+   color: #333647;
+ }
 
 @media (min-width: 768px) {
   .navbar-brand {
@@ -525,7 +533,7 @@ ul.media-list {
 }
 
 .title h2 {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   margin-left: 10px;
   padding-top: 5px;
   margin-bottom: 10px;
@@ -695,4 +703,30 @@ nav.pager {
   background-color: #d27238;
   color: #fff;
   padding: 5px 10px;
+}
+.header-image{
+  background-color: #fff;
+}
+.archived-groups{
+  margin-top:20px;
+}
+.ol-card{
+  border-left: 3px solid #333647;
+  margin-bottom: 10px;
+}
+.ol-card.no-left-border {
+  border-left:1px solid #dfdfdf;
+}
+.icebreaker .question{
+  font-weight: bold;
+}
+.messages a{
+  text-decoration: underline;
+  font-weight: bold;
+}
+.add-comment.card {
+  padding: 20px;
+}
+.col.title {
+  padding-left: 5px;
 }

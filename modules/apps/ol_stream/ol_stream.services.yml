@@ -1,4 +1,4 @@
 services:
   olstream.stream:
     class: Drupal\ol_stream\Services\OlStream
-    arguments: ['@olmain.groups','@olmembers.members','@renderer']
+    arguments: ['@olmain.groups','@olmembers.members','@renderer','@olmain.files']

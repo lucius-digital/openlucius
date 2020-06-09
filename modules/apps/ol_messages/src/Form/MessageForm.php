@@ -8,6 +8,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Xss;
 use Drupal\ol_main\Services\OlFiles;
 use Drupal\ol_members\Services\OlMembers;
+use Drupal\ol_messages\Services\OlCultureQuestions;
 use Drupal\ol_messages\Services\OlMessages;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -34,8 +35,6 @@ class MessageForm extends FormBase {
 
   /**
    * Class constructor.
-   *
-   * @param \Drupal\ol_messages\Services\OlMessages $messages
    */
   public function __construct(OlMessages $messages, OlFiles $files, OlMembers $members) {
     $this->messages = $messages;
@@ -69,7 +68,7 @@ class MessageForm extends FormBase {
     // Defaults.
     $name = '';
     $body = '';
-    $button_text = t('Submit Message');
+    $button_text = t('Submit');
     $hdd_file_location = $this->files->buildFileLocaton('message');
     $mail_send_default = array('1');
     $num_users = $this->members->countMembers(null, true);

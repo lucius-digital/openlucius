@@ -194,6 +194,9 @@ class OlGroup extends ContentEntityBase implements OlGroupInterface {
       ->setDescription(t('What sections will enabled.'))
       ->setStorageRequired(TRUE);
 
+    $fields['section_overrides'] = BaseFieldDefinition::create('string_long')
+      ->setDescription(t('Overridden section names.'))
+      ->setStorageRequired(TRUE);
 
     return $fields;
   }

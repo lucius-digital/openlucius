@@ -5,7 +5,8 @@
 .files-list-page .mt-0 {
   margin: 0;
 }
-.files-list-page .fa-file {
+.files-list-page .fa-file,
+.files-list-page .fa-file-alt {
   color: #ccc;
   margin: 0 20px 0 5px;
   font-size: 1.5rem;
@@ -16,6 +17,11 @@
 }
 .col-lg-4.folders {
   margin-bottom: 20px;
+  padding-left:0;
+}
+.col-lg-8.folders{
+  padding-left: 0;
+  padding-right: 0;
 }
 .files-list-page .btn-link {
   margin: 0;
@@ -45,8 +51,9 @@
 .files-list-page .table tr{
   width: 100%;
 }
-.files-list-page .svg-inline--fa.fa-file.fa-w-12 {
-  margin-right: 25px;
+.files-list-page .svg-inline--fa.fa-file.fa-w-12,
+.files-list-page .svg-inline--fa.fa-file-alt.fa-w-12 {
+  margin-right: 23px;
 }
 .manage-folder,
 .folder-left{

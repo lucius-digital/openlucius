@@ -2,24 +2,15 @@
 
 namespace Drupal\ol_main\Controller;
 
-use Drupal\Component\Utility\Html;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Form\FormBuilder;
-use Drupal\Core\Render\Renderer;
 use Drupal\ol_main\Services\OlGroups;
-use Drupal\ol_members\Services\OlMembers;
-use Drupal\ol_stream\Services\OlStream;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class membersController.
  */
 class MainController extends ControllerBase {
-
-  /**
-   * @var $members
-   */
-  protected $members;
 
   /**
    * @var $form_builder
@@ -29,38 +20,22 @@ class MainController extends ControllerBase {
   /**
    * @var $renderer
    */
-  protected $renderer;
-
-  /**
-   * @var $renderer
-   */
   protected $groups;
-
-  /**
-   * @var $renderer
-   */
-  protected $stream;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(OlMembers $members, FormBuilder $form_builder, Renderer $renderer, OlGroups $groups, OlStream $stream) {
-    $this->members = $members;
+  public function __construct(FormBuilder $form_builder, OlGroups $groups) {
     $this->form_builder = $form_builder;
-    $this->renderer = $renderer;
     $this->groups = $groups;
-    $this->stream = $stream;
   }
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('olmembers.members'),
       $container->get('form_builder'),
-      $container->get('renderer'),
-      $container->get('olmain.groups'),
-      $container->get('olstream.stream')
+      $container->get('olmain.groups')
     );
   }
 
@@ -88,5 +63,21 @@ class MainController extends ControllerBase {
       '#vars' => $theme_vars,
     ];
   }
-
+  /**
+   * @return array
+   * @throws \Exception
+   */
+  public function getArchivedGroups(){
+    // Get data.
+    $groups_data = $this->groups->getGroups(0);
+    $groups = $this->groups->renderArchivedGroupsCards($groups_data);
+    // Build it.
+    $theme_vars = [
+      'groups' => $groups,
+    ];
+    return [
+      '#theme' => 'groups_archived_page',
+      '#vars' => $theme_vars,
+    ];
+  }
 }

@@ -1,4 +1,4 @@
-<!--- \\\\\\\Post-->
+<!--- Comment-->
 <div class="card ol-card">
   <a id="comment_id_{{ vars.comment_id }}"></a>
   <div class="card-header comment">
@@ -10,6 +10,9 @@
         <div class="ml-2">
           <div class="m-0"><a href="/user/{{ vars.user_id }}/profile">{{ vars.username }}</a>
             <span class="badge badge-light comment"><i class="fas fa-clock"></i> {{ vars.created }} </span>
+            {% if vars.privacy %}
+            <span class="badge badge-primary comment"><i class="fas fa-lock"></i> {{ 'Private comment: only visible for you and questioner'}} </span>
+            {% endif %}
           </div>
         </div>
       </div>
@@ -27,7 +30,6 @@
       {% endif %}
     </div>
   </div>
-
   <div class="card-body comment">
      <p class="comment">{{ vars.body|raw }}</p>
   </div>
@@ -36,7 +38,6 @@
       {{ vars.files|raw }}
     </div>
   {% endif %}
-
   {% if vars.like_button %}
   <div class="card-footer comment">
     <div class="row">
@@ -46,14 +47,11 @@
     </div>
   </div>
   {% endif %}
-
-
 </div>
-<!-- Post /////-->
-
+<!-- / Comment -->
 
 {% if vars.owner == TRUE %}
-  <!-- Edit Modal -->
+  <!-- Modal edit comment -->
   <div class="modal fade" id="editCommentModal_{{ vars.comment_id }}"  role="dialog" aria-labelledby="editMessageLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -69,18 +67,10 @@
       </div>
     </div>
   </div>
-  <!-- Modal //// -->
+  <!-- / Modal edit comment -->
 {% endif %}
 
-
-
-
-
-
 {#
-
-
-
 <li class="media">
   <a id="comment_id_{{ vars.comment_id }}"></a>
   <a href="#" class="pull-left">

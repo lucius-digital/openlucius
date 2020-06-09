@@ -52,6 +52,11 @@ class DeleteFileForm extends FormBase {
       '#weight' => '0',
       '#attributes' => array('id' => array('remove-file-id')),
     ];
+    $form['file_type'] = [
+      '#type' => 'hidden',
+      '#weight' => '0',
+      '#attributes' => array('id' => array('file-type')),
+    ];
     $form['markup'] = [
       '#type' => 'markup',
       '#markup' => '<button type="button" class="btn btn-default" data-dismiss="modal">' .t('Cancel').'</button>',
@@ -71,8 +76,15 @@ class DeleteFileForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Get vars.
-    $fid = $form_state->getValue('file_id');
-    $this->files->removeOlFileAndFile($fid);
+    $ol_file_id = $form_state->getValue('file_id');
+    $file_type = $form_state->getValue('file_type');
+    if ($file_type == 'file') {
+      $fid = $this->files->getFileId($ol_file_id);
+      $this->files->removeOlFileAndFile($fid, true);
+    }
+    elseif ($file_type == 'text_doc') {
+      $this->files->removeOlFileAndTextDoc($ol_file_id, true);
+    }
   }
 
 }

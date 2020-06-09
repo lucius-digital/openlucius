@@ -2,17 +2,15 @@
 
 /**
  * @file
- * Contains ol_file_reference.module.
+ * Contains ol_files.module.
  */
-
-use Drupal\ol_file_reference\Entity\OlFileReference;
 
 /**
  * Implements hook_add_ol_section()
  * @param $sections
  */
 function ol_files_add_ol_section(&$sections){
-  $sections['files'] = array('label' => t('Files'), 'path' => t('files'), 'weight' => 80);
+  $sections['files'] = array('label' => t('Docs & Files'), 'path' => t('files'), 'weight' => 100);
 }
 
 /**
@@ -43,6 +41,18 @@ function ol_files_theme() {
         'vars' => NULL,
       ],
       'template' => 'file-modal-remove-folder',
+    ],
+    'text_doc_page' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'text-doc-page',
+    ],
+    'text_doc_card' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'text-doc-card',
     ],
   ];
 }

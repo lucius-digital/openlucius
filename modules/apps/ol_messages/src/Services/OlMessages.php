@@ -223,6 +223,7 @@ class OlMessages{
     }
   }
 
+
   /**
    * @param $id
    * @return bool
@@ -234,6 +235,7 @@ class OlMessages{
     $uid = $query->execute()->fetchField();
     return ($uid == $this->members->getUserId());
   }
+
 
 
 }

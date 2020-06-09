@@ -40,10 +40,42 @@ class OLMainSubscriber implements EventSubscriberInterface {
   }
 
   /**
+   * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
+   */
+  public function updateGroupVisitedTimestamp(RequestEvent $event) {
+
+    // Get current request.
+    $request = $event->getRequest();
+    // Get current path.
+    $current_path = $request->getPathInfo();
+    // Check if we are on a group page.
+    $is_group_page = fnmatch('/group/*', $current_path);
+
+    if($is_group_page) {
+      // Get current user id.
+      $current_uid =$this->account->id();
+      // Get group id.
+      $path_args = explode('/', $current_path);
+      $gid = $path_args[2];
+      // Update timestamp, we use the 'changed' field.
+      if(is_numeric($gid)){
+        \Drupal::database()->update('ol_group_user')
+          ->fields([
+            'changed' => time(),
+          ])
+          ->condition('group_id', $gid)
+          ->condition('member_uid', $current_uid)
+          ->execute();
+      }
+    }
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
     $events[KernelEvents::REQUEST][] = ['checkAnonymous', 100];
+    $events[KernelEvents::REQUEST][] = ['updateGroupVisitedTimestamp'];
     return $events;
   }
 

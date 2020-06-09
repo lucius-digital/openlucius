@@ -1,0 +1,20 @@
+add ol text doc entities:
+  title: 'Create new OL Text Doc entities'
+
+administer ol text doc entities:
+  title: 'Administer OL Text Doc entities'
+  description: 'Allow to access the administration form to configure OL Text Doc entities.'
+  restrict access: true
+
+delete ol text doc entities:
+  title: 'Delete OL Text Doc entities'
+
+edit ol text doc entities:
+  title: 'Edit OL Text Doc entities'
+
+view published ol text doc entities:
+  title: 'View published OL Text Doc entities'
+
+view unpublished ol text doc entities:
+  title: 'View unpublished OL Text Doc entities'
+

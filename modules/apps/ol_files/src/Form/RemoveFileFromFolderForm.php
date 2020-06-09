@@ -50,7 +50,7 @@ class RemoveFileFromFolderForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    $form['id_file'] = [
+    $form['id'] = [
       '#type' => 'hidden',
       '#attributes' => array('id' => array('edit-file-id')),
     ];
@@ -76,7 +76,7 @@ class RemoveFileFromFolderForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Get vars.
-    $id_file = Html::escape($form_state->getValue('id_file'));
+    $id_file = Html::escape($form_state->getValue('id'));
     $this->folders->removeFileFromFolder($id_file);
   }
 

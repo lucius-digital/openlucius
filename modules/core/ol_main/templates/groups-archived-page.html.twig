@@ -1,0 +1,19 @@
+<!-- Heading -->
+<div class="row ">
+  <div class="col">
+    <h4><i class="fa fa-archive"></i> {{ 'Archived Groups'|t }}</h4>
+  </div>
+</div>
+<!-- / Heading -->
+
+<!-- Group cards -->
+<div class="row archived-groups">
+  <div class="col">
+  {% if vars.groups is not empty %}
+    {{ vars.groups|raw }}
+  {% else %}
+    No archived groups.
+  {% endif %}
+  </div>
+</div>
+<!-- / Group cards -->

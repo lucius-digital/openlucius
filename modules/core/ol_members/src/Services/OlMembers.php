@@ -69,7 +69,7 @@ class OlMembers{
    * @return string
    * @throws \Exception
    */
-  public function renderMembersCards($members_list_data, $group_id = null, $group_admin_uid = null){
+  public function renderMembersCards($members_list_data, $group_id = null, $group_admin_uid = null, $blocked_users = null){
 
     // Initiate html var.
     $members_html = '';
@@ -93,6 +93,7 @@ class OlMembers{
       $members_row_data['group_id'] = $group_id;
       $members_row_data['uid'] = $members_data->uid;
       $members_row_data['mail'] = $members_data->mail;
+      $members_row_data['status'] = $members_data->status;
       // Render the html row.
       $render = ['#theme' => 'members_card', '#vars' => $members_row_data];
       $members_html .= $this->renderer->render($render);
@@ -105,10 +106,10 @@ class OlMembers{
    *
    * @return mixed
    */
-  public function getUsersInGroup($exclude_current_uid = false){
+  public function getUsersInGroup($exclude_current_uid = false, $gid = null){
 
     // Get current group id.
-    $gid = $this->route->getParameter('gid');
+    $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
     // Get and return data.
     $query = $this->database->select('ol_group_user', 'gu');
     $query->addField('gu', 'member_uid', 'uid');
@@ -125,13 +126,15 @@ class OlMembers{
   }
 
   /**
+   * @param int $status
+   *
    * @return mixed
    */
-  public function getAllUsers(){
+  public function getAllUsers($status = 1){
     // Get and return data.
     $query = $this->database->select('users_field_data', 'ufd');
     $query->addField('ufd', 'uid');
-    $query->condition('ufd.status', 1);
+    $query->condition('ufd.status', $status);
     $query->orderBy('ufd.name', 'asc');
     $query->addTag('ol_user_list');
     return $query->execute()->fetchAll();
@@ -201,7 +204,9 @@ class OlMembers{
       $style = $this->entity_type_manager->getStorage('image_style')->load('50x50');
       $picture_url = $style->buildUrl($file_uri);
     } else { // Default if user picture doesn't exist.
-      $picture_url = '/themes/custom/openlucius/images/default_user.jpg';
+      global $base_url;
+      $theme = \Drupal::theme()->getActiveTheme();
+      $picture_url = $base_url.'/'. $theme->getPath() .'/images/default_user.jpg';
     }
     return $picture_url;
   }
@@ -215,7 +220,7 @@ class OlMembers{
     if(empty($uid)) {
       return $this->current_user->getAccountName();
     } else {
-      $account = User::load($uid); // pass your uid
+      $account = User::load($uid);
       return $account->getAccountName();
     }
   }
@@ -283,29 +288,66 @@ class OlMembers{
   public function removeUserRole($uid, $role){
     // Permission must be handled by route.
     // Load user and remove role.
-    $user = User::load($uid);
-    $user->removeRole($role);
-    $user->save();
-    $name = $user->get('name')->value;
-    // Set message and redirect.
-    \Drupal::messenger()->addMessage(t('Successfully removed @name as User Manager.', array('@name' => $name)));
+    $current_uid = \Drupal::currentUser()->id();
+    if ($uid != $current_uid) {
+      $user = User::load($uid);
+      $user->removeRole($role);
+      $user->save();
+      $name = $user->get('name')->value;
+      // Set message and redirect.
+      \Drupal::messenger()
+        ->addMessage(t('Successfully removed @name as User Manager.', ['@name' => $name]));
+    } elseif ($uid == $current_uid) {
+      \Drupal::messenger()->addWarning(t('You can\'t remove your own roles.'));
+    }
     $path = Url::fromRoute('ol_members.all_members')->toString();
     $response = new RedirectResponse($path);
     $response->send();
   }
 
+  /**
+   * @param $uid
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
   public function blockUser($uid){
     // Permission must be handled by route.
     // Block user, also destroys session.
-    $account = User::load($uid);
-    $account->block();
-    $account->save();
-    // Get name for message.
-    $name = $account->label();
-    \Drupal::messenger()->addStatus( $name .t(' successfully blocked.'));
+    $current_uid = \Drupal::currentUser()->id();
+    if($uid != $current_uid) {
+      $account = User::load($uid);
+      $account->block();
+      $account->save();
+      // Get name for message.
+      $name = $account->label();
+      \Drupal::messenger()->addStatus($name . t(' successfully blocked.'));
+    } elseif ($uid == $current_uid) {
+      \Drupal::messenger()->addWarning(t('You can\'t block yourself.'));
+    }
     $path = Url::fromRoute('ol_members.all_members')->toString();
     $response = new RedirectResponse($path);
     $response->send();
+    exit();
+  }
+
+  /**
+   * @param $uid
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function unblockUser($uid){
+    // Permission must be handled by route.
+    // Block user, also destroys session.
+    $account = User::load($uid);
+    $account->activate();
+    $account->save();
+    // Get name for message.
+    $name = $account->label();
+    \Drupal::messenger()->addStatus($name . t(' successfully reactivated.'));
+    $path = Url::fromRoute('ol_members.all_members_blocked')->toString();
+    $response = new RedirectResponse($path);
+    $response->send();
+    exit();
   }
 
   /**
@@ -353,11 +395,11 @@ class OlMembers{
   private function getMemberData($uid){
     $query = \Drupal::database()->select('users_field_data', 'user');
     $query->addField('user', 'name');
+    $query->addField('user', 'status');
     $query->addField('user', 'mail');
     $query->addField('user', 'uid');
     $query->condition('user.uid', $uid);
-    $members_data = $query->execute()->fetchObject();
-    return $members_data;
+    return $query->execute()->fetchObject();
   }
 
   private function getGroupAdminUid($gid = null){

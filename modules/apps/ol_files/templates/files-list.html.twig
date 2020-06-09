@@ -1,6 +1,9 @@
 {# Yeah..., this needs some chopping up, make it more modular / atomic #}
 <!-- Heading -->
 <div class="row title">
+  <div class="col title">
+    <h2>{{ vars.page_title }}</h2>
+  </div>
   <div class="col text-right">
     <div class="form-group">
       <button class="btn btn-success" type="button" id="files-add-drop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -8,6 +11,7 @@
       </button>
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="files-add-drop">
         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addMessageModal"><i class="fa fa-upload"></i> {{ 'Upload Files'|t }}</a>
+        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#textDoc"><i class="fa fa-plus"></i> {{ 'Add Text Document'|t }}</a>
         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addEditFoldereModal"><i class="fa fa-folder-plus"></i> {{ 'Add Folder'|t }}</a>
       </div>
     </div>
@@ -87,7 +91,7 @@
             {{ vars.files|raw }}
             </table>
           {% else %}
-              <i>{{ 'No files found.'|t }}</i><br />
+              <i class="text-muted"><i class="fa fa-info-circle"></i> {{ 'No Results'|t }}</i><br />
           {% endif %}
         </div>
       </div>
@@ -148,3 +152,20 @@
   </div>
 </div>
 <!-- / Modal remove file from folder  -->
+
+<!-- Text-doc modal-->
+{# Manipulated by xyz.js #}
+<div class="modal fade modal-large" id="textDoc" tabindex="-1" role="dialog" aria-labelledby="textDoc" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-plus-square"></i> {{ 'Text Document'|t }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {{ vars.text_doc_form }}
+    </div>
+  </div>
+</div>
+<!-- / Text-doc modal  -->

@@ -79,6 +79,18 @@ function ol_main_theme() {
       ],
       'template' => 'file-modal-remove',
     ],
+    'groups_archived_page' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'groups-archived-page',
+    ],
+    'groups_card' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'groups-card',
+    ],
   ];
 }
 

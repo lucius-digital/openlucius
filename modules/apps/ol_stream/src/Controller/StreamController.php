@@ -4,7 +4,6 @@ namespace Drupal\ol_stream\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Form\FormBuilder;
-use Drupal\Core\Render\Renderer;
 use Drupal\ol_members\Services\OlMembers;
 use Drupal\ol_stream\Services\OlStream;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -26,27 +25,21 @@ class StreamController extends ControllerBase {
   protected $form_builder;
 
   /**
-   * @var $renderer
-   */
-  protected $renderer;
-
-  /**
-   * @var $renderer
+   * @var $groups
    */
   protected $groups;
 
   /**
-   * @var $renderer
+   * @var $stream
    */
   protected $stream;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(OlMembers $members, FormBuilder $form_builder, Renderer $renderer, OlGroups $groups, OlStream $stream) {
+  public function __construct(OlMembers $members, FormBuilder $form_builder, OlGroups $groups, OlStream $stream) {
     $this->members = $members;
     $this->form_builder = $form_builder;
-    $this->renderer = $renderer;
     $this->groups = $groups;
     $this->stream = $stream;
   }
@@ -57,14 +50,12 @@ class StreamController extends ControllerBase {
     return new static(
       $container->get('olmembers.members'),
       $container->get('form_builder'),
-      $container->get('renderer'),
       $container->get('olmain.groups'),
       $container->get('olstream.stream')
     );
   }
 
   public function getStream($gid){
-
     // Group uuid is used in Javascript, for socket.io room id and ajax calls.
     // This is for security hardening.
     $group_uuid = $this->groups->getGroupUuidById($gid);
@@ -76,8 +67,6 @@ class StreamController extends ControllerBase {
     $load_more = $this->form_builder->getForm(\Drupal\ol_stream\Form\LoadPreviousStreamItemsForm::class);
     // This is needed to determine refreshing (via javascript).
     $last_message_timestamp = $this->stream->getLastMessageTimestamp($group_uuid);
-
-
     // Build it.
     $theme_vars = [
       'stream_form' => $stream_form,
@@ -85,7 +74,7 @@ class StreamController extends ControllerBase {
       'last_message_timestamp' => $last_message_timestamp,
       'node_server' => $node_server,
     ];
-    $build = [
+    return [
       '#theme' => 'stream_wrapper',
       '#attached' => [
         'library' => [
@@ -101,7 +90,5 @@ class StreamController extends ControllerBase {
       ],
         '#vars' => $theme_vars,
     ];
-    return $build;
   }
-
 }

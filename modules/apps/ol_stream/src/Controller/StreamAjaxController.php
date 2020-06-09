@@ -47,6 +47,11 @@ class StreamAjaxController extends ControllerBase {
     return new Response($stream_html);
   }
 
+  /**
+   * @param $uuid
+   *
+   * @return \Symfony\Component\HttpFoundation\Response
+   */
   public function getLastMessageTimestamp($uuid){
     $timestamp = $this->stream->getLastMessageTimestamp($uuid);
     return new Response($timestamp);

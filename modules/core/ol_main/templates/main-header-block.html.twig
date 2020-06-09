@@ -9,10 +9,21 @@
 */
 #}
 
-<div class="col-md-12 ol-main">
-  <div class="row heading">
-    <div class="col-sm text-center global-message">
-      {{ vars.global_message }}
+{% if vars.global_message or vars.header_image_url  %}
+  <div class="col-md-12 ol-main">
+    {% if vars.global_message %}
+    <div class="row heading">
+      <div class="col-sm text-center global-message">
+        {{ vars.global_message }}
+      </div>
     </div>
+    {% endif %}
+    {% if vars.header_image_url %}
+    <div class="row header-image">
+      <div>
+        <img class='img-fluid w-100' src="{{ vars.header_image_url }}" alt="group header image" />
+      </div>
+    </div>
+    {% endif %}
   </div>
-</div>
+{% endif %}

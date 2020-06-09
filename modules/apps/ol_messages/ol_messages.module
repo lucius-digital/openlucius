@@ -42,7 +42,7 @@ function ol_messages_theme() {
  * @param $sections
  */
 function ol_messages_add_ol_section(&$sections){
-  $sections['messages'] = array('label' => t('Messages'), 'path' => t('messages'), 'weight' => 60);
+  $sections['messages'] = array('label' => t('Messages'), 'path' => 'messages', 'weight' => 60);
 }
 
 

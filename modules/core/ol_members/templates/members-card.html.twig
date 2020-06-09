@@ -26,7 +26,7 @@
             <i class="fa fa-ellipsis-h"></i>
           </button>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="ol-drop2">
-            {% if vars.current_is_group_admin == TRUE or vars.current_is_user_admin == TRUE %}
+            {% if vars.current_is_group_admin == TRUE and vars.group_id or vars.current_is_user_admin == TRUE and vars.group_id %}
             <a class="dropdown-item" href="/group/{{ vars.group_id }}/members/remove/{{ vars.uid }}"><i class="fa fa-user-minus"></i> {{ 'Remove from Group'|t }}</a>
             {% endif %}
             {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.is_user_admin == false %}
@@ -35,8 +35,11 @@
             {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.is_user_admin == true %}
             <a class="dropdown-item" href="/members/user_manager_remove/{{ vars.uid }}"><i class="fa fa-user-minus"></i> {{ 'Remove as User Manager'|t }}</a>
             {% endif %}
-            {% if vars.current_is_user_admin == TRUE and vars.group_id is empty %}
+            {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.status == 1 %}
             <a class="dropdown-item" href="/members/block/{{ vars.uid }}"><i class="fa fa-times-circle"></i> {{ 'Block this user'|t }}</a>
+            {% endif %}
+            {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.status == 0 %}
+            <a class="dropdown-item" href="/members/unblock/{{ vars.uid }}"><i class="fa fa-check-circle"></i> {{ 'Reactivate this user'|t }}</a>
             {% endif %}
           </div>
         </div>
