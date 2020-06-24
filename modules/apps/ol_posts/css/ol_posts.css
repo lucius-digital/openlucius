@@ -1,0 +1,36 @@
+#edit-post-body-value-format{
+  display: none;
+}
+.posts__item a{
+  text-decoration: underline;
+  font-weight: bold;
+}
+.posts-list-wrapper .post-card-body p{
+  /*color: #737373;*/
+  line-height: 1.3em;
+}
+.posts-list-wrapper .post-card-body h6{
+  font-size:1.15rem;
+}
+.card.ol-card.post-list-card {
+  margin-bottom: 10px;
+}
+.file-upload-wrapper{
+  margin:10px 0 0 10px;
+}
+.post-body,
+.post-files{
+  margin:10px;
+}
+.post-files{
+  margin:20px;
+}
+.post-card-body #comment-container{
+  margin: 10px ;
+}
+.post-body a{
+  color: #0811fb;
+}
+.post-body a:hover{
+  text-decoration: underline;
+}

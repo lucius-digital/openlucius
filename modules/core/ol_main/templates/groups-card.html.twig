@@ -6,11 +6,11 @@
         <div class="ml-2">
           <div class="h5 m-0"><a href="/group/{{ vars.id }}/{{ vars.landing }}">{{ vars.name }}</a>
           </div>
-          <span class="badge badge-success"><i class="fas fa-user"></i> {{ 'Group admin'|t }}:
+          <span class="badge badge-success"><i class="lni lni-user"></i> {{ 'Group admin'|t }}:
             <a href="/user/{{ vars.admin_uid }}/profile">{{ vars.admin_name }}</a>
           </span>
-          <span class="badge badge-info"><i class="fas fa-clock"></i> {{ 'Created'|t }}: {{ vars.created|date("D d-m-Y H:i") }}</span>
-            <span class="badge badge-secondary"><i class="fas fa-clock"></i> {{ 'Archived'|t }}: {{ vars.changed|date("D d-m-Y H:i") }}</span>
+          <span class="badge badge-info"><i class="lni lni-timer"></i> {{ 'Created'|t }}: {{ vars.created|date("D d-m-Y H:i") }}</span>
+            <span class="badge badge-secondary"><i class="lni lni-timer"></i> {{ 'Archived'|t }}: {{ vars.changed|date("D d-m-Y H:i") }}</span>
         </div>
       </div>
     </div>

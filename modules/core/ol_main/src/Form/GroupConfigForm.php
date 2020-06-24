@@ -84,8 +84,8 @@ class GroupConfigForm extends FormBase {
     $current_header_fid = $this->groups->getHeaderImage();
     $default_fid = (is_numeric($current_header_fid)) ? array($current_header_fid) : '';
     // Handle 'group on top' option.
-    $on_top_title = array( '1' => t('Show on top in group list (in left sidebar)'));
-    $on_top_default = array($this->groups->isOnTop());
+    // $on_top_title = array( '1' => t('Show on top in group list (in left sidebar)'));
+    // $on_top_default = array($this->groups->isOnTop());
     // Handle 'archived'.
     $archived_title = array( '1' => t('Archive this group'));
     $is_archived = $this->groups->isArchived();
@@ -137,7 +137,7 @@ class GroupConfigForm extends FormBase {
       '#weight' => '30',
       '#suffix' => '</div></div>'
     ];
-    $form['on_top'] = array(
+/*    $form['on_top'] = array(
       '#prefix' => '<div class="form-group">',
       '#title' => t('Show on top'),
       '#type' => 'checkboxes',
@@ -145,7 +145,7 @@ class GroupConfigForm extends FormBase {
       '#default_value' => $on_top_default,
       '#weight' => '40',
       '#suffix' => '</div>'
-    );
+    );*/
     $form['markup'] = [
       '#type' => 'markup',
       '#markup' => '<div class="form-group">

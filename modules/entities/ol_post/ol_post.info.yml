@@ -1,0 +1,5 @@
+name: 'OL Post'
+type: module
+description: 'OL Post Entity'
+core_version_requirement: ^9
+package: 'OL app'

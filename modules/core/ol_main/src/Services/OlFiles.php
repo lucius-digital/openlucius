@@ -386,22 +386,23 @@ class OlFiles{
   /**
    * @param $entity_type
    * @param $entity_id
+   * @param string $image_preset
    *
    * @return string
    */
-  public function getAttachedFiles($entity_type, $entity_id){
+  public function getAttachedFiles($entity_type, $entity_id, $image_preset = 'ol_attached_file'){
     // Get data.
     $group_id = $this->route->getParameter('gid');
     $files = $this->getFilesByEntity($group_id, $entity_type, $entity_id);
     $allowed_extensions = $this->getAllowedFileExtentions();
-    $image_style = ImageStyle::load('ol_attached_file');
+    $image_style = ImageStyle::load($image_preset);
     // Loop through files and build html.
     $files_html = '';
     $file_row_data['owner'] = false;
     foreach ($files as $file) {
       // Build vars.
       $file_row_data['owner'] = $file->uid == $this->members->getUserId();
-      $file_row_data['thumbnail_url'] ='';
+      $file_row_data['big_image'] = $image_preset == 'large';
       $file_row_data['filename'] = $file->filename;
       $file_row_data['uri'] = $file->uri;
       $file_row_data['ol_fid'] = $file->ol_fid;

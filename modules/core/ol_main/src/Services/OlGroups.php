@@ -36,49 +36,102 @@ class OlGroups{
   protected $renderer;
 
   /**
+   * @var $members
+   */
+  protected $members;
+
+  /**
    * OlMembers constructor.
    *
    * @param $route
    * @param $messenger
    * @param $current_user
    * @param $renderer
+   * @param $members
    */
-  public function __construct($route, $messenger, $current_user, $renderer) {
+  public function __construct($route, $messenger, $current_user, $renderer, $members) {
     $this->route = $route;
     $this->messenger = $messenger;
     $this->current_user = $current_user;
     $this->renderer = $renderer;
+    $this->members = $members;
+  }
+
+
+  /**
+   * Defines group types.
+   * @return array
+   */
+  public function getGroupTypes(){
+    $group_types = array();
+    $group_types['company'] = array(
+      'label' => t('Company wide group'),
+      'block_header' => t('Company wide'),
+      'icon_class' => t('lni lni-apartment'),
+      'weight' => 10,
+    );
+    $group_types['team'] = array(
+      'label' => t('Team'),
+      'block_header' => t('Teams'),
+      'icon_class' => t('lni lni-users'),
+      'weight' => 50,
+    );
+    $group_types['project'] = array(
+      'label' => t('Project'),
+      'block_header' => t('Projects'),
+      'icon_class' => t('lni lni-rocket'),
+      'weight' => 100,
+    );
+    return $group_types;
   }
 
   /**
-   * @param $name
-   * @param null $uid
-   *
+   * @param string $name
+   * @param string $type
+   * @param int $uid
    * @param bool $message_redirect
    *
+   * @return int|string|null
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function addGroup($name, $uid = null, $message_redirect = true){
-    // Get uid if arument is empty.
+  public function addGroup($name, $type, $uid = null, $message_redirect = true){
+    // Get uid if argument is empty.
     $uid = (empty($uid)) ? $this->current_user->id(): $uid;
     // Create Group.
     $ol_group = OlGroup::create([
       'name' => Html::escape($name),
-      'type' => 1,
+      'type' => $type,
       'landing' => 'stream',
-      'enabled_sections' => 'stream,members,files,messages',
+      'enabled_sections' => 'stream,members,files,messages', // Todo: jsonize.
       'user_id' => $uid,
     ]);
     $ol_group->save();
     $new_group_id = $ol_group->id();
 
-    // Add user to Group.
-    $ol_group = OlGroupUser::create([
-      'name' => $name,
-      'group_id' => $new_group_id,
-      'member_uid' => $uid,
-    ]);
-    $ol_group->save();
+    // Add all users to this company-wide group.
+    if($type == 'company') {
+      // Add all users to this group.
+      $all_members = $this->members->getAllUsers();
+      foreach ($all_members as $member){
+        $ol_group = OlGroupUser::create([
+          'name' => $name,
+          'group_id' => $new_group_id,
+          'member_uid' => $member->uid,
+        ]);
+        $ol_group->save();
+      }
+      $this->messenger->addStatus(t('All members were added to this company wide group.'));
+    }
+    // Only add current user to this group, since it's not company wide.
+    else {
+      // Add user to Group.
+      $ol_group = OlGroupUser::create([
+        'name' => $name,
+        'group_id' => $new_group_id,
+        'member_uid' => $uid,
+      ]);
+      $ol_group->save();
+    }
     if($message_redirect === true) {
       // Redirect with message.
       $this->messenger->addStatus(t('Your group was created successfully!'));
@@ -93,9 +146,11 @@ class OlGroups{
 
   /**
    * @param int $status
+   * @param null $type
+   *
    * @return mixed
    */
-  public function getGroups($status = 1){
+  public function getGroups($status, $type = null){
     // Get groups data.
     $uid = $this->current_user->id();
     $query = \Drupal::database()->select('ol_group', 'gr');
@@ -107,11 +162,15 @@ class OlGroups{
     $query->addField('gr', 'created');
     $query->condition('gr.status', $status);
     $query->condition('lgu.member_uid', $uid);
+    if ($type) {
+    $query->condition('gr.type', $type);
+    }
     $query->orderBy('gr.type', 'desc');
     $query->orderBy('gr.name', 'asc');
     $query->join('ol_group_user', 'lgu', 'lgu.group_id = gr.id');
     return $query->execute()->fetchAll();
   }
+
 
   /**
    * @param $groups_data
@@ -223,12 +282,12 @@ class OlGroups{
     $name = Html::escape($form_state->getValue('name'));
     $sections = $form_state->getValue('sections');
     $homepage = $form_state->getValue('homepage');
-    $on_top = $form_state->getValue('on_top')[1];
+    //$on_top = $form_state->getValue('on_top')[1];
     $status = $form_state->getValue('status')[1];
     // Switch, because checked = 1 means archived, but status 0 is archived in dbase.
     $status = ($status == 1) ? 0 : 1;
     // Handle on_top setting.
-    $on_top = ($on_top) ? 99 : 1 ; // 99 = on top | 1 = default.
+    //$on_top = ($on_top) ? 99 : 1 ; // 99 = on top | 1 = default.
     // Get current gid.
     $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
     // Build array with only ticked values.
@@ -260,7 +319,7 @@ class OlGroups{
         'enabled_sections' => implode(',', $enabled_sections_array),
         'section_overrides' => $sections_overrides_json,
         'landing' => $homepage,
-        'type' => $on_top,
+       // 'type' => $type,
         'status' => $status,
       ])
       ->condition('id', $gid, '=')
@@ -294,6 +353,20 @@ class OlGroups{
   }
 
   /**
+   * Returns status of a group.
+   *
+   * @param null $gid
+   * @return mixed
+   */
+  public function getGroupType($gid = null){
+    $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
+    $query = \Drupal::database()->select('ol_group', 'gr');
+    $query->addField('gr', 'type');
+    $query->condition('gr.id', $gid);
+    return $query->execute()->fetchField();
+  }
+
+  /**
    * @return void
    */
   public function redirectToTopGroup(){
@@ -305,7 +378,8 @@ class OlGroups{
     $query->addField('gr', 'landing');
     //$query->condition('gr.type', 99); // 99 = 'on top'.
     $query->condition('lgu.member_uid', $uid);
-    $query->orderBy('gr.type', 'desc'); // 99 = 'on top'.
+    $query->condition('gr.type', 'company');
+    //$query->orderBy('gr.id', 'desc');
     $query->orderBy('gr.name', 'asc');
     $query->join('ol_group_user', 'lgu', 'lgu.group_id = gr.id');
     $query->range(0,1);

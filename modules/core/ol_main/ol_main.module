@@ -37,6 +37,12 @@ function ol_main_theme() {
       ],
       'template' => 'sidebar-groups-block',
     ],
+    'sidebar_groups_block_wrapper' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'sidebar-groups-block-wrapper',
+    ],
     'main_header_block' => [
       'variables' => [
         'vars' => NULL,
@@ -66,6 +72,12 @@ function ol_main_theme() {
         'vars' => NULL,
       ],
       'template' => 'comment-item',
+    ],
+    'comment_item_small' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'comment-item-small',
     ],
     'file_item' => [
       'variables' => [
@@ -225,7 +237,7 @@ function sortByWeight($x, $y) {
  * @param int $start
  * @return string
  */
-function shortenString($string, $max_characters, $start = 0){
+function shortenString($string, $max_characters = 40, $start = 0){
   return strlen($string) > $max_characters ? substr($string, $start, $max_characters).'...' : $string;
 }
 /**
@@ -260,7 +272,18 @@ function time_elapsed_string($datetime, $full = false) {
       unset($string[$k]);
     }
   }
-
   if (!$full) $string = array_slice($string, 0, 1);
   return $string ? implode(', ', $string) . t(' ago') : t('just now');
+}
+
+/**
+ * Helper function to detect and create links in plain texts,
+ *   like posts, inline comments and chat-items.
+ *
+ * @param $body
+ * @return string|string[]|null
+ */
+function detectAndCreateLink($body){
+  $url = '~(?:(https?)://([^\s<]+)|(www\.[^\s<]+?\.[^\s<]+))(?<![\.,:])~i';
+  return preg_replace($url, '<a href="$0" title="$0" class="inline-link">$0</a>', $body);
 }

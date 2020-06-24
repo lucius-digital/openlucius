@@ -7,11 +7,10 @@
     const file_type = button.data('file_type') // Extract info from data-* attributes
     // Update the modal's content via jquery.
     const modal = $(this)
-    if (file_id != null) {
+    if (ol_fid != null) {
       modal.find('#remove-file-id').val(ol_fid)
       modal.find('.file_name').text(file_name)
       modal.find('#file-type').val(file_type)
     }
   })
-
 })(jQuery, Drupal, drupalSettings);

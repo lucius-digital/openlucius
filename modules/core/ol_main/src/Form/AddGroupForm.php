@@ -58,12 +58,17 @@ class AddGroupForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
+    $form['type'] = [
+      '#type' => 'hidden',
+      '#weight' => '0',
+      '#attributes' => array('id' => array('group-type-id')),
+    ];
     $form['name'] = [
       '#prefix' => '<div class="modal-body"><div class="form-group">',
       '#type' => 'textfield',
       '#weight' => '0',
       '#required' => true,
-      '#attributes' => array('placeholder' => t('Add a group name...'), 'class' => array('form-control')),
+      '#attributes' => array('placeholder' => t('Name...'), 'class' => array('form-control')),
       '#suffix' => '</div>'
     ];
     $form['submit'] = [
@@ -71,10 +76,10 @@ class AddGroupForm extends FormBase {
       '#type' => 'submit',
       '#weight' => '20',
       '#attributes' => array('class' => array('btn btn-success')),
-      '#value' => t('Add new Group'),
+      '#value' => t('Add'),
       '#suffix' => '</div>'
     ];
-
+    $form['#attached']['library'][] = 'ol_main/ol_add_group';
     return $form;
   }
 
@@ -100,8 +105,9 @@ class AddGroupForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Get form data.
     $name = Html::escape($form_state->getValue('name'));
+    $type = Html::escape($form_state->getValue('type'));
     // Save group.
-    $this->groups->addGroup($name);
+    $this->groups->addGroup($name, $type);
   }
 
 }

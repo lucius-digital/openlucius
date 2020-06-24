@@ -79,4 +79,49 @@ p.comment {
 .add-comment.card h4{
   color: #616a71;
 }
-
+.small-comment-body {
+  background-color: #f3f3f3;
+  /*padding: 3px 10px;*/
+  margin:3px;
+}
+.small-comment-body .username{
+  font-size: 0.7rem;
+  color: #170ffb;
+}
+.small-comment-body .body-text{
+  font-size: 0.7rem;
+}
+.small-comment-body .created{
+  font-size: 0.6rem;
+}
+.small-comment-body .btn{
+  padding: 0;
+}
+.post-comment-form .btn{
+  font-size: 0.8rem;
+}
+.post-comment-form .form-text {
+  margin-top: 0;
+  font-size: 0.8rem;
+}
+.comment-link-wrapper{
+  margin-left: 10px;
+}
+.post-comment-form-wrapper{
+  margin: 5px 5px 0 10px;
+}
+.comment-container{
+  margin:10px 0 0 10px;
+}
+.card.ol-card.ol-post{
+  margin-bottom: 30px;
+}
+.stream-item-body a{
+  color: #0811fb;
+}
+.stream-item-body a:hover{
+  text-decoration: underline;
+}
+.comment-wrapper.add-comment{
+  border-left: 3px solid #0811fb;
+}

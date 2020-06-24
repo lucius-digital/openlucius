@@ -1,0 +1,41 @@
+.like-button{
+  margin:0;
+  padding: 0;
+  /*color:#9f9c9c;*/
+}
+.like-wrapper .liked,
+.like-wrapper .liked .btn,
+.liked .like-button,
+.like_count.liked{
+  color:#ed4956;
+}
+.like-wrapper {
+  min-width: 100px;
+  padding-right:0;
+}
+.like-wrapper {
+  font-size: 0.8rem;
+  margin-left:10px;
+}
+.like-wrapper .like-button{
+  font-size: 0.8rem;
+  padding-left:0;
+}
+.like-wrapper,
+.like-wrapper .btn{
+  color:#848181;
+}
+.users_that_liked {
+  color: #a09d9d;
+  font-size: 0.7rem;
+  margin-left: 10px;
+}
+.you_liked{
+  /*display:none;*/
+}
+.like-button:hover{
+  text-decoration: underline;
+}
+.like-wrapper .like-button {
+  padding: 0;
+}

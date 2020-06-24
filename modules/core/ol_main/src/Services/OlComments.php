@@ -51,7 +51,7 @@ class OlComments{
   public function saveComment($body, $entity_id, $reference_type, $privacy = 0){
     // Prepare data.
     $gid = $this->route->getParameter('gid');
-    $name = strip_tags(shortenString($body,50));
+    $name = shortenString(strip_tags($body),20);
     // Save new comment.
     $ol_comment = OlComment::create([
       'body' =>  $body,
@@ -117,63 +117,75 @@ class OlComments{
   }
 
   /**
+   *
    * @param $entity_id
    * @param $entity_type
    * @param null $order
+   * @param bool $show_small
+   * @param bool $pager
    *
    * @return string
    * @throws \Exception
    */
-  public function getComments($entity_id, $entity_type, $order = null){
-    // Pager initialize.
-    $page = \Drupal::service('pager.parameters')->findPage();
-    $num_per_page = 20;
-    $offset = $num_per_page * $page;
-    // Get comments detail data.
-    $comments = $this->getCommentsByEntity($entity_id, $entity_type, $num_per_page, $offset, $order);
-    // Pager, now that we have the total number of results, .
-    $total_result = $this->getCommentsByEntity($entity_id, $entity_type, $num_per_page, $offset, $order, true);
-    $pager_manager = \Drupal::service('pager.manager');
-    $pager = $pager_manager->createPager($total_result, $num_per_page);
-    $pager->getCurrentPage();
+  public function getComments($entity_id, $entity_type, $order = null, $show_small = false, $pager = true){
+    // Only execute pager if needed, kinda nasty coded.
+    if($pager){
+      $page = \Drupal::service('pager.parameters')->findPage();
+      $num_per_page = 20;
+      $offset = $num_per_page * $page;
+      $comments = $this->getCommentsByEntity($entity_id, $entity_type, $num_per_page, $offset, $order);
+      $total_result = $this->getCommentsByEntity($entity_id, $entity_type, $num_per_page, $offset, $order, TRUE);
+      $pager_manager = \Drupal::service('pager.manager');
+      $pager = $pager_manager->createPager($total_result, $num_per_page);
+      $pager->getCurrentPage();
+    } else {
+      $comments = $this->getCommentsByEntity($entity_id, $entity_type);
+    }
     // Build html.
     $comments_html = '';
     $current_uid = $this->members->getUserId();
     $group_admin_uid = \Drupal::service('olmembers.members')->isGroupAdmin($current_uid);
-    foreach ($comments as $comment){
-
+    // Loop though comments and build html.
+    foreach ($comments as $comment) {
       // Private comments only visible to comment creator and content creator.
       if ($comment->privacy == 1 && $current_uid != $comment->user_id && $current_uid != $group_admin_uid ){
         continue;
       }
       $comment_row_data['privacy'] = $comment->privacy;
-      $comment_row_data['body'] = $comment->body;
+      $comment_row_data['body'] = ($show_small) ? detectAndCreateLink($comment->body) : $comment->body;
       $comment_row_data['username'] = $this->members->getUserName($comment->user_id);
       $comment_row_data['user_id'] = $comment->user_id;
       $comment_row_data['owner'] = $comment->user_id == $current_uid;
       $comment_row_data['comment_id'] = $comment->id;
       $comment_row_data['created'] = time_elapsed_string('@'.$comment->created);
       $comment_row_data['user_picture'] = $this->members->getUserPictureUrl($comment->user_id);
-      if($comment_row_data['owner'] == TRUE) {
+      if($comment_row_data['owner'] == TRUE){
         $comment_row_data['edit_form'] = \Drupal::formBuilder()->getForm(\Drupal\ol_main\Form\CommentForm::class, 'edit', $comment->id, $entity_type, $entity_id);
       }
+      $template = ($show_small) ? 'comment_item_small' : 'comment_item';
+      $comment_row_data['like_button'] = \Drupal::formBuilder()->getForm(\Drupal\ol_like\Form\LikeForm::class, 'comment', $comment->id);
       $comment_row_data['files'] = $this->files->getAttachedFiles('comment', $comment->id);
       // Render HTML.
       // Files lib needed for handling file attachments in comments.
       // Libraries renders multiple times, but only 1 css visible, that's good. But not too much unneeded load?
       $render = [
-        '#theme' => 'comment_item',
+        '#theme' => $template,
         '#attached' => ['library' => ['ol_main/ol_comments','ol_files/ol_files']],
         '#vars' => $comment_row_data,
       ];
       $comments_html .= \Drupal::service('renderer')->render($render);
     }
     // Build render array.
-    $pager = [];
-    $pager[] = ['#type' => 'pager'];
-    $pager_html = \Drupal::service('renderer')->render($pager);
-    return $comments_html.$pager_html;
-    // Wow :)
+    if($pager){
+      $pager = [];
+      $pager[] = ['#type' => 'pager'];
+      $pager_html = \Drupal::service('renderer')->render($pager);
+      return $comments_html . $pager_html;
+      // Wow :)
+    } else {
+      // No pager output.
+      return $comments_html;
+    }
   }
 
   /**
@@ -186,7 +198,7 @@ class OlComments{
    *
    * @return mixed
    */
-  private function getCommentsByEntity($entity_id, $entity_type, $num_per_page, $offset, $order = 'asc', $get_total = false){
+  private function getCommentsByEntity($entity_id, $entity_type, $num_per_page = null, $offset  = null, $order = 'asc', $get_total = false){
     // Get comment detail data.
     $query = \Drupal::database()->select('ol_comment', 'comm');
     $query->addField('comm', 'id');
@@ -199,13 +211,16 @@ class OlComments{
     $query->condition('comm.entity_type', $entity_type);
     $query->orderBy('comm.created', $order);
     // Data for message lists.
-    if ($get_total == false) {
+    if ($get_total == false && $num_per_page && $offset) {
       $query->range($offset, $num_per_page);
       return $query->execute()->fetchAll();
     }
     // Count data for pager.
     elseif ($get_total == true) {
       return $query->countQuery()->execute()->fetchField();
+    }
+    else {
+      return $query->execute()->fetchAll();
     }
   }
 

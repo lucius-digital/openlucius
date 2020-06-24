@@ -1,0 +1,20 @@
+add ol culture question entities:
+  title: 'Create new Ol culture question entities'
+
+administer ol culture question entities:
+  title: 'Administer Ol culture question entities'
+  description: 'Allow to access the administration form to configure Ol culture question entities.'
+  restrict access: true
+
+delete ol culture question entities:
+  title: 'Delete Ol culture question entities'
+
+edit ol culture question entities:
+  title: 'Edit Ol culture question entities'
+
+view published ol culture question entities:
+  title: 'View published Ol culture question entities'
+
+view unpublished ol culture question entities:
+  title: 'View unpublished Ol culture question entities'
+

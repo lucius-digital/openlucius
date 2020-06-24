@@ -1,0 +1,20 @@
+add ol post entities:
+  title: 'Create new OL Post entities'
+
+administer ol post entities:
+  title: 'Administer OL Post entities'
+  description: 'Allow to access the administration form to configure OL Post entities.'
+  restrict access: true
+
+delete ol post entities:
+  title: 'Delete OL Post entities'
+
+edit ol post entities:
+  title: 'Edit OL Post entities'
+
+view published ol post entities:
+  title: 'View published OL Post entities'
+
+view unpublished ol post entities:
+  title: 'View unpublished OL Post entities'
+

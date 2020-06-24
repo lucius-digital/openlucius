@@ -1,0 +1,9 @@
+name: 'OL Posts'
+type: module
+description: 'OL Posts'
+core_version_requirement: ^9
+package: 'OL app'
+dependencies:
+  - ol_members
+  - ol_stream
+  - ol_main

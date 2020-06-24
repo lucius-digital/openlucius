@@ -35,5 +35,5 @@ function ol_members_add_ol_section(&$sections){
  * @param $sections
  */
 function ol_members_add_global_menu_item(&$sections){
-  $sections['members'] = array('label' => t('Everybody'), 'path' => t('members'), 'icon'=> 'building', 'weight' => 100);
+  $sections['members'] = array('label' => t('Everybody'), 'path' => t('members'), 'icon'=> 'lni lni-user', 'weight' => 100);
 }

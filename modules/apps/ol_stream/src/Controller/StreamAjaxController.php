@@ -41,7 +41,7 @@ class StreamAjaxController extends ControllerBase {
     // Get stream items html via stream service.
     $stream_data = $this->stream->getStreamList($uuid);
     if(empty($stream_data)){
-      return new Response(t('Be the first one to add a chat-message here!'));
+      return new Response(t('Be the first one to add activity here!'));
     }
     $stream_html = $this->stream->renderStreamList($stream_data);
     return new Response($stream_html);

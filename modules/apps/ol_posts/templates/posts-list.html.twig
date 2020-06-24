@@ -1,0 +1,42 @@
+<!-- Filters -->
+<div class="row title">
+  <div class="col title">
+    <h2>{{ vars.page_title }}</h2>
+  </div>
+  <div class="col text-right">
+    <div class="form-group">
+      <button class="btn btn-success" data-toggle="modal" data-target="#addPostModal">
+        <i class="lni lni-plus"></i> {{ 'Add'|t }}
+      </button>
+    </div>
+  </div>
+</div>
+  {% if vars.posts is not empty %}
+    <div class="posts-list-wrapper">
+    {{ vars.posts|raw }}
+    </div>
+  {% else %}
+<div class="card ol-card">
+  <div class="card-header">
+    <p class="text-muted">
+      <i class="fa fa-info-circle"></i> <i> {{ 'Be the first to add a post.'|t }}</i><br />
+    </p>
+  </div>
+</div>
+{% endif %}
+
+<!-- Modal add post -->
+<div class="modal fade bd-example-modal-lg" id="addPostModal" role="dialog" aria-labelledby="addPostModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ vars.page_title }} | {{ 'Add new'|t }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {{ vars.post_form }}
+    </div>
+  </div>
+</div>
+<!-- / Modal add post  -->

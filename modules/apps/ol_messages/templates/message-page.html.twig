@@ -23,13 +23,13 @@
               <!-- / Comment items-->
             </ul>
           {% else %}
-            <div class="row h-100">
-              <div class="col-md-8 my-auto">
-                <p>
-                  <i>{{ 'Be the first to comment.'|t }}</i>
-                </p>
-              </div>
+          <div class="card ol-card">
+            <div class="card-header">
+              <p class="text-muted">
+                <i class="fa fa-info-circle"></i> <i> {{ 'Be the first to comment.'|t }}</i><br />
+              </p>
             </div>
+          </div>
           {% endif %}
         </div>
       </div>
@@ -45,7 +45,7 @@
 <div class="row">
   <div class="col-md-12">
     <div class="comment-wrapper add-comment card">
-      <h4 class="title">{{ 'Add comment'|t }}</h4>
+{#      <h4 class="title">{{ 'Add comment'|t }}</h4>#}
       <div class="panel panel-info">
         <div class="panel-body">
           <div class="row">

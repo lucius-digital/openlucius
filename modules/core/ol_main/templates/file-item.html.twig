@@ -1,38 +1,19 @@
 <li class="media">
-  <a id="file_id_{{ vars.file_id }}"></a>
-  {% if vars.big_thumbnail == true %}
-  <div class="col">
-    <a href="{{ vars.url }}" target="_blank">
-      <img alt="" class="img-fluid img-thumbnail" src="{{ vars.thumbnail_url }}" />
-    </a>
-    {% if vars.owner == TRUE %}
-    <button class="btn btn-link dropdown-toggle" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <i class="fa fa-ellipsis-h"></i>
-    </button>
-    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="ol-drop2">
-      <i class="fas fa-times"></i>
-      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#removeFile"
-         data-name="{{ vars.filename }}"
-         data-folder_id="{{ vars.file_id }}"
-         data-file_type="{{ vars.file_type }}"
-      >{{ 'Remove File'|t }}</a>
-    </div>
+{#  <a id="file_id_{{ vars.file_id }}"></a>#}
+  <a href="{{ vars.url }}" class="pull-left" target="_blank">
+    {% if vars.thumbnail_url %}
+      <img alt="" class="img-fluid rounded attached-file" src="{{ vars.thumbnail_url }}" />
+    {% else %}
+      <span class="file_icon"><i class="fas fa-file"></i></span>
     {% endif %}
-  </div>
-  {% else %}
-    <a href="{{ vars.url }}" class="pull-left" target="_blank">
-      {% if vars.thumbnail_url %}
-        <img alt="" class="img-fluid rounded attached-file" src="{{ vars.thumbnail_url }}" />
-      {% else %}
-        <span class="file_icon"><i class="fas fa-file"></i></span>
-      {% endif %}
-    </a>
-  {% endif %}
-
-  {% if vars.big_thumbnail == false %}
+  </a>
   <div class="media-body">
-    <span class="text-muted filename"><a href="{{ vars.url }}" target="_blank"> {{ vars.filename }}</a></span>
+    {% if vars.big_image == false %}
+    <span class="text-muted filename">
+      <a href="{{ vars.url }}" target="_blank"> {{ vars.filename }}</a>
+    </span>
     <span class="badge badge-light">{{ vars.file_size }}</span>
+    {% endif %}
     {% if vars.owner == TRUE %}
     <button class="btn btn-link dropdown-toggle" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       <i class="fa fa-ellipsis-h"></i>
@@ -46,5 +27,4 @@
     </div>
     {% endif %}
   </div>
-  {% endif %}
 </li>

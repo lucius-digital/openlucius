@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\ol_group_user\Entity\OlGroupUser;
 use Drupal\Component\Utility\Html;
+use Drupal\ol_main\Services\OlGroups;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\ol_members\Services\OlMembers;
 use Drupal\Core\Routing\CurrentRouteMatch;
@@ -45,21 +46,27 @@ class MembersForm extends FormBase {
   protected $language_manager;
 
   /**
-   * @var $language_manager
+   * @var $stream
    */
   protected $stream;
+
+  /**
+   * @var $groups
+   */
+  protected $groups;
 
   /**
    * Class constructor.
    * @param AccountInterface $account
    */
-  public function __construct(AccountInterface $account, OlMembers $members, CurrentRouteMatch $current_route, Messenger $messenger, LanguageManager $language_manager, OlStream $stream) {
+  public function __construct(AccountInterface $account, OlMembers $members, CurrentRouteMatch $current_route, Messenger $messenger, LanguageManager $language_manager, OlStream $stream, OlGroups $groups) {
     $this->account = $account;
     $this->members = $members;
     $this->current_route = $current_route;
     $this->messenger = $messenger;
     $this->language_manager = $language_manager;
     $this->stream = $stream;
+    $this->groups =  $groups;
   }
 
   /**
@@ -72,8 +79,8 @@ class MembersForm extends FormBase {
       $container->get('current_route_match'),
       $container->get('messenger'),
       $container->get('language_manager'),
-      $container->get('olstream.stream')
-
+      $container->get('olstream.stream'),
+      $container->get('olmain.groups')
     );
   }
 
@@ -147,17 +154,31 @@ class MembersForm extends FormBase {
     $email = $form_state->getValue('new_member_email');
     // Check if 'new' email already exists.
     $email_exists = $this->checkEmailExistence($email);
-    // Get current language code
+    // Get current language code.
     $language = $this->language_manager->getCurrentLanguage()->getId();
+
     // Create new user, if it doesn't exist already.
     if(!empty($email) && $email_exists == FALSE && $this->account->hasPermission('administer ol users')) {
-      $account = $this->members->addNewUser($email, $language); // Create user.
+      // Create new user.
+      $account = $this->members->addNewUser($email, $language);
       $account_id = $account->id();
-      $this->members->addUserToGroup($account_id, $group_id); // Add user to new group.
-      _user_mail_notify('register_no_approval_required', $account); // Send login email to new user.
-      $stream_body = t('Added a member: @user', array('@user' => $email)); // Create new stream item.
-      $this->stream->addStreamItem($group_id, 'user_added', $stream_body,'user', $account_id); // Create stream item.
-      $this->messenger->addStatus(t($email .' added as a member to this group. A login link was sent by e-mail.'));
+      // Get group type.
+      $group_type = $this->groups->getGroupType();
+      // If group type is 'company', add new user to all company-wide groups.
+      if($group_type == 'company'){
+        $this->members->addUserToCompanyWideGroups($account_id);
+      // If type is not 'company', add only to this group.
+      } else {
+        $this->members->addUserToGroup($account_id, $group_id);
+      }
+      // Send login email to new user.
+      _user_mail_notify('register_no_approval_required', $account);
+      // Create new stream item.
+      $stream_body = t('Added a member: @user', array('@user' => $email));
+      // Create stream item.
+      $this->stream->addStreamItem($group_id, 'user_added', $stream_body,'user', $account_id);
+      // Add message.
+      $this->messenger->addStatus(t($email .' added as a member. A login link was sent by e-mail.'));
     }
     // Add existing user to group.
     elseif (!empty($uid)) {

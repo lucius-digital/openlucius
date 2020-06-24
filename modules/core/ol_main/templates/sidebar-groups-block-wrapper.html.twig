@@ -1,0 +1,26 @@
+{#
+/**
+* @file
+* Theme implementation to display wrapper block for groups in left sidebar.
+*
+* @ingroup themeable
+*/
+#}
+
+{{ vars.group_blocks_html|raw }}
+
+<!-- Modal -->
+<div class="modal fade" id="addGroupModal" tabindex="-1" role="dialog" aria-labelledby="addGroupModal" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ 'Add new'|t }} <span class="group-type-label"></span></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {{ vars.add_group_form }}
+    </div>
+  </div>
+</div>
+<!-- / Modal -->

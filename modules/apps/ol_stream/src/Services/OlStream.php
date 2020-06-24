@@ -94,8 +94,9 @@ class OlStream{
       $stream_date = $stream_item->created;
       $stream_row_data['created'] = (date('d-m-Y') == date('d-m-Y', $stream_date)) ? date('H:i', $stream_date) : date('D, d M Y, H:i', $stream_date);
       $stream_row_data['user_name'] = $stream_item->name;
-      $stream_row_data['stream_body'] = $stream_item->stream_body;
+      $stream_row_data['stream_body'] = detectAndCreateLink($stream_item->stream_body);
       $stream_row_data['path'] = $this->getStreamItemLink($stream_item);
+      $stream_row_data['item_type'] = (!empty($stream_row_data['path'])) ? 'external': 'chat';
       if ($stream_item->entity_type == 'files_added'){
         $stream_row_data['files'] = $this->getFileLinks($stream_item->entity_id);
         $stream_row_data['stream_body'] = t('Added files: ');
@@ -145,6 +146,10 @@ class OlStream{
       case 'culture_question':
         $path = Url::fromRoute('ol_culture_questions.detail_page',
           ['gid' => $stream_item->group_id, 'id' => $stream_item->entity_id])->toString();
+      break;
+      case 'post':
+        $path = Url::fromRoute('lus_post.posts',
+          ['gid' => $stream_item->group_id])->toString();
       break;
     }
     return $path;

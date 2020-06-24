@@ -133,7 +133,7 @@ class MessageForm extends FormBase {
     ];
     $form['send_mail'] = array(
       '#prefix' => '<div class="col-12 col-md-6"><div class="form-group send_mail_checkbox">',
-      '#title' => t('Email notifications'),
+      '#title' => t('Email Notifications'),
       '#type' => 'checkboxes',
       '#options' => $send_mail_title,
       '#default_value' => $mail_send_default,

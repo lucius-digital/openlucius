@@ -181,7 +181,7 @@ class OlGroup extends ContentEntityBase implements OlGroupInterface {
       ->setLabel(t('Changed'))
       ->setDescription(t('The time that the entity was last edited.'));
 
-    $fields['type'] = BaseFieldDefinition::create('integer')
+    $fields['type'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Group Type'))
       ->setDescription(t('The Group Type.'))
       ->setRequired(TRUE);

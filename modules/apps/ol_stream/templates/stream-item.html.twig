@@ -6,10 +6,11 @@
          {{ vars.created }}
       </span>
     </h6>
-      {{ vars.stream_body }}
+      <span class="stream-item-body {{ vars.item_type }}">{{ vars.stream_body|raw }}
       {% if vars.path %}
         <a href="{{ vars.path }}" class="stream-inline-link">{{ 'View'|t }}</a>
       {% endif %}
+        </span>
     {% if vars.files %}
       {% for file in vars.files  %}
         <a href="{{ file.file_path }}" class="stream-inline-link">{{ file.file_name }}</a>

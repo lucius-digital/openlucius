@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @file
+ * Contains lus_post.module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function ol_posts_theme() {
+  return [
+    'posts_list' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'posts-list',
+    ],
+    'post_card_list' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'post-card-list',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_add_ol_section()
+ * @param $sections
+ */
+function ol_posts_add_ol_section(&$sections){
+  $sections['posts'] = array('label' => t('Posts'), 'path' => 'posts', 'weight' => 60);
+}
+
+

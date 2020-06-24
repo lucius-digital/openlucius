@@ -118,7 +118,7 @@ class StreamItemForm extends FormBase {
 
     // Initiate.
     $response = new AjaxResponse();
-    $message = Xss::filter($form_state->getValue('message'));
+    $message = trim(Xss::filter($form_state->getValue('message')));
     $group_id = $this->groups->getCurrentGroupId();
     $user_picture = $this->members->getUserPictureUrl();
     $created = date('H:i' ); // Needed for appending and emitting message.

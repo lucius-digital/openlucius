@@ -1,0 +1,98 @@
+<!--- Post-->
+<div class="card ol-card ol-post">
+  <!-- Header-->
+  <div class="card-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="mr-2">
+          <img class="rounded-circle" src="{{ vars.user_picture }}" alt="user thumbnail" height="45">
+        </div>
+        <div class="ml-2">
+          <div class="h5 m-0"><a href="/user/{{ vars.user_id }}/profile">{{ vars.username }}</a></div>
+          <div class="h7 text-muted"><span class="badge badge-light"><i class="fas fa-clock"></i> {{ vars.created|date("D d-m-Y H:i") }} </span></div>
+        </div>
+      </div>
+      {% if vars.owner == TRUE %}
+        <div>
+          <div class="dropdown">
+            <button class="btn btn-link dropdown-toggle" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-ellipsis-h"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="ol-drop2">
+              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editPostModal_{{ vars.id }}">{{ 'Edit'|t }} </a>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  <!-- / Header-->
+
+  <!-- Post body -->
+  <div class="card-body">
+    <div class="post-card-body">
+      <div class="post-body">
+        {{ vars.body|raw }}
+      </div>
+      {% if vars.files %}
+      <div class="post-files">
+        {{ vars.files|raw }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  <!-- / Post body -->
+  <div class="card-footer">
+    <div class="like-wrapper">
+      {{ vars.like_button }}
+    </div>
+    <div class="comment-link-wrapper">
+        <a id="comment_list"></a>
+        {% if vars.comment_count == 1 %}
+          {% set var_comment = 'Comment' %}
+          <span  class="card-link"><i class="fa fa-comment"></i> {{ vars.comment_count }} {{ var_comment|t }}</span>
+        {% elseif vars.comment_count == 0 %}
+          {% set var_comment = 'Be the first to comment' %}
+          <span class="card-link"><i class="fa fa-comment"></i> {{ var_comment|t }}</span>
+        {% else %}
+          {% set var_comment = 'Comments' %}
+          <span class="card-link"><i class="fa fa-comment"></i> {{ vars.comment_count }} {{ var_comment|t }} </span>
+        {% endif %}
+    </div>
+    <div class="comment-container" id="comment-container-{{ vars.id }}">{{ vars.comment_items|raw }}</div>
+    <div class="post-comment-form-wrapper">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="mr-2">
+            <img class="rounded-circle" src="{{ vars.current_user_picture }}" alt="" height="25">
+          </div>
+          <div class="ml-2">
+            <div class="m-0">
+              {{ vars.post_comment_form|raw }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- / Post-->
+
+{% if vars.owner == TRUE %}
+  <!-- Edit modal -->
+  <div class="modal fade bd-example-modal-lg" id="editPostModal_{{ vars.id }}" role="dialog" aria-labelledby="editPostLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-edit"></i> {{ 'Edit post'|t }}  </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {{ vars.post_edit_form }}
+      </div>
+    </div>
+  </div>
+  <!-- / Edit modal  -->
+{% endif %}
+

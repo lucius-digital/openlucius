@@ -23,7 +23,7 @@ services:
     arguments: []
   olmain.groups:
     class: Drupal\ol_main\Services\OlGroups
-    arguments: ['@current_route_match','@messenger','@current_user','@renderer']
+    arguments: ['@current_route_match','@messenger','@current_user','@renderer', '@olmembers.members']
   olmain.files:
     class: Drupal\ol_main\Services\OlFiles
     arguments: ['@current_route_match','@olmembers.members','@current_user']

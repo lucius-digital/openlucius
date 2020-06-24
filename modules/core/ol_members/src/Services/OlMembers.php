@@ -259,6 +259,26 @@ class OlMembers{
     ]);
     $ol_group_user->save();
   }
+
+  /**
+   * @param $uid
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function addUserToCompanyWideGroups($uid){
+    // Get all company-wide groups.
+    $group_service = \Drupal::service('olmain.groups');
+    $company_groups = $group_service->getGroups(1,'company');
+    // Loop through company-wide groups and add user.
+    foreach ($company_groups as $group){
+      // Create new relation.
+      $ol_group_user = OlGroupUser::create([
+        'name' => 'uid: '. $uid .' group id: '.$group->id,
+        'member_uid' => Html::escape($uid),
+        'group_id' => $group->id,
+      ]);
+      $ol_group_user->save();
+    }
+  }
   /**
    * @param $uid
    * @param $role

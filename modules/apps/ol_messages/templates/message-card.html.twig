@@ -47,23 +47,21 @@
 
   <!-- Footer -->
   <div class="card-footer">
-    <div class="row">
-      <div class="col-lg-8 like-wrapper">
-        {{ vars.like_button }}
-      </div>
-      <div class="col-lg-4 comment-link-wrapper text-right">
-        <a id="comment_list"></a>
-        {% if vars.comment_count == 1 %}
-          {% set var_comment = 'Comment' %}
-          <a href="{{ vars.link }}#comment_list" class="card-link"><i class="fa fa-comment"></i> {{ vars.comment_count }} {{ var_comment|t }}</a>
-        {% elseif vars.comment_count == 0 %}
-          {% set var_comment = 'Be the first to comment' %}
-          <a href="{{ vars.link }}#comment_list" class="card-link"><i class="fa fa-comment"></i> {{ var_comment|t }}</a>
-        {% else %}
-          {% set var_comment = 'Comments' %}
-          <a href="{{ vars.link }}#comment_list" class="card-link"><i class="fa fa-comment"></i> {{ vars.comment_count }} {{ var_comment|t }} </a>
-        {% endif %}
-      </div>
+    <div class="like-wrapper">
+      {{ vars.like_button }}
+    </div>
+    <div class="comment-link-wrapper">
+      <a id="comment_list"></a>
+      {% if vars.comment_count == 1 %}
+        {% set var_comment = 'Comment' %}
+        <a href="{{ vars.link }}#comment_list" class="card-link"><i class="fa fa-comment"></i> {{ vars.comment_count }} {{ var_comment|t }}</a>
+      {% elseif vars.comment_count == 0 %}
+        {% set var_comment = 'Be the first to comment' %}
+        <a href="{{ vars.link }}#comment_list" class="card-link"><i class="fa fa-comment"></i> {{ var_comment|t }}</a>
+      {% else %}
+        {% set var_comment = 'Comments' %}
+        <a href="{{ vars.link }}#comment_list" class="card-link"><i class="fa fa-comment"></i> {{ vars.comment_count }} {{ var_comment|t }} </a>
+      {% endif %}
     </div>
   </div>
   <!-- / Footer -->

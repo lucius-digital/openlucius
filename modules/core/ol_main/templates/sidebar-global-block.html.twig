@@ -15,7 +15,7 @@
       {% set active="" %}
     {% endif %}
   <li class="{{ active }}">
-    <a href="/{{ item.path }}"><i class="fa fa-{{ item.icon }}"></i> {{ item.label }}</a>
+    <a href="/{{ item.path }}"><i class="{{ item.icon }}"></i> {{ item.label }}</a>
   </li>
   {% endfor %}
 </ul>

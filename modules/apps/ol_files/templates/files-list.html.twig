@@ -7,12 +7,12 @@
   <div class="col text-right">
     <div class="form-group">
       <button class="btn btn-success" type="button" id="files-add-drop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="fa fa-plus"></i> Add <i class="fa fa-caret-down"></i>
+        <i class="lni lni-plus"></i> Add <i class="fa fa-caret-down"></i>
       </button>
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="files-add-drop">
-        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addMessageModal"><i class="fa fa-upload"></i> {{ 'Upload Files'|t }}</a>
-        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#textDoc"><i class="fa fa-plus"></i> {{ 'Add Text Document'|t }}</a>
-        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addEditFoldereModal"><i class="fa fa-folder-plus"></i> {{ 'Add Folder'|t }}</a>
+        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addMessageModal"><i class="lni lni-upload"></i> {{ 'Upload Files'|t }}</a>
+        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#textDoc"><i class="lni lni-plus"></i> {{ 'Add Text Document'|t }}</a>
+        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addEditFoldereModal"><i class="lni lni-folder"></i> {{ 'Add Folder'|t }}</a>
       </div>
     </div>
   </div>
@@ -73,9 +73,9 @@
       {% if vars.org_member == true %}
         <div class="manage-folder text-right">
           {% if vars.folders is empty %}
-            <button type="button" class="btn btn-light text-muted" data-toggle="modal" data-target="#addFoldereModal"><i class="fas fa-plus"></i> {{ 'Add First Folder'|t }}</button>
+            <button type="button" class="btn btn-light text-muted" data-toggle="modal" data-target="#addFoldereModal"><i class="lni lni-plus"></i> {{ 'Add First Folder'|t }}</button>
           {% else %}
-            <button type="button" class="btn btn-light text-muted" data-toggle="modal" data-target="#addFoldereModal"><i class="fas fa-plus"></i> {{ 'Folder'|t }}</button>
+            <button type="button" class="btn btn-light text-muted" data-toggle="modal" data-target="#addFoldereModal"><i class="lni lni-plus"></i> {{ 'Folder'|t }}</button>
             <button type="button" class="btn btn-light text-muted" data-toggle="modal" data-target="#manageFoldersModal"> {{ 'Manage Folders'|t }}</button>
           {% endif %}
         </div>
@@ -105,7 +105,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-plus-square"></i> {{ 'Add Files'|t }}</h5>
+        <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ 'Add Files'|t }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -122,7 +122,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-plus-square"></i> {{ 'Add Folder'|t }}</h5>
+        <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ 'Add Folder'|t }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -139,7 +139,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-plus-square"></i> {{ 'Remove from folder'|t }}</h5>
+        <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ 'Remove from folder'|t }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -159,7 +159,7 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-plus-square"></i> {{ 'Text Document'|t }}</h5>
+        <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ 'Text Document'|t }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

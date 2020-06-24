@@ -88,6 +88,7 @@ class OlMessages{
       if($messages_row_data['owner'] == TRUE) {
         $messages_row_data['message_edit_form'] = \Drupal::formBuilder()->getForm(\Drupal\ol_messages\Form\MessageForm::class, 'edit', $message_data->id);
       }
+      $messages_row_data['like_button'] = \Drupal::formBuilder()->getForm(\Drupal\ol_like\Form\LikeForm::class, 'message', $message_data->id);
       $messages_row_data['comment_count'] = $this->comments->getCommentCount($message_data->id, 'message', $message_data->group_id);
       if ($view == 'page') {
         $messages_row_data['files'] = $this->files->getAttachedFiles('message', $message_data->id);
@@ -183,7 +184,7 @@ class OlMessages{
     $message->save();
     $id = $message->id();
     // Add stream item.
-    $stream_body = t('Posted a message: @message', array('@message' => $name)); // Create new stream item.
+    $stream_body = t('Added a message: @message', array('@message' => $name)); // Create new stream item.
     $this->stream->addStreamItem($gid, 'message_added', $stream_body, 'message', $id); // Create stream item.
     // Mail if true
     if($send_mail == true){

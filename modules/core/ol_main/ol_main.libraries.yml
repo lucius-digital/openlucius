@@ -3,10 +3,16 @@ ol_comments:
   css:
     theme:
       css/ol_comments.css: {}
+  js:
+    js/ol_comments.js: {}
 ol_attached_files:
   version: 1.x
   css:
     theme:
       css/ol_attached_files.css: {}
   js:
-    js/ol_attached_files.js: {  }
+    js/ol_attached_files.js: {}
+ol_add_group:
+  version: 1.x
+  js:
+    js/ol_add_group.js: {}

@@ -53,6 +53,7 @@ class SidebarGroupsBlock extends BlockBase implements ContainerFactoryPluginInte
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->groups = $groups;
   }
+
   /**
    * {@inheritdoc}
    */
@@ -60,18 +61,36 @@ class SidebarGroupsBlock extends BlockBase implements ContainerFactoryPluginInte
 
     // Prepare data.
     $add_group_form = \Drupal::formBuilder()->getForm(\Drupal\ol_main\Form\AddGroupForm::class);
-    $groups_data = $this->groups->getGroups();
-    $groups = $this->groups->addActivityBadge($groups_data);
-    $active_gid = $this->groups->getCurrentGroupId();
+    $group_types = $this->groups->getGroupTypes();
+    $group_blocks_html = '';
 
-    // Build.
+    foreach ($group_types as $type => $group_type){
+      $groups_data = $this->groups->getGroups(1, $type);
+      $groups = $this->groups->addActivityBadge($groups_data);
+      $active_gid = $this->groups->getCurrentGroupId();
+      // Build.
+      $theme_vars = [
+        'groups' => $groups,
+        'type' => $type,
+        'active_gid' => $active_gid,
+        'block_header' => $group_type['block_header'],
+        'icon_class' => $group_type['icon_class'],
+        'label' => $group_type['label'],
+        'add_group_form' => $add_group_form,
+      ];
+      $render = [
+        '#theme' => 'sidebar_groups_block',
+        '#cache' => ['max-age' => 0],
+        '#vars' => $theme_vars,
+      ];
+      $group_blocks_html .= \Drupal::service('renderer')->render($render);
+    }
     $theme_vars = [
-      'groups' => $groups,
-      'active_gid' => $active_gid,
+      'group_blocks_html' => $group_blocks_html,
       'add_group_form' => $add_group_form,
     ];
     $build = [
-      '#theme' => 'sidebar_groups_block',
+      '#theme' => 'sidebar_groups_block_wrapper',
       '#cache' => ['max-age' => 0],
       '#vars' => $theme_vars,
     ];

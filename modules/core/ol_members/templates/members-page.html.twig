@@ -5,9 +5,9 @@
       {% if vars.page_title %}
       {{ vars.page_title }}
       {% elseif vars.blocked_users == 1 %}
-        {{ 'Blocked Users'|t }}
+        <i class="lni lni-users"></i>  {{ 'Blocked Users'|t }}
       {% elseif vars.all_members == 1 %}
-        {{ 'Everybody'|t }}
+        <i class="lni lni-users"></i> {{ 'Everybody'|t }}
       {% endif %}
     </h2>
   </div>
@@ -15,16 +15,16 @@
     <div class="form-group">
       {% if vars.blocked_users == 1 %}
         <a class="btn btn-success" href="{{ url('ol_members.all_members') }}">
-          <i class="fa fa-users"></i> {{ 'Active users'|t }}
+          <i class="lni lni-users"></i> {{ 'Active users'|t }}
         </a>
       {% elseif vars.members_form and vars.can_add_members %}
         {# Add group members button #}
         <button class="btn btn-success" data-toggle="modal" data-target="#addMembersModal">
-          <i class="fa fa-plus"></i> {{ 'Add Group Members'|t }}
+          <i class="lni lni-plus"></i> {{ 'Add Group Members'|t }}
         </button>
       {% elseif vars.all_members == 1 %}
         <a class="btn btn-secondary" href="{{ url('ol_members.all_members_blocked') }}">
-          <i class="fa fa-users"></i> {{ 'Blocked users'|t }}
+          <i class="lni lni-users"></i> {{ 'Blocked users'|t }}
         </a>
       {% endif %}
     </div>
@@ -46,7 +46,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-plus"></i> {{ 'Add Group Members'|t }}</h5>
+        <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ 'Add Group Members'|t }}</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
