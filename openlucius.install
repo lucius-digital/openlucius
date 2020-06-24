@@ -18,7 +18,7 @@ function openlucius_install_tasks() {
   return $tasks;
 }
 /**
- * Sets the front page path to /node.
+ * Sets the front page path to /ol_home (a redirect to first group).
  */
 function openlucius_set_front_page() {
   Drupal::configFactory()
@@ -32,7 +32,7 @@ function openlucius_set_front_page() {
  */
 function openlucius_add_first_group() {
   $group = \Drupal::service('olmain.groups');
-  $group->addGroup('General', 1, false);
+  $group->addGroup('General', 'company', 1, false);
 }
 
 /**
