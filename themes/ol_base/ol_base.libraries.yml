@@ -4,6 +4,9 @@ global:
   css:
     theme:
       '//stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css': { type: external, minified: true}
+      '//fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap': { type: external, minified: true}
+      '//fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap': { type: external, minified: true}
+      '//cdn.lineicons.com/2.0/LineIcons.css': { type: external, minified: true}
       css/status-messages.css: {}
       css/pager.css: {}
       css/tabs.css: {}
