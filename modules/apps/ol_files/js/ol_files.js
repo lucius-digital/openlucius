@@ -1,4 +1,5 @@
 (function ($, Drupal, drupalSettings) {
+
   // Source: https://getbootstrap.com/docs/4.1/components/modal/#varying-modal-content
   $('#addEditFoldereModal').on('show.bs.modal', function (event) {
     const button = $(event.relatedTarget); // Button that triggered the modal
@@ -64,4 +65,13 @@
       modal.find('.folder_name').text(folder_name)
     }
   })
+  $(document).ready(function(){
+    $('#files_table').DataTable({
+      "order": [4,'desc'],
+      "columnDefs": [ {
+        "targets"  : 'no-sort',
+        "orderable": false,
+      }]
+    });
+  });
 })(jQuery, Drupal, drupalSettings);

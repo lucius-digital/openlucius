@@ -34,3 +34,6 @@
 .post-body a:hover{
   text-decoration: underline;
 }
+.card.ol-card.post-question-info{
+  margin-bottom:40px;
+}

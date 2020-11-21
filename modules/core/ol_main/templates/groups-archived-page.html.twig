@@ -1,19 +1,15 @@
-<!-- Heading -->
-<div class="row ">
-  <div class="col">
-    <h4><i class="lni lni-archive"></i> {{ 'Archived Groups'|t }}</h4>
-  </div>
-</div>
-<!-- / Heading -->
-
 <!-- Group cards -->
-<div class="row archived-groups">
+<div class="col-md-10 col-xl-9 pl-md-5 bd-content mb-5 offset-lg-1">
   <div class="col">
   {% if vars.groups is not empty %}
     {{ vars.groups|raw }}
   {% else %}
-    No archived groups.
+    <div class="card shadow-sm mb-2 p-4">
+      <span class="text-muted font-italic"><i class="lni lni-bulb"></i> {{ 'No groups archived yet'|t }}</span>
+    </div>
   {% endif %}
   </div>
 </div>
 <!-- / Group cards -->
+
+

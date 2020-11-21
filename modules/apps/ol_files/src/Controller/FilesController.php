@@ -7,6 +7,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Form\FormBuilder;
 use Drupal\Core\Pager\PagerManager;
 use Drupal\Core\Pager\PagerParameters;
+use Drupal\Core\Url;
 use Drupal\ol_files\Services\OlFolders;
 use Drupal\ol_files\Services\OlTextDocs;
 use Drupal\ol_main\Services\OlComments;
@@ -14,6 +15,7 @@ use Drupal\ol_main\Services\OlFiles;
 use Drupal\ol_main\Services\OlSections;
 use Drupal\ol_members\Services\OlMembers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Class FilesController.
@@ -104,9 +106,18 @@ class FilesController extends ControllerBase {
    */
   public function getFiles($gid){
 
+    $current_folder = Html::escape(\Drupal::request()->query->get('folder'));
+    $top_folder = $this->folders->getFolders($gid, true);
+    $top_folder_id = (!empty($top_folder[0]->id)) ? $top_folder[0]->id : null;
+    // Optimization, goto first folder instead of 'all files'.
+    if($top_folder_id && empty($current_folder)){
+      $path = Url::fromRoute('ol_files.group_files',['gid' => $gid], ['query' =>['folder' => $top_folder_id ]])->toString();
+      $response = new RedirectResponse($path);
+      $response->send();
+    }
+    $total_files_count = $this->getTotalFileCount($gid);
     $folders = $this->folders->getFoldersData($gid);
     $path = \Drupal::request()->getpathInfo();
-    $current_folder = Html::escape(\Drupal::request()->query->get('folder'));
     $page_title = $this->sections->getSectionOverrideTitle('files', 'Docs & Files');
 
     // Get forms.
@@ -140,6 +151,7 @@ class FilesController extends ControllerBase {
       'remove_from_folder' => $remove_from_folder,
       'text_doc_form' => $text_doc_form,
       'page_title' => $page_title,
+      'total_files_count' => $total_files_count,
     ];
     // Build render array.
     $render[] = [
@@ -151,10 +163,27 @@ class FilesController extends ControllerBase {
         ],
     ];
     // Add pager to the render array and return.
+    /* No pager for now: we use DataTable with all files,
+    Probably needs optimization, for groups with lots of files: implement DataTable AJAX
     $render[] = ['#type' => 'pager'];
+    */
     return $render;
+
   }
 
+  /**
+   * @param $gid
+   *
+   * @return mixed
+   */
+  private function getTotalFileCount($gid){
+    // Count query.
+    $query = \Drupal::database()->select('ol_file', 'oltable');
+    $query->addField('oltable', 'id');
+    $query->condition('oltable.group_id', $gid);
+    $query->condition('oltable.status', 1);
+    return $query->countQuery()->execute()->fetchField();
+  }
 
   /**
    * Needs to be migrated to dynamic form -and modal.

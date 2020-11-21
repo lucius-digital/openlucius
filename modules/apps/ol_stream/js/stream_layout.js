@@ -9,6 +9,7 @@ function initBlockHeight(){
     var navBarHeading = jQuery('.load-previous-form').height();
     var headingMessage = jQuery('.container-fluid .heading').height();
     var headingImg = jQuery('.header-image').height();
+    var messagesArea = jQuery('.messages').height();
     var removeHeight = formHeight + navBarHeading ;
     if (headingMessage) {
       removeHeight = removeHeight + headingMessage;
@@ -16,6 +17,10 @@ function initBlockHeight(){
     if (headingImg) {
       removeHeight = removeHeight + headingImg;
     }
+    if (messagesArea) {
+      removeHeight = removeHeight + messagesArea;
+    }
+    console.log('hoit' +messagesArea);
     jQuery('.chat-list-holder').css('max-height', 'calc(100vh - 130px - ' + removeHeight + 'px)');
 }
 

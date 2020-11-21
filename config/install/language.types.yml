@@ -1,0 +1,27 @@
+all:
+  - language_interface
+  - language_content
+  - language_url
+configurable:
+  - language_interface
+negotiation:
+  language_content:
+    enabled:
+      language-interface: 0
+  language_url:
+    enabled:
+      language-url: 0
+      language-url-fallback: 1
+  language_interface:
+    enabled:
+      language-user: -19
+      language-browser: -18
+      language-url: -17
+      language-selected: -15
+    method_weights:
+      language-user-admin: -20
+      language-user: -19
+      language-url: -17
+      language-session: -16
+      language-browser: -18
+      language-selected: -15

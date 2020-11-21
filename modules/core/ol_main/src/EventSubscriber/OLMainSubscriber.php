@@ -27,15 +27,16 @@ class OLMainSubscriber implements EventSubscriberInterface {
     // Get current path.
     $current_path = $request->getPathInfo();
     // Check if this is /user/rest path.
-    $user_reset = fnmatch('/user/reset/*', $current_path);
+    $user_reset = fnmatch('*/user/reset/*', $current_path);
 
     if($this->account->isAnonymous()
       && $current_path != '/user/login'
       && $current_path != '/user/password'
       && $current_path != '/register'
+      && $current_path != '/register_culture'
       && $user_reset != true
     ){
-      $event->setResponse(new RedirectResponse('/user/login', 301));
+    //  $event->setResponse(new RedirectResponse('/user/login', 301));
     }
   }
 

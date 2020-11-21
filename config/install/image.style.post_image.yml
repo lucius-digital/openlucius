@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies: {  }
+name: post_image
+label: 'Post Image'
+effects:
+  0ad20c6a-5a17-482b-a9fd-bf025e877fed:
+    uuid: 0ad20c6a-5a17-482b-a9fd-bf025e877fed
+    id: image_scale
+    weight: 1
+    data:
+      width: 1024
+      height: null
+      upscale: false

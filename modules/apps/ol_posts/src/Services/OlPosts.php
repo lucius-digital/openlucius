@@ -3,7 +3,9 @@
 namespace Drupal\ol_posts\Services;
 
 use Drupal\Core\Url;
+use Drupal\ol_icebreaker_settings\Entity\OlIcebreakerSettings;
 use Drupal\ol_post\Entity\OlPost;
+use Drupal\ol_post_settings\Entity\OlPostSettings;
 
 /**
  * Class OlPosts.
@@ -78,6 +80,7 @@ class OlPosts{
       // Convert to clickable link.
       $body = detectAndCreateLink($post_data->body);
       $posts_row_data['body'] = nl2br($body);
+//      $posts_row_data['body'] = $body;
       $posts_row_data['name'] = $post_data->name;
       $posts_row_data['created'] = $post_data->created;
       $posts_row_data['username'] = $post_data->username;
@@ -94,7 +97,7 @@ class OlPosts{
       $posts_row_data['comment_count'] = $this->comments->getCommentCount($post_data->id, 'post', $post_data->group_id);
       $posts_row_data['comment_items'] = $this->comments->getComments($post_data->id, 'post', 'asc', true, false);
       $posts_row_data['post_comment_form'] = \Drupal::formBuilder()->getForm(\Drupal\ol_posts\Form\PostCommentForm::class, $post_data->id);
-      $posts_row_data['files'] = $this->files->getAttachedFiles('post', $post_data->id, 'large');
+      $posts_row_data['files'] = $this->files->getAttachedFiles('post', $post_data->id, 'post_image');
       $posts_row_data['like_button'] = \Drupal::formBuilder()->getForm(\Drupal\ol_like\Form\LikeForm::class, 'post', $post_data->id);
       // Different template based on list or detail page.
       $template = ($view == 'list') ? 'post_card_list' : 'post_card';
@@ -150,6 +153,7 @@ class OlPosts{
     $query->addField('mess', 'name');
     $query->addField('mess', 'created');
     $query->addField('mess', 'user_id');
+    $query->addField('mess', 'status');
     $query->addField('user', 'name', 'username');
     $query->condition('mess.id', $id);
     $query->join('users_field_data', 'user', 'user.uid = mess.user_id');
@@ -195,7 +199,7 @@ class OlPosts{
     // Mail if true
     if($send_mail == true){
       // Generate url and send mails.
-      $url = Url::fromRoute('lus_post.post', ['gid' => $gid, 'id' => $id], ['absolute' => TRUE])->toString();
+      $url = Url::fromRoute('lus_post.post', ['gid' => $gid, 'id' => $id])->toString();
       $this->mail->sendMail($name, $url);
     }
     // Post.
@@ -222,7 +226,7 @@ class OlPosts{
       if($send_mail == true){
         // Generate url and send mails.
         $gid = $this->route->getParameter('gid');
-        $url = Url::fromRoute('lus_post.post', ['gid' => $gid, 'id' => $id], ['absolute' => TRUE])->toString();
+        $url = Url::fromRoute('lus_post.post', ['gid' => $gid, 'id' => $id])->toString();
         $this->mail->sendMail($name, $url);
       }
       // Add post.
@@ -243,6 +247,64 @@ class OlPosts{
     return ($uid == $this->members->getUserId());
   }
 
+  /**
+   * @param $question
+   * @param $send_days_json
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function savePostSettings($question, $send_days_json, $enabled){
+    // Get current group id.
+    $gid = $this->route->getParameter('gid');
+    // Save new icebreaker settings.
+    $next_execution = strtotime('today midnight');
+    $ol_icebreakers = OlPostSettings::create([
+      'group_id' => $gid,
+      'question' => $question,
+      'next_execution' => $next_execution,
+      'send_days' => $send_days_json,
+      'status' => $enabled,
+    ]);
+    $ol_icebreakers->save();
+    // Add message.
+    \Drupal::messenger()->addStatus(t('Your settings are saved successfully.'));
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getPostSettings(){
+    $gid = $this->route->getParameter('gid');
+    $query = \Drupal::database()->select('ol_post_settings', 'ops');
+    $query->addField('ops', 'id');
+    $query->addField('ops', 'question');
+    $query->addField('ops', 'send_days');
+    $query->addField('ops', 'status');
+    $query->condition('ops.group_id', $gid);
+    return $query->execute()->fetchObject();
+  }
+
+  /**
+   * @param $id
+   * @param $question
+   * @param $send_days_json
+   * @param $enabled
+   */
+  public function updatePostSettings($id, $question, $send_days_json, $enabled){
+    $uid = \Drupal::currentUser()->id();
+    $gid = $this->route->getParameter('gid');
+    \Drupal::database()->update('ol_post_settings')
+      ->fields([
+        'question' => $question,
+        'send_days' => $send_days_json,
+        'status' => $enabled,
+      ])
+      ->condition('id', $id)
+      ->condition('user_id', $uid)
+      ->condition('group_id', $gid)
+      ->execute();
+    \Drupal::messenger()->addStatus(t('Your settings are saved successfully.'));
+  }
 
 
 }

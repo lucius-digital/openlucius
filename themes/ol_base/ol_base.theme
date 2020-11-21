@@ -18,6 +18,7 @@ use Drupal\Core\Render\Element\PasswordConfirm;
  */
 function ol_base_form_user_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   $form['account']['name']['#attributes']['class'][] = 'form-control';
+  $form['#attributes']['class'][] = 'col-md-10 col-xl-9 p-3  bg-white rounded shadow-sm';
   $form['account']['mail']['#attributes']['class'][] = 'form-control';
   $form['account']['current_pass']['#attributes']['class'][] = 'form-control';
   $form['account']['pass']['#process'][] = 'ol_base_form_user_register_form_process_pass';
@@ -25,20 +26,31 @@ function ol_base_form_user_form_alter(&$form, \Drupal\Core\Form\FormStateInterfa
   $form['language']['preferred_langcode']['#attributes']['class'][] = 'form-control';
   $form['actions']['submit']['#attributes']['class'][] = 'btn btn-success btn-lg';
 }
-
 /**
+ * Implements hook_form_FORM_ID_alter()
  * Style fields on user/login/ page
  *
  * @param $form
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  * @param $form_id
  *
- * Implements hook_form_alter()
  */
 function ol_base_form_user_login_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   $form['name']['#attributes']['class'][] = 'form-control col-md-6';
   $form['pass']['#attributes']['class'][] = 'form-control col-md-6';
-  $form['actions']['submit']['#attributes']['class'][] = 'btn btn-success btn-lg';
+  $form['actions']['submit']['#attributes']['class'][] = 'btn btn-success mt-3 px-5';
+  $form['#attributes']['class'][] = 'col-md-10 col-xl-9 p-3  bg-white rounded shadow-sm';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter()
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ * @param $form_id
+ */
+function ol_base_form_user_pass_reset_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  $form['actions']['submit']['#attributes']['class'][] = 'btn btn-success mt-3 px-5';
+  $form['#attributes']['class'][] = 'col-md-10 col-xl-9 p-3  bg-white rounded shadow-sm';
 }
 
 /**
@@ -53,7 +65,9 @@ function ol_base_form_user_login_form_alter(&$form, \Drupal\Core\Form\FormStateI
 function ol_base_form_user_pass_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
   $form['name']['#attributes']['class'][] = 'form-control col-md-6';
   $form['pass']['#attributes']['class'][] = 'form-control col-md-6';
-  $form['actions']['submit']['#attributes']['class'][] = 'btn btn-success btn-lg';
+  $form['actions']['submit']['#attributes']['class'][] = 'btn btn-success mt-1 px-5';
+  $form['#attributes']['class'][] = 'col-md-10 col-xl-9 p-3  bg-white rounded shadow-sm';
+
 
 }
 
@@ -96,4 +110,11 @@ function ol_base_preprocess_html(&$variables) {
       });
     }
   }
+}
+/**
+ * Implements hook_preprocess()
+ */
+function ol_base_preprocess(array &$variables) {
+  $variables['base_path'] = base_path();
+  $variables['theme_path'] = base_path() . $variables['directory'];
 }

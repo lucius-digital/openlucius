@@ -206,6 +206,16 @@ class OlCultureQuestionSettings extends ContentEntityBase implements OlCultureQu
       ->setDescription(t('The culture questions, json encoded.'))
       ->setStorageRequired(TRUE);
 
+    $fields['send_days'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Questions'))
+      ->setDescription(t('The days, json encoded.'))
+      ->setStorageRequired(TRUE);
+
+    $fields['question_type'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Question Type'))
+      ->setDescription(t('Social or culture.'))
+      ->setStorageRequired(TRUE);
+
     return $fields;
   }
 

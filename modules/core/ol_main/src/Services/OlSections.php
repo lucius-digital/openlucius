@@ -63,4 +63,18 @@ class OlSections{
     }
   }
 
+  /**
+   * @param $sections
+   * @return array
+   */
+  public function buildOptionsFromSections($sections){
+    $options = array();
+    foreach ($sections as $section){
+      $label = (string) $section['label']; // Casting to string is needed here.
+      $key = (string) $section['path'];
+      $options[$key] = $label;
+    }
+    return $options;
+  }
+
 }

@@ -9,24 +9,10 @@
 */
 #}
 
-<nav class="navbar navbar-expand-md navbar-light bg-light">
-  <button type="button" id="sidebarCollapse" class="btn btn-secondary" data-toggle="collapse" data-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle sidebar">
-    <i class="fas fa-align-left"></i> Menu
-  </button>
-  {% if vars.sections is not empty %}
-  <span class="navbar-brand">
-    {% if vars.is_archived == 0 %}
-      {{ '(ARCHIVED)'|t }}
-    {% endif %}
-    {{ vars.group_name|length > 20 ? vars.group_name|slice(0, 20) ~ '..' : vars.group_name  }}
-  </span>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  {% endif %}
-  <div class="collapse navbar-collapse text-align-right" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      {% for section in vars.sections %}
+
+<div class="nav-scroller bg-white shadow-sm">
+  <nav class="nav nav-underline">
+    {% for section in vars.sections %}
       {# Nasty active styling for now #}
       {# Link building also needs attention #}
       {% if section.path == vars.active_section %}
@@ -34,15 +20,10 @@
       {% else %}
         {% set active = '' %}
       {% endif %}
-      <li class="nav-item {{ active }}">
-        <a class="nav-link" href="{{ host }}/group/{{ vars.gid }}/{{ section.path }}">{{ section.label }} </a>
-      </li>
-      {% endfor %}
-      {% if vars.is_group_admin %}
-      <li class="nav-item {{ active }}">
-        <a class="nav-link" href="/group/{{ vars.gid }}/settings"><i class="lni lni-cog"></i> </a>
-      </li>
-      {% endif %}
-    </ul>
-  </div>
-</nav>
+      <a class="nav-link {{ active }}" href="{{ base_url }}/group/{{ vars.gid }}/{{ section.path }}">
+        {{ section.label }}
+        <span class="badge badge-light align-top">{{ section.badge_count }}</span>
+      </a>
+    {% endfor %}
+  </nav>
+</div>

@@ -10,12 +10,25 @@
  */
 function ol_stream_theme() {
   return [
+    'stream_uber_wrapper' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'stream-uber-wrapper',
+    ],
+
     'stream_wrapper' => [
       'variables' => [
         'vars' => NULL,
       ],
       'template' => 'stream-wrapper',
     ],
+/*    'stream_wrapper_user' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'stream-wrapper-user',
+    ],*/
     'stream_item' => [
       'variables' => [
         'vars' => NULL,

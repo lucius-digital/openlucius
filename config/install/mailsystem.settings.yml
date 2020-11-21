@@ -1,0 +1,17 @@
+theme: ol_base
+defaults:
+  sender: php_mail
+  formatter: swiftmailer
+modules:
+  swiftmailer:
+    none:
+      formatter: swiftmailer
+      sender: swiftmailer
+  system:
+    none:
+      formatter: php_mail
+      sender: php_mail
+  user:
+    none:
+      formatter: php_mail
+      sender: php_mail

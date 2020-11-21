@@ -64,7 +64,9 @@ class AddGroupForm extends FormBase {
       '#attributes' => array('id' => array('group-type-id')),
     ];
     $form['name'] = [
-      '#prefix' => '<div class="modal-body"><div class="form-group">',
+      '#prefix' => '<div class="col-md-6 col-xl-7 offset-xl-4 offset-md-4 py-3 bd-content mb-5 bg-white rounded shadow-sm">
+                     <div class="modal-body">
+                      <div class="form-group">',
       '#type' => 'textfield',
       '#weight' => '0',
       '#required' => true,
@@ -76,8 +78,8 @@ class AddGroupForm extends FormBase {
       '#type' => 'submit',
       '#weight' => '20',
       '#attributes' => array('class' => array('btn btn-success')),
-      '#value' => t('Add'),
-      '#suffix' => '</div>'
+      '#value' => t('Add New Group'),
+      '#suffix' => '</div></div>'
     ];
     $form['#attached']['library'][] = 'ol_main/ol_add_group';
     return $form;
@@ -91,11 +93,11 @@ class AddGroupForm extends FormBase {
     // Get value.
     $name = Html::escape($form_state->getValue('name'));
     // Set an error for the form element with a key of "title".
-    if (strlen($name) > 20) {
-      $form_state->setErrorByName('name', $this->t('Group not added: name can not be more then 20 characters long.'));
+    if (strlen($name) > 50) {
+      $form_state->setErrorByName('name', $this->t('Group not saved: name can not be more then 50 characters long.'));
     }
     if (strlen($name) < 2) {
-      $form_state->setErrorByName('name', $this->t('Group not added: name must be at least 2 character long.'));
+      $form_state->setErrorByName('name', $this->t('Group not saved: name must be at least 2 character long.'));
     }
   }
 
@@ -106,8 +108,13 @@ class AddGroupForm extends FormBase {
     // Get form data.
     $name = Html::escape($form_state->getValue('name'));
     $type = Html::escape($form_state->getValue('type'));
+    $enabled_sections = 'stream,messages,posts,files,members';
     // Save group.
-    $this->groups->addGroup($name, $type);
+    $this->groups->addGroup($name, $type, null, true, $enabled_sections);
+    if ($type == 'company') {
+      \Drupal::messenger()
+        ->addStatus(t('All members were added to this company wide group.'));
+    }
   }
 
 }

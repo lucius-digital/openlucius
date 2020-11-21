@@ -1,85 +1,69 @@
-<!--- Post-->
-<div class="card ol-card ol-post">
-  <!-- Header-->
-  <div class="card-header">
-    <div class="d-flex justify-content-between align-items-center">
-      <div class="d-flex justify-content-between align-items-center">
-        <div class="mr-2">
-          <img class="rounded-circle" src="{{ vars.user_picture }}" alt="user thumbnail" height="45">
-        </div>
-        <div class="ml-2">
-          <div class="h5 m-0"><a href="/user/{{ vars.user_id }}/profile">{{ vars.username }}</a></div>
-          <div class="h7 text-muted"><span class="badge badge-light"><i class="fas fa-clock"></i> {{ vars.created|date("D d-m-Y H:i") }} </span></div>
-        </div>
-      </div>
+
+<!-- POST  -->
+<div class="card shadow-sm mb-4">
+
+  <!-- POST BODY AREA-->
+  <div class="card-body">
+    <div class="media text-muted">
+      <img class="rounded-circle mr-2" src="{{ vars.user_picture }}" alt="user tn" height="35">
+      <p class="media-body pb-3 mb-0 small lh-125 border-gray">
+        <strong class="d-block text-gray-dark">
+          <a href="/user/{{ vars.user_id }}/profile" class="username text-muted">{{ vars.username }}</a>
+        </strong>
+        <span class="text-muted small">{{ vars.created|date("D d-m-Y H:i") }}</span>
+      </p>
       {% if vars.owner == TRUE %}
-        <div>
+        <div class="float-right">
           <div class="dropdown">
-            <button class="btn btn-link dropdown-toggle" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="fa fa-ellipsis-h"></i>
+            <button class="btn btn-link" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              <i class="lni lni-line-dotted"></i>
             </button>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="ol-drop2">
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="ol-drop2" >
               <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editPostModal_{{ vars.id }}">{{ 'Edit'|t }} </a>
             </div>
           </div>
         </div>
       {% endif %}
     </div>
-  </div>
-  <!-- / Header-->
+    <p class="card-text">{{ vars.body|raw }}</p>
 
-  <!-- Post body -->
-  <div class="card-body">
-    <div class="post-card-body">
-      <div class="post-body">
-        {{ vars.body|raw }}
-      </div>
-      {% if vars.files %}
-      <div class="post-files">
-        {{ vars.files|raw }}
-      </div>
-      {% endif %}
-    </div>
   </div>
-  <!-- / Post body -->
-  <div class="card-footer">
-    <div class="like-wrapper">
-      {{ vars.like_button }}
+  {% if vars.files %}
+    {{ vars.files|raw }}
+  {% endif %}
+  <!-- END POST BODY AREA-->
+
+  <!-- POST FOOTER -->
+  <div class="card-footer text-muted">
+
+    <!-- LIKE AREA-->
+    {{ vars.like_button }}
+    <!-- END LIKE AREA-->
+
+    <!-- COMMENT AREA-->
+    <div class="comment-container mt-3" id="comment-container-{{ vars.id }}">
+      {{ vars.comment_items|raw }}
     </div>
-    <div class="comment-link-wrapper">
-        <a id="comment_list"></a>
-        {% if vars.comment_count == 1 %}
-          {% set var_comment = 'Comment' %}
-          <span  class="card-link"><i class="fa fa-comment"></i> {{ vars.comment_count }} {{ var_comment|t }}</span>
-        {% elseif vars.comment_count == 0 %}
-          {% set var_comment = 'Be the first to comment' %}
-          <span class="card-link"><i class="fa fa-comment"></i> {{ var_comment|t }}</span>
-        {% else %}
-          {% set var_comment = 'Comments' %}
-          <span class="card-link"><i class="fa fa-comment"></i> {{ vars.comment_count }} {{ var_comment|t }} </span>
-        {% endif %}
-    </div>
-    <div class="comment-container" id="comment-container-{{ vars.id }}">{{ vars.comment_items|raw }}</div>
-    <div class="post-comment-form-wrapper">
+    <div class="post-comment-form-wrapper mt-3">
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex justify-content-between align-items-center">
           <div class="mr-2">
             <img class="rounded-circle" src="{{ vars.current_user_picture }}" alt="" height="25">
           </div>
-          <div class="ml-2">
-            <div class="m-0">
+          <div>
               {{ vars.post_comment_form|raw }}
-            </div>
           </div>
         </div>
       </div>
     </div>
+    <!-- END COMMENT AREA-->
   </div>
+  <!-- END POST FOOTER -->
 </div>
-<!-- / Post-->
+<!-- END POST -->
 
 {% if vars.owner == TRUE %}
-  <!-- Edit modal -->
+  <!-- Post edit modal -->
   <div class="modal fade bd-example-modal-lg" id="editPostModal_{{ vars.id }}" role="dialog" aria-labelledby="editPostLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
@@ -93,6 +77,6 @@
       </div>
     </div>
   </div>
-  <!-- / Edit modal  -->
+  <!-- End post edit modal  -->
 {% endif %}
 

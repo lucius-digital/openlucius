@@ -100,7 +100,7 @@ class OlTextDocs{
     // Mail if true
     if($send_mail == true){
       // Generate url and send mails.
-      $url = Url::fromRoute('ol_files.group_files', ['gid' => $gid], ['absolute' => TRUE])->toString();
+      $url = Url::fromRoute('ol_files.group_files', ['gid' => $gid])->toString();
       $this->mail->sendMail($name, $url);
     }
     // Message.
@@ -195,7 +195,7 @@ class OlTextDocs{
       if($send_mail == true){
         // Generate url and send mails.
         $gid = $this->route->getParameter('gid');
-        $url = Url::fromRoute('ol_files.text_doc', ['gid' => $gid, 'id' => $id], ['absolute' => TRUE])->toString();
+        $url = Url::fromRoute('ol_files.text_doc', ['gid' => $gid, 'id' => $id])->toString();
         $this->mail->sendMail($name, $url);
       }
       // Add message.

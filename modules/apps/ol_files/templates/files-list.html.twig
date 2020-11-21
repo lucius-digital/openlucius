@@ -1,68 +1,67 @@
-{# Yeah..., this needs some chopping up, make it more modular / atomic #}
+{# Yeah... this needs some chopping up, make it more modular / atomic #}
 <!-- Heading -->
-<div class="row title">
-  <div class="col title">
-    <h2>{{ vars.page_title }}</h2>
+
+<div class="row py-2 pl-3">
+  <div class="col">
+    <h1 class="h4">{{ vars.page_title }}</h1>
   </div>
   <div class="col text-right">
-    <div class="form-group">
-      <button class="btn btn-success" type="button" id="files-add-drop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <i class="lni lni-plus"></i> Add <i class="fa fa-caret-down"></i>
-      </button>
-      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="files-add-drop">
-        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addMessageModal"><i class="lni lni-upload"></i> {{ 'Upload Files'|t }}</a>
-        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#textDoc"><i class="lni lni-plus"></i> {{ 'Add Text Document'|t }}</a>
-        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addEditFoldereModal"><i class="lni lni-folder"></i> {{ 'Add Folder'|t }}</a>
-      </div>
+    <button class="btn btn-success btn-sm" type="button" id="files-add-drop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <i class="lni lni-plus"></i> Add <i class="fa fa-caret-down"></i>
+    </button>
+    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="files-add-drop">
+      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addMessageModal"><i class="lni lni-upload"></i> {{ 'Upload Files'|t }}</a>
+      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#textDoc"><i class="lni lni-plus"></i> {{ 'Add Text Document'|t }}</a>
+      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addEditFoldereModal"><i class="lni lni-folder"></i> {{ 'Add Folder'|t }}</a>
     </div>
   </div>
-</div> <!-- / Heading -->
+</div>
 
 <div class="container">
   <div class="row">
     <!-- Folders -->
-    <div class="col-lg-4 folders">
-      <div class="list-group">
-        {% if vars.current_folder|length == 0  %}
+    <div class="col-lg-3 folders mb-3">
+      <div class="list-group small">
+        {% if vars.current_folder == 'all' %}
           {% set active = 'active' %}
         {% endif %}
-        <a href="{{ vars.path }}" class="list-group-item list-group-item-action flex-column align-items-start {{ active }}">
+        <a href="{{ vars.path }}?folder=all" class="list-group-item list-group-item-action flex-column align-items-start {{ active }}">
           <div class="d-flex w-100 justify-content-between ">
             <h7>{{ 'All Files'|t }}</h7>
-            <small><span class="badge badge-light badge-pill">{{ vars.total_files }}</span></small>
+            <small><span class="badge badge-light badge-pill">{{ vars.total_files_count }}</span></small>
           </div>
         </a>
       </div>
       <div class="list-group folder-left">
-        <ul class="list-group">
+        <ul class="list-group small">
           {% for folder in vars.folders %}
             {# Nasty active styling for now :s #}
             {% if vars.current_folder ==  folder.id  %}
-              {% set active = 'active' %}
+              {% set class = 'active' %}
             {% else %}
-              {% set active = '' %}
+              {% set class = 'text-muted' %}
             {% endif %}
-              <li class="list-group-item d-flex justify-content-between align-items-center {{ active }}">
-                <a href="{{ vars.path }}?folder={{ folder.id }}" class="folder-link {{ active }}">
+              <li class="list-group-item d-flex justify-content-between align-items-center {{ class }}">
+                <a href="{{ vars.path }}?folder={{ folder.id }}" class="folder-link {{ class }}">
                   {% if vars.current_folder ==  folder.id %}
-                    <i class="fas fa-folder-open"></i>
+                    <i class="lni lni-folder"></i>
                   {% else %}
-                    <i class="fas fa-folder"></i>
+                    <i class="lni lni-folder"></i>
                   {% endif %}
                   {{ folder.name }}
                 </a>
                   {% if folder.can_admin %}
-                    <button class="btn btn-link dropdown-toggle" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i class="fa fa-ellipsis-h"></i>
+                    <button class="btn btn-link" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="lni lni-line-dotted"></i>
                     </button>
                     <div class="dropdown-menu dropdown-menu-left" aria-labelledby="ol-drop2">
                         <button class="dropdown-item" data-toggle="modal" data-target="#addEditFoldereModal" data-name="{{ folder.name }}" data-folder_id="{{ folder.id }}">
-                          <i class="fas fa-edit"></i> {{ 'Rename Folder'|t }}
+                          <i class="lni lni-pencil"></i> {{ 'Rename Folder'|t }}
                         </button>
                       <button class="dropdown-item" data-toggle="modal" data-target="#removeFolder"
                               data-folder_name="{{ folder.name }}"
                               data-folder_id="{{ folder.id }}"
-                      ><i class="fas fa-times"></i> {{ 'Remove Folder'|t }}</button>
+                      ><i class="lni lni-close"></i> {{ 'Remove Folder'|t }}</button>
                     </div>
                   {% endif %}
                 <small><span class="badge badge-light badge-pill">{{ folder.count_files }}</span></small>
@@ -83,20 +82,30 @@
     </div> <!-- / Folders -->
 
     <!-- Files -->
-    <div class="col-lg-8 folders">
-      <div class="card ol-card files-list-page">
-        <div class="card-header">
-          {% if vars.files is not empty %}
-            <table class="table table-responsive ">
-            {{ vars.files|raw }}
-            </table>
-          {% else %}
-              <i class="text-muted"><i class="fa fa-info-circle"></i> {{ 'No Results'|t }}</i><br />
-          {% endif %}
-        </div>
-      </div>
+    <div class="col-lg-9 p-3 card shadow-sm mb-4">
+    <div class="small">
+      {% if vars.files is not empty %}
+        <table id="files_table" class="table display table-responsive table-sm" style="width: 100%">
+          <thead>
+          <tr>
+            <th class="no-sort">Icon</th>
+            <th>File</th>
+            <th>Size</th>
+            <th>User</th>
+            <th>Date</th>
+            <th>Folder</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+           {{ vars.files|raw }}
+          </tbody>
+        </table>
+      {% else %}
+        <i class="text-muted"><i class="fa fa-info-circle"></i> {{ 'No result'|t }}</i><br />
+      {% endif %}
     </div> <!-- / Files -->
-
+    </div>
   </div> <!-- / Row -->
 </div><!-- / Container -->
 

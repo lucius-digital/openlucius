@@ -1,26 +1,20 @@
-{% if vars.no_item_here == false %}
-  {{ vars.load_more }}
-{% endif %}
+<div class="my-3 p-3 bg-white rounded shadow-sm">
+  {% if vars.stream_html is empty %}
+    <i class="lni lni-bulb"></i> <i> {{ 'No activity yet.'|t }}</i><br />
+  {% endif %}
 
-<span id="last_message_timestamp">{{ vars.last_message_timestamp }}</span>
-<span id="last_message_timestamp_db">testing</span>
-{#Mobile: <span id="mobile_check">mobile?</span>
-Tablet: <span id="tablet_check">tablet?</span>
-IOS: <span id="ios_check">ios?</span>#}
-<div class="container chat-wrapper">
-  <div class="row">
-    <div class="col-12 stream-bar">
-      <div class="chat-list-holder">
-          <ul class="list-unstyled stream-list" id="message-container">
-            <span id="append_here"></span>
-            <div id="stream-items-container">
-              <div class="loader"></div>
-              <br />
-                {{ 'Loading messages...'|t }}
-            </div>
-          </ul>
-      </div>
-      {{ vars.stream_form }}
-    </div>
-  </div>
+  {% if vars.stream_html %}
+  <h6 class="border-bottom border-gray pb-2 mb-0">
+    {% if vars.group_id %}
+      <a href="/group/{{ vars.group_id }}/stream" class="text-muted"><i class="lni lni-users text-muted"></i> {{ vars.group_name }}</a>
+    {% else %}
+      {{ vars.group_name }}
+    {% endif %}
+    <span class="badge badge-light float-right text-muted">{{ vars.readable_date }}</span>
+  </h6>
+  {% endif %}
+  {{ vars.stream_html|raw }}
+  <small class="d-block text-right mt-3">
+    {# Future maybe handy <a href="#"></a>#}
+  </small>
 </div>

@@ -1,0 +1,5 @@
+name: 'OL Post Settings'
+type: module
+description: 'OL Post Settings'
+core_version_requirement: ^9
+package: 'OL App'

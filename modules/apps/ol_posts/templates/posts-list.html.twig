@@ -1,42 +1,86 @@
-<!-- Filters -->
-<div class="row title">
-  <div class="col title">
-    <h2>{{ vars.page_title }}</h2>
-  </div>
-  <div class="col text-right">
-    <div class="form-group">
-      <button class="btn btn-success" data-toggle="modal" data-target="#addPostModal">
-        <i class="lni lni-plus"></i> {{ 'Add'|t }}
-      </button>
+<div class="col-md-10 col-xl-9 pl-md-5 bd-content mb-5 offset-lg-1">
+  <!-- Title and action buttons-->
+  <div class="row py-2 pl-3">
+    <div class="col">
+      <h1 class="h4">{{ vars.page_title }}</h1>
+    </div>
+    <div class="col text-right">
+      {% if vars.post_settings.status != 1 %}
+        <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addPostModal">
+          <i class="lni lni-plus"></i> {{ 'Add'|t }}
+        </button>
+      {% endif %}
+      {% if vars.is_group_admin == true %}
+        <button class="btn btn-success  btn-sm" data-toggle="modal" data-target="#postSettings">
+          <i class="lni lni-cog"></i> {{ 'Settings'|t }}
+        </button>
+      {% endif %}
     </div>
   </div>
-</div>
+
+  <!-- Active question area-->
+  {% if vars.post_settings.status == 1 %}
+    <div class="card shadow-sm mb-4">
+      <div class="card-header">
+        <p class="text-muted">
+          <i class="fa fa-info-circle"></i> {{ 'Please let your team know'|t }}: <i><b> {{ vars.post_settings.question }} </b></i>
+        </p>
+        <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addPostModal">
+          <i class="lni lni-plus"></i> {{ 'Post Your Answer'|t }}
+        </button>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Posts-->
   {% if vars.posts is not empty %}
     <div class="posts-list-wrapper">
     {{ vars.posts|raw }}
     </div>
-  {% else %}
-<div class="card ol-card">
-  <div class="card-header">
-    <p class="text-muted">
-      <i class="fa fa-info-circle"></i> <i> {{ 'Be the first to add a post.'|t }}</i><br />
-    </p>
-  </div>
-</div>
-{% endif %}
 
-<!-- Modal add post -->
-<div class="modal fade bd-example-modal-lg" id="addPostModal" role="dialog" aria-labelledby="addPostModal" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ vars.page_title }} | {{ 'Add new'|t }}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+  <!-- No posts message-->
+  {% else %}
+    <div class="card ol-card">
+      <div class="card-header">
+        <p class="text-muted">
+          <i class="lni lni-bulb"></i> <i> {{ 'Be the first to post.'|t }}</i><br />
+        </p>
       </div>
-      {{ vars.post_form }}
+    </div>
+  {% endif %}
+
+  <!-- Modal add post -->
+  <div class="modal fade bd-example-modal-lg" id="addPostModal" role="dialog" aria-labelledby="addPostModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ vars.page_title }} </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {{ vars.post_form }}
+      </div>
     </div>
   </div>
+  <!-- / Modal add post  -->
+
+  {% if vars.is_group_admin == true %}
+  <!-- Modal config post-->
+  <div class="modal fade" id="postSettings" tabindex="-1" role="dialog" aria-labelledby="icebreakerSettings" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-coq"></i> {{ 'Settings'|t }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {{ vars.post_config_form }}
+      </div>
+    </div>
+  </div>
+  <!-- Modal //// -->
+  {% endif %}
+
 </div>
-<!-- / Modal add post  -->

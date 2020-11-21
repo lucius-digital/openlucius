@@ -1,21 +1,21 @@
-<li class="media">
-  <img class="mr-3 rounded-circle" src="{{ vars.user_picture_url }}" alt="Image" height="30">
-  <div class="media-body">
-    <h6 class="mt-0 mb-1">{{ vars.user_name }}
-      <span class="badge badge-light comment">
-         {{ vars.created }}
-      </span>
-    </h6>
-      <span class="stream-item-body {{ vars.item_type }}">{{ vars.stream_body|raw }}
-      {% if vars.path %}
-        <a href="{{ vars.path }}" class="stream-inline-link">{{ 'View'|t }}</a>
-      {% endif %}
-        </span>
+<div class="media text-muted pt-3">
+  <img class="mr-2 rounded-circle" src="{{ vars.user_picture_url }}" alt="   " height="32">
+  <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+    <strong class="d-block text-gray-dark">
+      <a href="/user/{{ vars.uid }}/profile" class="username text-muted">{{ vars.user_name }}</a>
+      <span class="badge badge-pill badge-light float-right text-muted">{{ vars.created }}</span></strong>
+    {% if vars.group_name %}
+      <span class="badge badge-secondary"><i class="lni lni-users"> </i> {{ vars.group_name }}</span>
+    {% endif %}
+      {{ vars.stream_body|raw }}
+    {% if vars.path %}
+      <a href="{{ vars.path }}" class="stream-inline-link">{{ 'View'|t }}</a>
+    {% endif %}
     {% if vars.files %}
       {% for file in vars.files  %}
         <a href="{{ file.file_path }}" class="stream-inline-link">{{ file.file_name }}</a>
         {% if not loop.last %},{% endif %}
       {% endfor %}
     {% endif %}
-  </div>
-</li>
+  </p>
+</div>

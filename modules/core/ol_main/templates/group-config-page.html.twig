@@ -1,16 +1,13 @@
-<div class="container">
-  <div class="row title">
+<div class="col-md-12 col-xl-11 pl-md-5 bd-content mb-5">
+  <!-- Title and action buttons-->
+  <div class="row py-2 pl-3">
     <div class="col">
-      <h2>{{ 'Group settings' }}</h2>
+      <h1 class="h4">{{ 'Group Settings' }}</h1>
+    </div>
+  </div>
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+        {{ vars.config_form }}
     </div>
   </div>
 </div>
-
-<div class="container group-settings">
-  <div class="row">
-    <div class="col">
-      {{ vars.config_form }}
-    </div>
-  </div>
-</div>
-

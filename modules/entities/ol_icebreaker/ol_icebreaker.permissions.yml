@@ -1,0 +1,20 @@
+add ol icebreaker entities:
+  title: 'Create new OL Icebreaker entities'
+
+administer ol icebreaker entities:
+  title: 'Administer OL Icebreaker entities'
+  description: 'Allow to access the administration form to configure OL Icebreaker entities.'
+  restrict access: true
+
+delete ol icebreaker entities:
+  title: 'Delete OL Icebreaker entities'
+
+edit ol icebreaker entities:
+  title: 'Edit OL Icebreaker entities'
+
+view published ol icebreaker entities:
+  title: 'View published OL Icebreaker entities'
+
+view unpublished ol icebreaker entities:
+  title: 'View unpublished OL Icebreaker entities'
+

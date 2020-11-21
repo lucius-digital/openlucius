@@ -1,0 +1,26 @@
+<div class="container-fluid bg-white py-1">
+  <div class="row">
+    {% if vars.group_id %}
+      <div class="col pl-0">
+    {% else %}
+      <div class="col pl-0 text-center">
+    {% endif %}
+      <h1 class="h4 pl-3 pt-3 main-heading">
+        {% if vars.title_icon %}
+          <i class="lni lni-{{ vars.title_icon }} text-muted"></i>
+        {% endif %}
+        {{ vars.title }}
+        {% if vars.group_id and vars.is_group_admin is not empty %}
+          <span class="dropdown">
+            <button class="btn btn-link" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              <i class="lni lni-line-dotted"></i>
+            </button>
+            <span class="dropdown-menu" aria-labelledby="ol-drop2" >
+              <a class="dropdown-item" href="{{ url('ol_main.group_settings', { 'gid' : vars.group_id }) }}"><i class="lni lni-cog"></i> Settings </a>
+            </span>
+          </span>
+        {% endif %}
+      </h1>
+    </div>
+  </div>
+</div>

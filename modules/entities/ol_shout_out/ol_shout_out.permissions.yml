@@ -1,0 +1,20 @@
+add ol shout out entities:
+  title: 'Create new OL Shout Out entities'
+
+administer ol shout out entities:
+  title: 'Administer OL Shout Out entities'
+  description: 'Allow to access the administration form to configure OL Shout Out entities.'
+  restrict access: true
+
+delete ol shout out entities:
+  title: 'Delete OL Shout Out entities'
+
+edit ol shout out entities:
+  title: 'Edit OL Shout Out entities'
+
+view published ol shout out entities:
+  title: 'View published OL Shout Out entities'
+
+view unpublished ol shout out entities:
+  title: 'View unpublished OL Shout Out entities'
+

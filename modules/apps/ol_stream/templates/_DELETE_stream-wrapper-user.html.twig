@@ -1,0 +1,20 @@
+{% if vars.user_stream %}
+<div class="row title">
+  <div class="col title">
+    <h2>{{ vars.username }} {{ '\'s activity'|t }}</h2>
+  </div>
+</div>
+{% endif %}
+<div class="container user-stream-wrapper">
+  <div class="row">
+    <div class="col-12">
+      <ul class="list-unstyled stream-list">
+        {% if vars.stream_html %}
+          {{ vars.stream_html|raw }}
+        {% else %}
+        <i class="text-muted"><i class="fa fa-info-circle"></i> {{ 'No results yet.'|t }}</i>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</div>

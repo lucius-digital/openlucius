@@ -7,3 +7,9 @@ stream:
   js:
     js/stream.js: { weight: -10, attributes: { defer: true}  }
     js/stream_layout.js: { weight: -10, attributes: { defer: true} }
+stream_user:
+  version: 1.x
+  header: true
+  css:
+    theme:
+      css/stream.css: {}

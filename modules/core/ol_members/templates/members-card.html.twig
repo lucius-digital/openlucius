@@ -1,51 +1,53 @@
-<!--- Member card -->
-<div class="card ol-card">
-  <div class="card-header">
-    <div class="d-flex justify-content-between align-items-center">
-      <div class="d-flex justify-content-between align-items-center">
-        <div class="mr-2">
-          <img class="rounded-circle" width="45" src="{{ vars.user_picture }}" alt="">
-        </div>
-        <div class="ml-2">
-          <div class="h5 m-0"><a href="/user/{{ vars.uid }}/profile">{{ vars.name }}</a>
-          </div>
-          <div class="h7 text-muted">{{ vars.userstatus }}</div>
-          <a href="mailto:{{ vars.mail }}"> <span class="badge badge-secondary"><i class="fas fa-envelope"></i> {{ vars.mail }}</span></a>
+
+<!-- POST  -->
+<div class="card shadow-sm mb-2">
+
+  <!-- POST BODY AREA-->
+  <div class="card-body pb-1 px-3 ">
+    <div class="media text-muted">
+      <img class="rounded-circle mr-2" src="{{ vars.user_picture }}" alt="user tn" height="35">
+      <p class="media-body pb-3 mb-0 lh-125 border-gray">
+        <span class="d-block">
+          <a href="/user/{{ vars.uid }}/profile" class="username text-muted">{{ vars.name }}</a>
+        </span>
+        <span class="text-muted small">
+          <a href="mailto:{{ vars.mail }}">
+            <span class="badge badge-secondary"><i class="lni lni-envelope"></i> {{ vars.mail }}</span>
+          </a>
           {% if vars.is_group_admin == TRUE %}
-            <span class="badge badge-info"><i class="fas fa-user-shield"></i> {{ 'Group Administrator'|t }}</span>
+            <span class="badge badge-info"><i class="lni lni-shield"></i> {{ 'Group Administrator'|t }}</span>
           {% endif %}
           {% if vars.is_user_admin == TRUE %}
-            <span class="badge badge-success"><i class="fas fa-user-shield"></i> {{ 'User Manager'|t }}</span>
+            <span class="badge badge-success"><i class="lni lni-shield"></i> {{ 'User Manager'|t }}</span>
           {% endif %}
-        </div>
-      </div>
+        </span>
+      </p>
       {% if vars.current_is_group_admin == TRUE or vars.current_is_user_admin == TRUE %}
-      <div>
-        <div class="dropdown">
-          <button class="btn btn-link dropdown-toggle" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fa fa-ellipsis-h"></i>
-          </button>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="ol-drop2">
-            {% if vars.current_is_group_admin == TRUE and vars.group_id or vars.current_is_user_admin == TRUE and vars.group_id %}
-            <a class="dropdown-item" href="/group/{{ vars.group_id }}/members/remove/{{ vars.uid }}"><i class="fa fa-user-minus"></i> {{ 'Remove from Group'|t }}</a>
-            {% endif %}
-            {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.is_user_admin == false %}
-            <a class="dropdown-item" href="/members/user_manager_add/{{ vars.uid }}"><i class="fa fa-user-plus"></i> {{ 'Make User Manager'|t }}</a>
-            {% endif %}
-            {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.is_user_admin == true %}
-            <a class="dropdown-item" href="/members/user_manager_remove/{{ vars.uid }}"><i class="fa fa-user-minus"></i> {{ 'Remove as User Manager'|t }}</a>
-            {% endif %}
-            {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.status == 1 %}
-            <a class="dropdown-item" href="/members/block/{{ vars.uid }}"><i class="fa fa-times-circle"></i> {{ 'Block this user'|t }}</a>
-            {% endif %}
-            {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.status == 0 %}
-            <a class="dropdown-item" href="/members/unblock/{{ vars.uid }}"><i class="fa fa-check-circle"></i> {{ 'Reactivate this user'|t }}</a>
-            {% endif %}
+        <div class="float-right">
+          <div class="dropdown">
+            <button class="btn btn-link" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              <i class="lni lni-line-dotted"></i>
+            </button>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="ol-drop2" >
+              {% if vars.current_is_group_admin == TRUE and vars.group_id or vars.current_is_user_admin == TRUE and vars.group_id %}
+                <a class="dropdown-item" href="/group/{{ vars.group_id }}/members/remove/{{ vars.uid }}"><i class="lni lni-circle-minus"></i> {{ 'Remove from Group'|t }}</a>
+              {% endif %}
+              {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.is_user_admin == false %}
+                <a class="dropdown-item" href="/members/user_manager_add/{{ vars.uid }}"><i class="lni lni-crown"></i> {{ 'Make User Manager'|t }}</a>
+              {% endif %}
+              {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.is_user_admin == true %}
+                <a class="dropdown-item" href="/members/user_manager_remove/{{ vars.uid }}"><i class="lni lni-close"></i> {{ 'Remove as User Manager'|t }}</a>
+              {% endif %}
+              {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.status == 1 %}
+                <a class="dropdown-item" href="/members/block/{{ vars.uid }}"><i class="lni lni-circle-minus"></i> {{ 'Block this user'|t }}</a>
+              {% endif %}
+              {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.status == 0 %}
+                <a class="dropdown-item" href="/members/unblock/{{ vars.uid }}"><i class="lni lni-checkmark-circle"></i> {{ 'Reactivate this user'|t }}</a>
+              {% endif %}
+            </div>
           </div>
         </div>
-      </div>
       {% endif %}
     </div>
   </div>
 </div>
-<!-- / Member card-->

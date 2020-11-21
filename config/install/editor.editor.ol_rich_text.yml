@@ -33,10 +33,6 @@ settings:
           name: Media
           items:
             - Blockquote
-        -
-          name: Tools
-          items:
-            - Source
   plugins:
     stylescombo:
       styles: ''

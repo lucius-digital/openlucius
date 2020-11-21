@@ -26,14 +26,14 @@
 <!DOCTYPE html>
 <html{{ html_attributes }}>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <head-placeholder token="{{ placeholder_token|raw }}">
     <title>{{ head_title|safe_join(' | ') }}</title>
     <css-placeholder token="{{ placeholder_token|raw }}">
     <js-placeholder token="{{ placeholder_token|raw }}">
 
   </head>
-  <body{{ attributes }}>
+  <body{{ attributes.addClass('bg-light') }}>
 
     {{ page_top }}
     {{ page }}

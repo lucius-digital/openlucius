@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - ol_main
+  theme:
+    - ol_base
+id: mainnavigationblock
+theme: ol_base
+region: main_nav
+weight: 0
+provider: null
+plugin: main_navigation_block
+settings:
+  id: main_navigation_block
+  label: 'Main navigation block'
+  provider: ol_main
+  label_display: '0'
+visibility: {  }

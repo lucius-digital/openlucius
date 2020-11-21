@@ -62,3 +62,15 @@
 #files-navigation-form .form-item-name .form-text{
   margin-top:0;
 }
+.folders .active a,
+.folders .active .btn-link{
+  color:#fff;
+}
+table.dataTable thead th,
+table.dataTable thead td,
+table.dataTable.no-footer {
+  border-bottom: 1px solid #9a9a9a !important;
+}
+.form-managed-file .option {
+  font-size: 0.8rem;
+}

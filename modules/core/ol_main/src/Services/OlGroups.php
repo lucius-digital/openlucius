@@ -82,6 +82,8 @@ class OlGroups{
       'icon_class' => t('lni lni-rocket'),
       'weight' => 100,
     );
+    // Let other modules alter group types.
+    \Drupal::moduleHandler()->invokeAll('alter_group_types', [&$group_types]);
     return $group_types;
   }
 
@@ -91,10 +93,12 @@ class OlGroups{
    * @param int $uid
    * @param bool $message_redirect
    *
+   * @param $enabled_sections
+   *
    * @return int|string|null
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function addGroup($name, $type, $uid = null, $message_redirect = true){
+  public function addGroup($name, $type, $uid = null, $message_redirect = true, $enabled_sections = null){
     // Get uid if argument is empty.
     $uid = (empty($uid)) ? $this->current_user->id(): $uid;
     // Create Group.
@@ -102,7 +106,7 @@ class OlGroups{
       'name' => Html::escape($name),
       'type' => $type,
       'landing' => 'stream',
-      'enabled_sections' => 'stream,members,files,messages', // Todo: jsonize.
+      'enabled_sections' => $enabled_sections, // Todo: jsonize.
       'user_id' => $uid,
     ]);
     $ol_group->save();
@@ -120,7 +124,6 @@ class OlGroups{
         ]);
         $ol_group->save();
       }
-      $this->messenger->addStatus(t('All members were added to this company wide group.'));
     }
     // Only add current user to this group, since it's not company wide.
     else {
@@ -134,8 +137,8 @@ class OlGroups{
     }
     if($message_redirect === true) {
       // Redirect with message.
-      $this->messenger->addStatus(t('Your group was created successfully!'));
-      $this->messenger->addStatus(t('You can now configure it in the form below:'));
+      $this->messenger->addStatus(t('Created successfully!'));
+      $this->messenger->addStatus(t('You can now configure it in the form below.'));
       $path = Url::fromRoute('ol_main.group_settings', ['gid' => $new_group_id])
         ->toString();
       $response = new RedirectResponse($path);
@@ -150,7 +153,7 @@ class OlGroups{
    *
    * @return mixed
    */
-  public function getGroups($status, $type = null){
+  public function getGroups($status){
     // Get groups data.
     $uid = $this->current_user->id();
     $query = \Drupal::database()->select('ol_group', 'gr');
@@ -162,10 +165,6 @@ class OlGroups{
     $query->addField('gr', 'created');
     $query->condition('gr.status', $status);
     $query->condition('lgu.member_uid', $uid);
-    if ($type) {
-    $query->condition('gr.type', $type);
-    }
-    $query->orderBy('gr.type', 'desc');
     $query->orderBy('gr.name', 'asc');
     $query->join('ol_group_user', 'lgu', 'lgu.group_id = gr.id');
     return $query->execute()->fetchAll();
@@ -369,7 +368,7 @@ class OlGroups{
   /**
    * @return void
    */
-  public function redirectToTopGroup(){
+  public function _DISABLED_redirectToTopGroup(){
     // Get current uid.
     $uid = $this->current_user->id();
     // Query if current user is group admin.
@@ -378,7 +377,8 @@ class OlGroups{
     $query->addField('gr', 'landing');
     //$query->condition('gr.type', 99); // 99 = 'on top'.
     $query->condition('lgu.member_uid', $uid);
-    $query->condition('gr.type', 'company');
+    $query->condition('gr.status',1 );
+    //$query->condition('gr.type', 'company');
     //$query->orderBy('gr.id', 'desc');
     $query->orderBy('gr.name', 'asc');
     $query->join('ol_group_user', 'lgu', 'lgu.group_id = gr.id');

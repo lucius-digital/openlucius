@@ -6,48 +6,24 @@
  */
 
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_theme().
  */
 function ol_main_theme() {
   return [
-    'sidebar_header_block' => [
+    'main_nav_block' => [
       'variables' => [
         'vars' => NULL,
       ],
-      'template' => 'sidebar-header-block',
+      'template' => 'main-nav-block',
     ],
-    'sidebar_user_block' => [
+    'main_title_block' => [
       'variables' => [
         'vars' => NULL,
       ],
-      'template' => 'sidebar-user-block',
-    ],
-    'sidebar_global_block' => [
-      'variables' => [
-        'vars' => NULL,
-      ],
-      'template' => 'sidebar-global-block',
-    ],
-    'sidebar_groups_block' => [
-      'variables' => [
-        'vars' => NULL,
-      ],
-      'template' => 'sidebar-groups-block',
-    ],
-    'sidebar_groups_block_wrapper' => [
-      'variables' => [
-        'vars' => NULL,
-      ],
-      'template' => 'sidebar-groups-block-wrapper',
-    ],
-    'main_header_block' => [
-      'variables' => [
-        'vars' => NULL,
-      ],
-      'template' => 'main-header-block',
+      'template' => 'main-title-block',
     ],
     'main_sections_block' => [
       'variables' => [
@@ -55,11 +31,11 @@ function ol_main_theme() {
       ],
       'template' => 'main-sections-block',
     ],
-    'sidebar_pm_block' => [
+    'sidebar_header_block' => [
       'variables' => [
         'vars' => NULL,
       ],
-      'template' => 'sidebar-pm-block',
+      'template' => 'sidebar-header-block',
     ],
     'group_config_page' => [
       'variables' => [
@@ -114,24 +90,33 @@ function ol_main_theme() {
 function ol_main_mail($key, &$message, $params) {
 
   $site_name = \Drupal::config('system.site')->get('name');
-  $site_mail = \Drupal::config('system.site')->get('mail');
-
   // Options, needed for mulitlangual mails.
-/*  $options = array(
-    'langcode' => $message['langcode'],
-  ); */
+  /*  $options = array(
+      'langcode' => $message['langcode'],
+    ); */
+  // If sender_email not provided, get default.
+
+
   switch ($key) {
     case 'ol_main_mail':
       $message['headers']['Reply-To'] = \Drupal::config('system.site')->get('mail');
-      //$message['from'] = '[' .$site_name .'] ' .$params['sender_name'] .' <' . $site_mail . '>';
+      $message['headers']['Content-Type'] = 'text/html';
+      $message['headers']['From'] = $params['sender_name'] .'<' . $params['sender_mail'] . '>';
       $message['subject'] = $params['subject'];
       $message['body'][] = $params['body'];
-      $message['body'][] = $params['url'];
+      $message['cta_url'] = $params['cta_url'];
+      $message['cta_text'] = $params['cta_text'];
+      $message['lower_body'] = $params['lower_body'];
+      $message['bold_text'] = $params['bold_text'];
+      $message['sender_name'] = $params['sender_name'];
+      $message['name_recipient'] = $params['name_recipient'];
+      $message['base_url'] = $params['base_url'];
       break;
   }
 }
 
 /**
+ * Implements hook_file_download
  * @param $uri
  *
  * @return array
@@ -156,6 +141,7 @@ function ol_main_file_download($uri) {
   $query->condition('file_man.uri', $uri);
   $access = $query->execute()->fetchField();
 
+
   // Check if this maybe is a user picture.
   // Provide access to user picture if current user is somewhere in a group with requested user picture.
   // This way we are also prepared for 'external' role.
@@ -164,8 +150,11 @@ function ol_main_file_download($uri) {
     $query = \Drupal::database()->select('file_managed', 'file');
     $query->addField('ogu', 'group_id');
     $query->join('ol_group_user', 'ogu', 'ogu.member_uid = file.uid');
+    // This join, so we only query user pictures.
+    $query->join('user__field_user_picture', 'fup', 'fup.field_user_picture_target_id = file.fid');
     $query->condition('file.uri', $uri);
     $group_ids = $query->execute()->fetchCol();
+
     // Get all groups current user is in.
     $group_ids_current_user = getUserGroups($user_id);
     // Grant access if they have a common group.

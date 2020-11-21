@@ -5,7 +5,6 @@ namespace Drupal\ol_posts\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\Xss;
 use Drupal\ol_main\Services\OlFiles;
 use Drupal\ol_members\Services\OlMembers;
 use Drupal\ol_posts\Services\OlCultureQuestions;
@@ -63,15 +62,20 @@ class PostForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $op = null, $id = null) {
+  public function buildForm(array $form, FormStateInterface $form_state, $op = null, $id = null, $post_settings = null) {
 
     // Defaults.
     $body = '';
     $button_text = t('Submit');
     $hdd_file_location = $this->files->buildFileLocaton('post');
-    $mail_send_default = array('0');
+    //$mail_send_default = array('0');
     $num_users = $this->members->countMembers(null, true);
-    $send_mail_title = array( '1' => t('Notify members') .' ('.$num_users .')',);
+    //$send_mail_title = array( '1' => t('Notify members') .' ('.$num_users .')',);
+    $question = t('What\'s happening?');
+
+    if(!empty($post_settings->question)){
+      $question = $post_settings->question;
+    }
 
     // Handle edit vars.
     if ($op == 'edit'){
@@ -90,15 +94,16 @@ class PostForm extends FormBase {
     $form['body'] = [
       '#prefix' => '<div class="modal-body"><div class="form-group post-body">',
       '#type' => 'textarea',
+//      '#format' => 'ol_rich_text',
       '#weight' => '20',
-      '#attributes' => array('placeholder' => t('What\'s happening?'), 'class' => array('form-control')),
+      '#attributes' => array('placeholder' => $question, 'class' => array('form-control')),
       '#default_value' => $body,
       '#required' => true,
       '#suffix' => '</div>'
     ];
     $form['markup'] = [
       '#type' => 'markup',
-      '#markup' => '<div class="row"><div class="col-12 col-md-6"><div class="form-group file-upload-wrapper">',
+      '#markup' => '<div class="row"><div class="col-12 col-md-12"><div class="form-group file-upload-wrapper">',
       '#allowed_tags' => ['div'],
       '#weight' => '25',
     ];
@@ -110,7 +115,7 @@ class PostForm extends FormBase {
       '#upload_location' => 'private://'.$hdd_file_location,
       '#multiple' => TRUE,
       '#upload_validators' => array(
-        'file_validate_extensions' => $this->files->getAllowedFileExtentions(),
+        'file_validate_extensions' => $this->files->getAllowedImageExtentions(),
       ),
       '#weight' => '30',
     );
@@ -120,7 +125,7 @@ class PostForm extends FormBase {
       '#allowed_tags' => ['div'],
       '#weight' => '35',
     ];
-    $form['send_mail'] = array(
+/*    $form['send_mail'] = array(
       '#prefix' => '<div class="col-12 col-md-6"><div class="form-group send_mail_checkbox">',
       '#title' => t('Email notifications'),
       '#type' => 'checkboxes',
@@ -128,9 +133,9 @@ class PostForm extends FormBase {
       '#default_value' => $mail_send_default,
       '#weight' => '40',
       '#suffix' => '</div></div></div>'
-    );
+    );*/
     $form['submit'] = [
-      '#prefix' => '</div><div class="modal-footer">',
+      '#prefix' => '</div></div><div class="modal-footer">',
       '#type' => 'submit',
       '#weight' => '100',
       '#attributes' => array('class' => array('btn btn-success')),
@@ -159,6 +164,8 @@ class PostForm extends FormBase {
     // Get data.
     $id = Html::escape($form_state->getValue('post_id'));
     $body = Html::escape($form_state->getValue('body'));
+//    $body = $form_state->getValue('body')['value'];
+//    $body = check_markup($body,'ol_rich_text');
     $name = $name_shortened = shortenString($body);
     $send_mail = $form_state->getValue('send_mail')[1];
     $files = $form_state->getValue('files');

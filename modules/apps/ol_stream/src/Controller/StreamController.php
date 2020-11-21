@@ -3,8 +3,8 @@
 namespace Drupal\ol_stream\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Form\FormBuilder;
-use Drupal\ol_members\Services\OlMembers;
+use Drupal\Core\Pager\PagerManager;
+use Drupal\Core\Pager\PagerParameters;
 use Drupal\ol_stream\Services\OlStream;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\ol_main\Services\OlGroups;
@@ -13,16 +13,6 @@ use Drupal\ol_main\Services\OlGroups;
  * Class StreamController.
  */
 class StreamController extends ControllerBase {
-
-  /**
-   * @var $members
-   */
-  protected $members;
-
-  /**
-   * @var $form_builder
-   */
-  protected $form_builder;
 
   /**
    * @var $groups
@@ -35,60 +25,89 @@ class StreamController extends ControllerBase {
   protected $stream;
 
   /**
+   * @var $pager
+   */
+  protected $pager;
+
+  /**
+   * @var $pager_params
+   */
+  protected $pager_params;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(OlMembers $members, FormBuilder $form_builder, OlGroups $groups, OlStream $stream) {
-    $this->members = $members;
-    $this->form_builder = $form_builder;
+  public function __construct(OlGroups $groups, OlStream $stream, PagerManager $pager, PagerParameters $pager_params) {
     $this->groups = $groups;
     $this->stream = $stream;
+    $this->pager = $pager;
+    $this->pager_params = $pager_params;
   }
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('olmembers.members'),
-      $container->get('form_builder'),
       $container->get('olmain.groups'),
-      $container->get('olstream.stream')
+      $container->get('olstream.stream'),
+      $container->get('pager.manager'),
+      $container->get('pager.parameters')
     );
   }
 
-  public function getStream($gid){
-    // Group uuid is used in Javascript, for socket.io room id and ajax calls.
-    // This is for security hardening.
-    $group_uuid = $this->groups->getGroupUuidById($gid);
-    $username = $this->members->getUserName();
-    $user_picture = $this->members->getUserPictureUrl();
-    $node_server = \Drupal::config('ol_main.admin_settings')->get('nodejs_server_url');
-    // Get forms.
-    $stream_form = $this->form_builder->getForm(\Drupal\ol_stream\Form\StreamItemForm::class, $node_server);
-    $load_more = $this->form_builder->getForm(\Drupal\ol_stream\Form\LoadPreviousStreamItemsForm::class);
-    // This is needed to determine refreshing (via javascript).
-    $last_message_timestamp = $this->stream->getLastMessageTimestamp($group_uuid);
-    // Build it.
+  /**
+   * @param null $gid
+   *
+   * @return array
+   */
+  public function getStream($gid = null){
+
+    // TODO: Date from-to filters instead of pager?
+    // Pager caps activity in days, if 'rest items' of that day don't fall in their queries range.
+    // Test this in live situation.
+
+    // TODO: cache on per-user base.
+
+    // Pager init.
+    $page = $this->pager_params->findPage();
+    $num_per_page = 50;
+    $offset = $num_per_page * $page;
+
+    // If $gid is provided, the request came from 'Stream section' in a group.
+    if(is_numeric($gid)){
+      $group_ids = array($gid);
+    } else {
+      $group_ids = $this->stream->getUserGroups(null, true);
+    }
+
+    // Get -and render data.
+    $stream_data = $this->stream->getUserStreamList(null, $num_per_page, $offset, null);
+    $stream_html = $this->stream->renderStreamListMulti($stream_data, $group_ids);
+
+    // Pager, now that we have the total number of results.
+    $total_result = $this->stream->getUserStreamList(null, null, null, true);
+    $pager = $this->pager->createPager($total_result, $num_per_page);
+    $pager->getCurrentPage();
+
+    // Groups right.
+    $groups_data = $this->groups->getGroups(1);
+    $groups = $this->groups->addActivityBadge($groups_data);
+
+    // Build.
     $theme_vars = [
-      'stream_form' => $stream_form,
-      'load_more' => $load_more,
-      'last_message_timestamp' => $last_message_timestamp,
-      'node_server' => $node_server,
+      'stream_html' => $stream_html,
+      'groups' => $groups,
+      'groups_block_heading' => t('Your Groups'),
+      'group_id' => $gid,
     ];
-    return [
-      '#theme' => 'stream_wrapper',
-      '#attached' => [
-        'library' => [
-          'ol_stream/node_server', // Build dynamically in ol_stream_library_info_build().
-          'ol_stream/stream',
-        ],
-        'drupalSettings' => [
-          'group_uuid' => $group_uuid,
-          'node_server' => $node_server,
-          'username' => $username,
-          'user_picture' => $user_picture
-        ],
-      ],
-        '#vars' => $theme_vars,
+    // Build render array.
+    $render = [];
+    $render[] = [
+      '#theme' => 'stream_uber_wrapper',
+      '#vars' => $theme_vars,
     ];
+    // Add pager and return.
+    $render[] = ['#type' => 'pager'];
+    return $render;
   }
 }

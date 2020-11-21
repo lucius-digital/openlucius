@@ -93,7 +93,11 @@ class PostsController extends ControllerBase {
     $offset = $num_per_page * $page;
 
     // Get posts data.
-    $post_form = \Drupal::formBuilder()->getForm(\Drupal\ol_posts\Form\PostForm::class);
+    $is_group_admin = $this->members->isGroupAdmin();
+    $post_settings = $this->posts->getPostSettings();
+    $post_form = \Drupal::formBuilder()->getForm(\Drupal\ol_posts\Form\PostForm::class, null, null, $post_settings);
+    $post_config_form = \Drupal::formBuilder()->getForm(\Drupal\ol_posts\Form\PostConfigForm::class, $post_settings);
+
     $post_list_data = $this->posts->getPostsList(null, $num_per_page, $offset, null);
     $posts = $this->posts->renderPostsList($post_list_data);
     $page_title = $this->sections->getSectionOverrideTitle('posts', 'Posts');
@@ -106,8 +110,11 @@ class PostsController extends ControllerBase {
     // Build theme vars.
     $theme_vars = [
       'post_form' => $post_form,
+      'post_config_form' => $post_config_form,
+      'post_settings' => $post_settings,
       'posts' => $posts,
       'page_title' => $page_title,
+      'is_group_admin' => $is_group_admin,
     ];
     // Build render array.
     $render = [];

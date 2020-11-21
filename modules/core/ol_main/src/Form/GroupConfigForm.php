@@ -75,7 +75,7 @@ class GroupConfigForm extends FormBase {
     $section_overrides_json = $this->sections->getSectionOverridesData($gid);
     $section_overrides = json_decode($section_overrides_json, true);
     // Build usable array from $sections.
-    $options = $this->buildOptionsFromSections($sections);
+    $options = $this->sections->buildOptionsFromSections($sections);
     // Get enabled sections, for default_value.
     $enabled_sections = $this->sections->getEnabledSections($gid);
     // Build file location
@@ -87,7 +87,7 @@ class GroupConfigForm extends FormBase {
     // $on_top_title = array( '1' => t('Show on top in group list (in left sidebar)'));
     // $on_top_default = array($this->groups->isOnTop());
     // Handle 'archived'.
-    $archived_title = array( '1' => t('Archive this group'));
+    $archived_title = array( '1' => '');
     $is_archived = $this->groups->isArchived();
     $is_archived = ($is_archived == 1) ? 0 : 1; // Switch, because checked = 1 means archived, but status 0 is archived in dbase.
     $archived_default = array($is_archived);
@@ -96,16 +96,16 @@ class GroupConfigForm extends FormBase {
     $form['name'] = [
       '#prefix' => '<div class="modal-body"><div class="form-group row"><div class="col-sm-8">',
       '#type' => 'textfield',
-      '#title' => t('Group Name'),
+      '#title' => t('Name'),
       '#default_value' => $name ,
       '#required' => true,
       '#attributes' => array('placeholder' => t('Add a group name...'), 'class' => array('form-control')),
       '#weight' => '10',
       '#suffix' => '</div></div>'
     ];
-    $form['file'] = array(
+/*    $form['file'] = array(
       '#prefix' => '<div class="form-group">',
-      '#title' => t('Group header image'),
+      '#title' => t('Header image'),
       '#type' => 'managed_file',
       '#required' => FALSE,
       '#default_value' => $default_fid,
@@ -116,7 +116,7 @@ class GroupConfigForm extends FormBase {
       ),
       '#weight' => '15',
       '#suffix' => '</div>'
-    );
+    );*/
     $form['sections'] = [
       '#prefix' => '<div class="form-group">',
       '#type' => 'checkboxes',
@@ -125,6 +125,11 @@ class GroupConfigForm extends FormBase {
       '#options' => $options,
       '#required' => true,
       '#weight' => '20',
+      '#attributes' => array(
+        'data-toggle' => 'toggle',
+        'data-onstyle' => 'success',
+        'data-size' => 'xs',
+      ),
       '#suffix' => '</div>'
     ];
     $form['homepage'] = [
@@ -182,11 +187,19 @@ class GroupConfigForm extends FormBase {
     }
     $form['status'] = array(
       '#prefix' => '<div class="form-group">',
-      '#title' => t('Archive'),
+      '#title' => t('Published / Archived'),
       '#type' => 'checkboxes',
       '#options' => $archived_title,
       '#default_value' => $archived_default,
       '#weight' => '60',
+      '#attributes' => array(
+        'data-toggle' => 'toggle',
+        'data-onstyle' => 'warning',
+        'data-offstyle' => 'success',
+        'data-size' => 's',
+        'data-off' => t('Published'),
+        'data-on' => t('Archived'),
+      ),
       '#suffix' => '</div>'
     );
     $form['submit'] = [
@@ -194,7 +207,7 @@ class GroupConfigForm extends FormBase {
       '#type' => 'submit',
       '#weight' => '100',
       '#attributes' => array('class' => array('btn btn-success')),
-      '#value' => $this->t('Save Group Settings'),
+      '#value' => $this->t('Save Settings'),
       '#suffix' => '</div>'
     ];
     return $form;
@@ -211,14 +224,14 @@ class GroupConfigForm extends FormBase {
     if (strlen($name) < 2) {
       $form_state->setErrorByName('name', $this->t('Name not changed: it must be at least 2 characters long.'));
     }
-    if (strlen($name) > 20) {
-      $form_state->setErrorByName('name', $this->t('Group not added: name can not be more then 20 characters long.'));
+    if (strlen($name) > 50) {
+      $form_state->setErrorByName('name', $this->t('Group not saved: name can not be more then 50 characters long.'));
     }
     // Make sure homepage can't be set to disabled section.
     $sections = $form_state->getValue('sections');
     $homepage = $form_state->getValue('homepage');
     if(empty($sections[$homepage])){
-      $form_state->setErrorByName('homepage', $this->t('The homepage has to be an enabled section.'));
+      //$form_state->setErrorByName('homepage', $this->t('The homepage has to be an enabled section.'));
     }
   }
 
@@ -229,7 +242,7 @@ class GroupConfigForm extends FormBase {
 
     // We need this to save section name overrides, even if they are disabled by user.
     $all_sections = $this->sections->getSectionsData();
-    $options = $this->buildOptionsFromSections($all_sections);
+    $options = $this->sections->buildOptionsFromSections($all_sections);
     // Save group settings.
     $this->groups->saveGroupSettings($form_state, $options);
 
@@ -250,26 +263,13 @@ class GroupConfigForm extends FormBase {
   /**
    * Remove existing file.
    */
-  private function removeExistingHeaderFile(){
+  private function removeExistingHeaderFile() {
     $current_header_fid = $this->groups->getHeaderImage();
-    if($current_header_fid){
+    if ($current_header_fid) {
       $this->files->removeOlFileAndFile($current_header_fid, FALSE);
     }
   }
 
-  /**
-   * @param $sections
-   * @return array
-   */
-  private function buildOptionsFromSections($sections){
-    $options = array();
-    foreach ($sections as $section){
-      $label = (string) $section['label']; // Casting to string is needed here.
-      $key = (string) $section['path'];
-      $options[$key] = $label;
-    }
-    return $options;
-  }
 
 }
 

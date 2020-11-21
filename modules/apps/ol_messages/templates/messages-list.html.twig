@@ -1,42 +1,46 @@
-<!-- Filters -->
-<div class="row title">
-  <div class="col title">
-    <h2>{{ vars.page_title }}</h2>
-  </div>
-  <div class="col text-right">
-    <div class="form-group">
-      <button class="btn btn-success" data-toggle="modal" data-target="#addMessageModal">
+<div class="col-md-11 col-xl-10 pl-md-5 bd-content mb-5 offset-lg-1">
+  <!-- Title and action buttons-->
+  <div class="row py-2 pl-3">
+    <div class="col">
+      <h1 class="h4">{{ vars.page_title }}</h1>
+    </div>
+    <div class="col text-right">
+      <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addMessageModal">
         <i class="lni lni-plus"></i> {{ 'Add'|t }}
       </button>
     </div>
   </div>
-</div>
+
+  <!-- Message cards -->
   {% if vars.messages is not empty %}
     <div class="messages-list-wrapper">
-    {{ vars.messages|raw }}
+      {{ vars.messages|raw }}
     </div>
-  {% else %}
-<div class="card ol-card">
-  <div class="card-header">
-    <p class="text-muted">
-      <i class="fa fa-info-circle"></i> <i> {{ 'Be the first to add a message.'|t }}</i><br />
-    </p>
-  </div>
-</div>
-{% endif %}
 
-<!-- Modal add message -->
-<div class="modal fade bd-example-modal-lg" id="addMessageModal" role="dialog" aria-labelledby="addMessageModal" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ vars.page_title }} | {{ 'Add new'|t }}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+  <!-- Empty message -->
+  {% else %}
+    <div class="card ol-card">
+      <div class="card-header">
+        <p class="text-muted">
+          <i class="lni lni-bulb"></i> <i> {{ 'Be the first to add a message.'|t }}</i><br />
+        </p>
       </div>
-      {{ vars.message_form }}
+    </div>
+  {% endif %}
+
+  <!-- Modal add message -->
+  <div class="modal fade bd-example-modal-lg" id="addMessageModal" role="dialog" aria-labelledby="addMessageModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ vars.page_title }} | {{ 'Add new'|t }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {{ vars.message_form }}
+      </div>
     </div>
   </div>
+  <!-- / Modal add message  -->
 </div>
-<!-- / Modal add message  -->

@@ -1,0 +1,5 @@
+name: 'OL Icebreaker Settings'
+type: module
+description: 'OL Icebreaker Settings'
+core_version_requirement: ^9
+package: 'OL App'

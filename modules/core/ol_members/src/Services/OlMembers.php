@@ -114,6 +114,7 @@ class OlMembers{
     $query = $this->database->select('ol_group_user', 'gu');
     $query->addField('gu', 'member_uid', 'uid');
     $query->addField('ufd', 'mail');
+    $query->addField('ufd', 'name');
     $query->condition('gu.group_id', $gid);
     $query->condition('gu.status', 1);
     $query->condition('ufd.status', 1);

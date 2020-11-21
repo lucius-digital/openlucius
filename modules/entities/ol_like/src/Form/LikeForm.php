@@ -91,10 +91,20 @@ class LikeForm extends FormBase {
       '#required' => true,
       '#default_value' => $entity_id,
     ];
+      $form['users_that_liked'] = [
+        '#type' => 'markup',
+        '#markup' => '<p class="card-text small">
+                        <i class="lni lni-heart"></i>
+                        <span id="like_count_'.$entity.$entity_id .'" class="badge badge-pill badge-light text-muted like_count">' .$like_count .'</span>
+                          <span class="text-muted small">'
+                           .$users_that_liked .
+                          '</span>
+                       </p>',
+      ];
     $form['actions'] = [
-      '#prefix' => '<span class="'.$entity.$entity_id .' '.$liked_class.'"><i class="fa fa-heart"></i> ',
+      '#prefix' => '<span class="'.$entity.$entity_id .' '.$liked_class.'"> ',
       '#type' => 'button',
-      '#attributes' => array('class' => array('btn btn-blue btn-sm like-button '.$entity.$entity_id)),
+      '#attributes' => array('class' => array('btn btn-light px-5 btn-sm '.$entity.$entity_id)),
       '#value' => $button_text,
       '#ajax' => [
         'callback' => '::submitLikeAjax',
@@ -103,16 +113,9 @@ class LikeForm extends FormBase {
           'type' => 'none',
           ]
       ],
-      '#suffix' => '</span> · <span id="like_count_'.$entity.$entity_id .'" class="'.$entity.$entity_id.' like_count '.$liked_class .'">' .$like_count .'</span>'
+      '#suffix' => '</span>'
     ];
 
-    if(!empty($users_that_liked)) {
-      $form['users_that_liked'] = [
-        '#type' => 'markup',
-        '#weight' => '50',
-        '#markup' => '<span class="users_that_liked">' . t('Liked by: ') .$users_that_liked . '</span>',
-      ];
-    }
     $form['#attached']['library'][] = 'ol_like/like';
     return $form;
   }
@@ -161,7 +164,7 @@ class LikeForm extends FormBase {
       $ol_like->save();
       // Add ajax commands
       $response->addCommand(new HtmlCommand('.you_liked_'.$entity.$entity_id, 'You, '));
-      $css = ['color' => '#ed4956'];
+      $css = ['color' => '#007bff'];
       $response->addCommand(new CssCommand('.' .$entity .$entity_id, $css));
       $css_you_liked = ['display' => 'initial'];
       $response->addCommand(new CssCommand('.you_liked_' .$entity .$entity_id, $css_you_liked));

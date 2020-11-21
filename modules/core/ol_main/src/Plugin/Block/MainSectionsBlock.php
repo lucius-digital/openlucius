@@ -86,13 +86,12 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
 
     // Get all group sections.
     $gid = $this->route->getParameter('gid');
+    if(!$gid) {
+      return null;
+    }
     $sections = $this->sections->getSectionsData();
-    $is_group_admin = $this->members->isGroupAdmin();
-    $group_name = $this->groups->getGroupName();
-    $is_archived = $this->groups->isArchived();
     // Yeah.., this is not a good way to build url's, needs work.
     $themeable_sections = $this->makeSectionsThemeable($sections, $gid);
-    $host = \Drupal::request()->getHost();
 
     // Nasty active styling for now.
     $path = \Drupal::request()->getpathInfo();
@@ -104,10 +103,6 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
       'sections' => $themeable_sections,
       'active_section' => $active_section,
       'gid' => $gid,
-      'is_group_admin' => $is_group_admin,
-      'host' => $host,
-      'group_name' => $group_name,
-      'is_archived' => $is_archived,
     ];
     $build = [
       '#theme' => 'main_sections_block',
@@ -115,6 +110,14 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
       '#vars' => $theme_vars,
     ];
     return $build;
+  }
+
+  /**
+   * TODO: Work on caching.
+   * {@inheritdoc}
+   */
+  public function getCacheMaxAge() {
+    return 0;
   }
 
   /**
@@ -145,8 +148,61 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
       // Build path and label, including handling optional section name overrides.
       $override_value = (!empty($section_overrides[$key])) ? $section_overrides[$key] : $final_section;
       $themeable_sections[$final_section]['path'] = $key;
+      $themeable_sections[$final_section]['badge_count'] = $this->getSectionCount($key);
       $themeable_sections[$final_section]['label'] = $override_value;
     }
     return $themeable_sections;
   }
+
+  /**
+   * Query counts for section badges.
+   * todo: build dynamic via hook per module
+   * @param $key
+   *
+   * @return |null
+   */
+  private function getSectionCount($key){
+    // Switch to query the right table.
+    // This should be done in a more constructive way.
+    switch ($key) {
+      case 'stream':
+        return null;
+      case 'messages':
+        $table = 'ol_message';
+        break;
+      case 'posts':
+        $table = 'ol_post';
+        break;
+      case 'icebreakers':
+        $table = 'ol_icebreaker';
+        break;
+      case 'files':
+        $table = 'ol_file';
+        break;
+      case 'members':
+        $table = 'ol_group_user';
+        break;
+      case 'culture_questions':
+        $table = 'ol_culture_question';
+        break;
+      case 'social_questions':
+        $table = 'ol_social_question';
+        break;
+      case 'shoutouts':
+        $table = 'ol_shout_out';
+        break;
+    }
+    // Fallback.
+    if(empty($table)){
+      return null;
+    }
+    // Count query.
+    $gid = $this->route->getParameter('gid');
+    $query = \Drupal::database()->select($table, 'oltable');
+    $query->addField('oltable', 'id');
+    $query->condition('oltable.group_id', $gid);
+    $query->condition('oltable.status', 1);
+    return $query->countQuery()->execute()->fetchField();
+  }
+
 }

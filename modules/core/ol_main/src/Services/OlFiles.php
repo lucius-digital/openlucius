@@ -198,9 +198,11 @@ class OlFiles{
       $query->condition('lfr.folder_id', $folder_id);
     }
     $query->orderBy('lfr.created', 'desc');
-    if ($get_total == false) {
-      $query->range($offset, $num_per_page);
-    }
+    // if ($get_total == false) {
+     // No pager for now: we use DataTable with all files,
+     // Until this becomes too heavy,
+      // $query->range($offset, $num_per_page);
+    //}
     // Data for list.
     if ($get_total == false) {
       $files_data = $query->execute()->fetchAll();
@@ -219,8 +221,7 @@ class OlFiles{
   function renderFileListPage($file_list_data){
     // Get data.
     $files_html = '';
-    $file_row_data = array();
-    $file_row_data['owner'] = false;
+    $owner_show_modals = false;
     //$id_folder =  Html::escape(\Drupal::request()->query->get('folder'));
     //$path = \Drupal::request()->getpathInfo();
     // We can't have this as dependency, else install profile will bitch during install.
@@ -235,6 +236,10 @@ class OlFiles{
       // Switch on being a 'File' or 'Text doc'.
       if(!empty($file_data->file_id)){
         $file_row_data = $this->buildFileDetails($file_data->id);
+        // If current user is owner in 1 of the records: show modals.
+        if ($file_row_data['owner'] == 1){
+          $owner_show_modals = true;
+        }
       } else {
         $file_row_data = $this->buildTextDocDetails($file_data->id);
       }
@@ -248,7 +253,9 @@ class OlFiles{
     $file_remove_modal_html = '';
     $file_in_folder_html = '';
     $remove_folder_html = '';
-    if ($file_row_data['owner']){
+
+    // If current user is owner in 1 of the records: show modals.
+    if ($owner_show_modals){
       // Remove file modal
       $vars['remove_file_modal'] = \Drupal::formBuilder()->getForm(\Drupal\ol_main\Form\DeleteFileForm::class);
       $modal_render = ['#theme' => 'file_modal_remove','#vars' => $vars];
@@ -331,13 +338,17 @@ class OlFiles{
     // Get file data details.
     $file = $this->getfileData($id);
     // Build row.
+    $file_row_data['id'] = $id;
     $file_row_data['group_id'] = $file->group_id;
-    $file_row_data['filename'] = shortenString($file->name, 45);
+    $file_row_data['filename'] = shortenString($file->name, 25);
     $file_row_data['uri'] = $file->uri;
     $file_row_data['folder_id'] = $file->folder_id;
     $file_row_data['ol_fid'] = $file->ol_fid;
     $file_row_data['created'] = $file->created;
-    $file_row_data['user_name'] = $this->members->getUserName($file->user_id);
+    $file_row_data['user_name'] = shortenString($this->members->getUserName($file->user_id),12);
+/*    print $file->user_id;
+    print ' | ';
+    print $this->members->getUserId();*/
     $file_row_data['owner'] = $file->user_id == $this->members->getUserId();
     $file_row_data['url'] = Url::fromUri(file_create_url($file->uri));
     $file_row_data['file_size'] = $this->formatBytes($file->filesize,1);
@@ -399,10 +410,13 @@ class OlFiles{
     // Loop through files and build html.
     $files_html = '';
     $file_row_data['owner'] = false;
+
     foreach ($files as $file) {
       // Build vars.
+      $file_row_data['thumbnail_url'] = '';
       $file_row_data['owner'] = $file->uid == $this->members->getUserId();
       $file_row_data['big_image'] = $image_preset == 'large';
+      $file_row_data['post_image'] = $image_preset == 'post_image';
       $file_row_data['filename'] = $file->filename;
       $file_row_data['uri'] = $file->uri;
       $file_row_data['ol_fid'] = $file->ol_fid;

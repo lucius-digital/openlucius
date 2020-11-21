@@ -60,18 +60,8 @@ p.comment {
   font-size: 0.85rem;
   line-height: 1.3em;
 }
-.comment-link-wrapper{
-  margin-top: 2px;
-}
 .card-footer.comment{
   padding: 0.5rem 1rem;
-}
-.comment-wrapper .card{
-  margin-bottom: 10px;
-}
-.comment-link-wrapper {
-  color: #848181;
-  font-size: 0.8rem;
 }
 .add-comment.card {
   padding: 20px;
@@ -103,15 +93,6 @@ p.comment {
 .post-comment-form .form-text {
   margin-top: 0;
   font-size: 0.8rem;
-}
-.comment-link-wrapper{
-  margin-left: 10px;
-}
-.post-comment-form-wrapper{
-  margin: 5px 5px 0 10px;
-}
-.comment-container{
-  margin:10px 0 0 10px;
 }
 .card.ol-card.ol-post{
   margin-bottom: 30px;

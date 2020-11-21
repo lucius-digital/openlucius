@@ -2,7 +2,7 @@ ol_members.all_members:
   path: '/members'
   defaults:
     _controller: '\Drupal\ol_members\Controller\MembersController::getMembersAll'
-    _title: 'Members'
+    _title: 'People'
   requirements:
     _permission: 'access ol content'
   options:
@@ -11,7 +11,7 @@ ol_members.all_members_blocked:
   path: '/members/blocked'
   defaults:
     _controller: '\Drupal\ol_members\Controller\MembersController::getMembersAllBlocked'
-    _title: 'Blocked members'
+    _title: 'People'
   requirements:
     _permission: 'access ol content'
   options:
@@ -56,7 +56,7 @@ ol_members.group_members:
   path: '/group/{gid}/members'
   defaults:
     _controller: '\Drupal\ol_members\Controller\MembersController::getMembersGroup'
-    _title: 'Members'
+    _title: 'People'
   requirements:
     _group_access_check: 'TRUE'
     gid: '[0-9]+'

@@ -1,0 +1,20 @@
+add ol post settings entities:
+  title: 'Create new Ol post settings entities'
+
+administer ol post settings entities:
+  title: 'Administer Ol post settings entities'
+  description: 'Allow to access the administration form to configure Ol post settings entities.'
+  restrict access: true
+
+delete ol post settings entities:
+  title: 'Delete Ol post settings entities'
+
+edit ol post settings entities:
+  title: 'Edit Ol post settings entities'
+
+view published ol post settings entities:
+  title: 'View published Ol post settings entities'
+
+view unpublished ol post settings entities:
+  title: 'View unpublished Ol post settings entities'
+

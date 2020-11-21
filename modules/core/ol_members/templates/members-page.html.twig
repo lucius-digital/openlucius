@@ -1,36 +1,35 @@
-<!-- Action buttons -->
-<div class="row title">
-  <div class="col title">
-    <h2>
-      {% if vars.page_title %}
-      {{ vars.page_title }}
-      {% elseif vars.blocked_users == 1 %}
-        <i class="lni lni-users"></i>  {{ 'Blocked Users'|t }}
-      {% elseif vars.all_members == 1 %}
-        <i class="lni lni-users"></i> {{ 'Everybody'|t }}
-      {% endif %}
-    </h2>
-  </div>
-  <div class="col text-right">
-    <div class="form-group">
+<div class="col-md-10 col-xl-9 pl-md-5 bd-content mb-5 offset-lg-1">
+  <!-- Title and action buttons-->
+  <div class="row py-2 pl-3">
+    <div class="col">
+      <h1 class="h4">
+        {% if vars.page_title %}
+          {{ vars.page_title }}
+        {% elseif vars.blocked_users == 1 %}
+          <i class="lni lni-users"></i>  {{ 'Blocked users'|t }}
+        {% elseif vars.all_members == 1 %}
+          <i class="lni lni-users"></i> {{ 'Active users'|t }}
+        {% endif %}
+      </h1>
+    </div>
+    <div class="col text-right">
       {% if vars.blocked_users == 1 %}
-        <a class="btn btn-success" href="{{ url('ol_members.all_members') }}">
+        <a class="btn btn-success btn-sm" href="{{ url('ol_members.all_members') }}">
           <i class="lni lni-users"></i> {{ 'Active users'|t }}
         </a>
       {% elseif vars.members_form and vars.can_add_members %}
         {# Add group members button #}
-        <button class="btn btn-success" data-toggle="modal" data-target="#addMembersModal">
-          <i class="lni lni-plus"></i> {{ 'Add Group Members'|t }}
+        <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addMembersModal">
+          <i class="lni lni-plus"></i> {{ 'Add Members'|t }}
         </button>
       {% elseif vars.all_members == 1 %}
-        <a class="btn btn-secondary" href="{{ url('ol_members.all_members_blocked') }}">
+        <a class="btn btn-secondary btn-sm" href="{{ url('ol_members.all_members_blocked') }}">
           <i class="lni lni-users"></i> {{ 'Blocked users'|t }}
         </a>
       {% endif %}
     </div>
   </div>
-</div>
-<!-- / Action buttons -->
+
 
 <!-- Member cards -->
 {% if vars.member_cards is not empty %}
@@ -41,42 +40,24 @@
 <!-- / Member cards -->
 
 {% if vars.members_form and vars.can_add_members %}
-<!-- Modal add member -->
-<div class="modal fade" id="addMembersModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ 'Add Group Members'|t }}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      {% if vars.members_form %}
-        {{ vars.members_form }}
-      {% else %}
-        <div class="modal-body"><i>{{ 'Sorry, you\'re not allowed to add users'|t }}</i></div>
-      {% endif %}
-    </div>
-  </div>
-</div>
-<!-- / Modal -->
-
-{#<!-- Modal remove member -->
-<div class="modal fade" id="removeMembersModal" tabindex="-1" role="dialog" aria-labelledby="removeMembersModal" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">{{ 'Remove Member'|t }}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">{{ 'Yes, remove'|t }}</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'No, don\'t remove'|t }}</button>
+  <!-- Modal add member -->
+  <div class="modal fade" id="addMembersModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ 'Add Members'|t }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% if vars.members_form %}
+          {{ vars.members_form }}
+        {% else %}
+          <div class="modal-body"><i>{{ 'Sorry, you\'re not allowed to add users'|t }}</i></div>
+        {% endif %}
       </div>
     </div>
   </div>
-</div>
-<!-- / Modal -->#}
+  <!-- / Modal -->
 {%  endif %}
+</div>

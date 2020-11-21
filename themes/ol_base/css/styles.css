@@ -1,0 +1,58 @@
+
+.text-white-50 { color: rgba(255, 255, 255, .5); }
+
+.lh-100 { line-height: 1; }
+.lh-125 { line-height: 1.25; }
+.lh-150 { line-height: 1.5; }
+
+.group-name{
+    font-size: 1rem;
+}
+.card-footer {
+    padding: .75rem 1.25rem;
+    background-color:#fff;
+}
+.btn-link {
+  font-weight: 400;
+  color: #8c8c8c;
+}
+#edit-body-format-help {
+  display: none;
+}
+
+.liked .button{
+  color:#007bff;
+}
+
+.modal .fieldset-legend{
+  font-size: 1rem;
+}
+.badge{
+  font-weight: 300;
+}
+.description,
+form.user-pass p{
+  font-size: 0.8rem;
+  color: #797979;
+}
+.user-login-form .form-item-pass{
+  margin-top:1rem;
+}
+.group-config-form legend,
+.group-config-form .form-item-name label,
+.group-config-form .form-item-homepage label {
+  font-size: 1.2rem ;
+}
+@media (max-width: 768px) {
+  .main-heading,
+  .h4 {
+    font-size: 1.3rem;
+  }
+}
+.group-config-form .js-form-type-checkbox label,
+.group-config-form .modal-body .col-form-label{
+  font-size:0.9rem
+}
+li.nav-item.dropdown.plus-dropdown {
+  margin-top: 1px; /* Details matter :) */
+}

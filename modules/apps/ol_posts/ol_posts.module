@@ -5,6 +5,9 @@
  * Contains lus_post.module.
  */
 
+use Drupal\Core\Url;
+use Drupal\user\Entity\User;
+
 /**
  * Implements hook_theme().
  */
@@ -32,5 +35,102 @@ function ol_posts_theme() {
 function ol_posts_add_ol_section(&$sections){
   $sections['posts'] = array('label' => t('Posts'), 'path' => 'posts', 'weight' => 60);
 }
+
+/**
+ * Implements hook_cron().
+ *
+ */
+function ol_posts_cron() {
+
+  // Only run after 9am
+  if(date('H') > 9) {
+    // Query questions that needs publishing.
+    $post_settings = getAllPostSettings();
+    // Loop through results.
+    foreach ($post_settings as $post_setting) {
+      // Get data.
+      $send_days = json_decode($post_setting->send_days, TRUE);
+      $send_days_values = array_values($send_days);
+      // Get current day.
+      $current_day = date('D');
+      // Check if current day is in data, if so: send question.
+      if (in_array($current_day, $send_days_values, TRUE)) {
+        send_question($post_setting);
+      }
+    }
+  }
+}
+
+/**
+ * Custom procedural function for publishing and mailing culture questions.
+ *
+ * @param $culture_question
+ *
+ * @throws \Drupal\Core\Entity\EntityStorageException
+ */
+function send_question($post_setting) {
+
+  // Handle data.
+  $gid = $post_setting->group_id;
+  $user_id = $post_setting->user_id;
+  $question = $post_setting->question;
+  $id = $post_setting->id;
+
+  // Mail, if enabled.
+  $mail = \Drupal::service('olmain.mail');
+  $subject = $question;
+  $sender = $account = User::load($user_id)->getAccountName();
+  $url = Url::fromRoute('lus_post.posts', ['gid' => $gid,])->toString();
+  $mail_body = t('Please let your team know: ');
+  $cta_text = t('Post Your Answer');
+  $bold_text = $question;
+  $base_url = 'https://app.culturegrower.nl';
+  $lower_body = t('This will help our team to stay connected and up-to-date, without unnecessary meetings.');
+  $sender_mail = 'notifications@culturegrower.nl';
+  $mail_result = $mail->sendMail($subject, $url, $mail_body, NULL, $sender, $gid, $cta_text, $lower_body, $bold_text, $sender_mail, $base_url);
+
+  // Update settings with new execution time.
+  if ($mail_result == true) {
+    updatePostSettings($id, $gid, $user_id);
+  }
+
+}
+
+/**
+ * @param $id
+ * @param $gid
+ * @param $user_id
+ */
+function updatePostSettings($id, $gid, $user_id) {
+  // Update next execution, so it can't be sent anymore today.
+  $next_execution = strtotime('today midnight') + 86400;
+  // Query update.
+  \Drupal::database()->update('ol_post_settings')
+    ->fields([
+      'next_execution' => $next_execution,
+    ])
+    ->condition('id', $id)
+    ->condition('user_id', $user_id)
+    ->condition('group_id', $gid)
+    ->execute();
+}
+
+/**
+ * @return mixed
+ */
+function getAllPostSettings() {
+  $query = \Drupal::database()->select('ol_post_settings', 'ops');
+  $query->addField('ops', 'id');
+  $query->addField('ops', 'user_id');
+  $query->addField('ops', 'group_id');
+  $query->addField('ops', 'question');
+  $query->addField('ops', 'send_days');
+  $query->condition('ops.next_execution', \Drupal::time()->getRequestTime(), '<');
+  $query->condition('ops.status', 1);
+  return $query->execute()->fetchAll();
+}
+
+
+
 
 

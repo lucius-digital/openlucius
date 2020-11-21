@@ -7,11 +7,8 @@ description: 'OpenLucius theme'
 libraries:
   - ol_base/global
 regions:
-  sidebar_header: 'Sidebar Header'
-  sidebar_user: 'Sidebar User'
-  sidebar_global_menu: 'Sidebar Global Menu'
-  sidebar_groups_menu: 'Sidebar Groups Menu'
-  main_header: 'Main Header'
+  main_nav: 'Main Navigation'
+  main_title: 'Main Title'
   main_sections: 'Main Sections'
   content: Content
 libraries-override:

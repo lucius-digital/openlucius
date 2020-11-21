@@ -3,5 +3,7 @@ ol_files:
   css:
     theme:
       css/ol_files.css: {}
+      DataTables/datatables.min.css: {}
   js:
-    js/ol_files.js: {  }
+    js/ol_files.js: {}
+    DataTables/datatables.min.js: {}

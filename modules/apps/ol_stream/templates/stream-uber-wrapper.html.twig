@@ -1,0 +1,52 @@
+<div class="container">
+  {# Only use flex-row-reverse when there is a 'groups' block, like on homepage. #}
+  {% if vars.group_id is empty %}
+    <div class="row flex-row-reverse">
+  {% else %}
+    <div class="row">
+  {% endif %}
+    {% if vars.group_id is empty %}
+      <div class="col-lg-3 bd-content mb-5">
+        <div class="pb-2 pt-1">
+          <h2 class="h5 pl-3 pt-3"> {{ vars.groups_block_heading }}</h2>
+        </div>
+        <div class="list-group list-group-flush">
+          {% for group in vars.groups %}
+            {# Nasty active styling for now \_(ツ)_/¯ #}
+            {% if group.non_chat_count or group.chat_count %}
+              {% set active_class = 'font-weight-bold' %}
+            {% else %}
+              {% set active_class = 'text-muted' %}
+            {% endif %}
+            <a href="{{ base_path }}group/{{ group.id }}/{{ group.landing }}"
+               class="{{ active_class }} list-group-item d-flex justify-content-between align-items-center list-group-item-action">
+              {{ group.name }}
+                  {% if group.non_chat_count %}
+                    <span class="badge badge-danger badge-pill"> {{ group.non_chat_count }}</span>
+                  {% endif %}
+                  {% if group.chat_count %}
+                    <span class="badge badge-primary badge-pill"><i class="lni lni-comments"></i> {{ group.chat_count }}</span>
+                  {% endif %}
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    <div class="col-lg-9 pl-md-5 bd-content mb-5">
+      <div>
+        {% if vars.username %}
+          <h1 class="h4 pl-3 pt-3">{{ vars.username }}'s {{ 'activity'|t }}</h1>
+        {% else %}
+          <h1 class="h4 pl-3 pt-3">{{ vars.username }} {{ 'Activity'|t }}</h1>
+        {% endif %}
+      </div>
+      {% if vars.stream_html is empty %}
+        <div class="my-3 p-3 bg-white rounded shadow-sm text-muted">
+          <i class="lni lni-bulb"></i> <i> {{ 'No activity yet.'|t }}</i><br />
+        </div>
+      {% else %}
+        {{ vars.stream_html|raw }}
+      {% endif %}
+    </div>
+  </div>
+</div>

@@ -4,19 +4,20 @@ global:
   css:
     theme:
       '//stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css': { type: external, minified: true}
-      '//fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap': { type: external, minified: true}
-      '//fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap': { type: external, minified: true}
       '//cdn.lineicons.com/2.0/LineIcons.css': { type: external, minified: true}
-      css/status-messages.css: {}
-      css/pager.css: {}
-      css/tabs.css: {}
-      css/user.css: {}
-      css/style.css: {}
+      '//cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css': { type: external, minified: true}
+      css/components/status-messages.css: {}
+      css/components/pager.css: {}
+      css/components/tabs.css: {}
+      css/components/user.css: {}
+      css/components/nav.css: {}
+      css/components/hidden.css: {}
+      css/styles.css: {}
   js:
-    '//use.fontawesome.com/releases/v5.10.1/js/solid.js': { type: external }
-    '//use.fontawesome.com/releases/v5.10.1/js/fontawesome.js': { type: external }
     '//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js': { type: external }
     '//stackpath.bootstrapcdn.com/bootstrap/4.4.0/js/bootstrap.min.js': { type: external }
+    '//cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js': { type: external }
+    js/global.js: {}
   dependencies:
     - core/jquery
     - core/jquery.once

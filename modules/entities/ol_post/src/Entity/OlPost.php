@@ -194,6 +194,7 @@ class OlPost extends ContentEntityBase implements OlPostInterface {
         'max_length' => 4000,
         'text_processing' => 0,
       ]);
+
     return $fields;
   }
 

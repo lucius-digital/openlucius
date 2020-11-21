@@ -4,7 +4,10 @@ namespace Drupal\ol_main\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Form\FormBuilder;
+use Drupal\Core\Pager\PagerManager;
+use Drupal\Core\Pager\PagerParameters;
 use Drupal\ol_main\Services\OlGroups;
+use Drupal\ol_stream\Services\OlStream;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,6 +24,7 @@ class MainController extends ControllerBase {
    * @var $renderer
    */
   protected $groups;
+
 
   /**
    * {@inheritdoc}
@@ -41,15 +45,6 @@ class MainController extends ControllerBase {
 
   /**
    * @return array
-   * @throws \Exception
-   */
-  public function getHome(){
-    $this->groups->redirectToTopGroup();
-    return null;
-  }
-
-  /**
-   * @return array
    */
   public function getGroupSettings(){
     // Get form.
@@ -63,6 +58,7 @@ class MainController extends ControllerBase {
       '#vars' => $theme_vars,
     ];
   }
+
   /**
    * @return array
    * @throws \Exception

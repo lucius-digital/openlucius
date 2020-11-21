@@ -1,19 +1,20 @@
-<!--- Member card -->
-<div class="card ol-card">
-  <div class="card-header">
-    <div class="d-flex justify-content-between align-items-center">
-      <div class="d-flex justify-content-between align-items-center">
-        <div class="ml-2">
-          <div class="h5 m-0"><a href="/group/{{ vars.id }}/{{ vars.landing }}">{{ vars.name }}</a>
-          </div>
-          <span class="badge badge-success"><i class="lni lni-user"></i> {{ 'Group admin'|t }}:
-            <a href="/user/{{ vars.admin_uid }}/profile">{{ vars.admin_name }}</a>
+
+<!-- POST  -->
+<div class="card shadow-sm mb-2">
+
+  <!-- POST BODY AREA-->
+  <div class="card-body pb-1 px-3 ">
+    <div class="media text-muted">
+      <p class="media-body pb-3 mb-0 lh-125 border-gray">
+        <strong class=" h5 d-block">
+            <a href="/group/{{ vars.id }}/settings">{{ vars.name }}</a>
+        </strong>
+        <span class="badge badge-success"><i class="lni lni-user"></i> {{ 'Group admin'|t }}:
+            <u><a href="/user/{{ vars.admin_uid }}/profile" class="text-white">{{ vars.admin_name }}</a></u>
           </span>
-          <span class="badge badge-info"><i class="lni lni-timer"></i> {{ 'Created'|t }}: {{ vars.created|date("D d-m-Y H:i") }}</span>
-            <span class="badge badge-secondary"><i class="lni lni-timer"></i> {{ 'Archived'|t }}: {{ vars.changed|date("D d-m-Y H:i") }}</span>
-        </div>
-      </div>
+        <span class="badge badge-info"><i class="lni lni-timer"></i> {{ 'Created'|t }}: {{ vars.created|date("D d-m-Y H:i") }}</span>
+        <span class="badge badge-secondary"><i class="lni lni-timer"></i> {{ 'Archived'|t }}: {{ vars.changed|date("D d-m-Y H:i") }}</span>
+      </p>
     </div>
   </div>
 </div>
-<!-- / Member card-->

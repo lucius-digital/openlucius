@@ -7,7 +7,17 @@ ol_stream.group:
     no_cache: 'TRUE'
   requirements:
     _group_access_check: 'TRUE'
-    group_id: '[0-9]+'
+    gid: '[0-9]+'
+ol_stream.user:
+  path: '/user/{uid}/profile'
+  defaults:
+    _controller: '\Drupal\ol_stream\Controller\UserStreamController::getUserStream'
+    _title: 'User Stream'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _user_profile_access_check: 'TRUE'
+    uid: '[0-9]+'
 # Ajax for getting latest chat items
 ol_stream.get_latest_stream_items:
   path: '/group/{uuid}/get-latest-stream-items'

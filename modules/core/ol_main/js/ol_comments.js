@@ -6,7 +6,7 @@
   function appendComment(name, message, userpicture, created, entity_id) {
     const comment_container = $('#comment-container-'+entity_id)
     const messageElement = document.createElement('div')
-    messageElement.className = "d-flex justify-content-between align-items-center"
+    messageElement.className = "media text-muted pt-3"
     //messageElement.innerText = message
     if (userpicture == null){
       userpicture = '/themes/lus/images/white-pixel.jpg'
@@ -17,26 +17,22 @@
       created = time;
     }
     messageElement.innerHTML =
-      '  <div class="d-flex justify-content-between align-items-center">\n' +
-      '    <div class="mr-2">\n' +
-      '      <img class="rounded-circle" src="' +
+
+
+      '      <img class="rounded-circle mr-2" src="' +
       userpicture +
       '             " alt="" height="25">\n' +
-      '    </div>\n' +
-      '    <div class="ml-2 small-comment-body">\n' +
-      '      <div class="m-0">\n' +
-      '        <span href="#" class="username">' +
+      '    <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">\n' +
+      '      <strong class="d-block text-gray-dark">\n' +
       name +
-      '             </span>\n' +
-      '        <span class="body-text">\n' +
-      message +
-      '             </span>\n' +
-      '        <span class="badge badge-light created"><i class="fas fa-clock"></i> ' +
+      '        <span class="badge badge-pill badge-light text-muted">\n' +
       created +
-      '            </span>\n' +
-      '      </div>\n' +
-      '    </div>\n' +
-      '  </div>'
+      '        </span>\n' +
+      '      </strong>\n' +
+      '      <span class="body-text">\n' +
+      message +
+      '      </span>\n' +
+      '    </p>\n'
     comment_container.append(messageElement)
   }
 

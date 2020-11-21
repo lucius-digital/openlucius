@@ -1,0 +1,5 @@
+name: 'OL Shout Out Settings'
+type: module
+description: 'OL Shout Out Settings'
+core_version_requirement: ^9
+package: 'OL App'

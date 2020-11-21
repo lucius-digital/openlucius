@@ -137,7 +137,7 @@ class MembersForm extends FormBase {
       '#type' => 'submit',
       '#weight' => '20',
       '#attributes' => array('class' => array('btn btn-success')),
-      '#value' => $this->t('Add member to this group'),
+      '#value' => $this->t('Add member'),
       '#suffix' => '</div>'
     ];
     return $form;
@@ -178,7 +178,7 @@ class MembersForm extends FormBase {
       // Create stream item.
       $this->stream->addStreamItem($group_id, 'user_added', $stream_body,'user', $account_id);
       // Add message.
-      $this->messenger->addStatus(t($email .' added as a member. A login link was sent by e-mail.'));
+      $this->messenger->addStatus(t('@mail added as a member. A login link was sent by e-mail.', array('@mail' => $email)));
     }
     // Add existing user to group.
     elseif (!empty($uid)) {

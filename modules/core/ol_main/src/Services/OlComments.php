@@ -65,10 +65,13 @@ class OlComments{
     $id = $ol_comment->id();
     // Add stream item.
     $stream_body = t('Added a new comment: @comment', array('@comment' => $name)); // Create new stream item.
-    // We can't have this as dependency, else install profile will bitch during install.
-    // So for now, procedural use of this service.
-    $stream = \Drupal::service('olstream.stream');
-    $stream->addStreamItem($gid, 'comment_added', $stream_body, 'comment', $id); // Create stream item.
+    // Only create stream item if comment was not private,
+    if($privacy == 0) {
+      // We can't have this as dependency, else install profile will bitch during install.
+      // So for now, procedural use of this service.
+      $stream = \Drupal::service('olstream.stream');
+      $stream->addStreamItem($gid, 'comment_added', $stream_body, 'comment', $id); // Create stream item.
+    }
     // Message.
     \Drupal::messenger()->addStatus(t('Your comment was added successfully.'));
     // Maybe implement: https://www.drupal.org/docs/8/modules/webform/webform-cookbook/how-to-provide-anchor-link-submit-for-page-wizard

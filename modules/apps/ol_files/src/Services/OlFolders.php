@@ -141,15 +141,20 @@ class OlFolders{
 
   /**
    * @param null $gid
+   * @param null $get_top
+   *
    * @return mixed
    */
-  public function getFolders($gid = null){
+  public function getFolders($gid = null, $get_top = null){
     $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
     $query = \Drupal::database()->select('ol_folder', 'of');
     $query->addField('of', 'id');
     $query->addField('of', 'name');
     $query->condition('of.group_id', $gid);
     $query->condition('of.status', 1);
+    if($get_top) {
+      $query->range(0, 1);
+    }
     $query->orderBy('of.name');
     return $query->execute()->fetchAll();
   }
