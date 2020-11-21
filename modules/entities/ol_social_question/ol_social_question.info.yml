@@ -1,5 +1,0 @@
-name: 'OL Social Question'
-type: module
-description: 'OL Social Question'
-core_version_requirement: ^9
-package: 'OL App'

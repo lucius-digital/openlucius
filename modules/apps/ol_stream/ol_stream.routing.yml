@@ -1,3 +1,12 @@
+ol_stream.home:
+  path: '/ol_home'
+  defaults:
+    _controller: '\Drupal\ol_stream\Controller\StreamController::getStream'
+    _title: 'Home'
+  requirements:
+    _permission: 'access ol content'
+  options:
+    no_cache: 'TRUE'
 ol_stream.group:
   path: '/group/{gid}/stream'
   defaults:

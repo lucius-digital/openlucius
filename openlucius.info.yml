@@ -16,6 +16,7 @@ install:
   - file
   - filter
   - image
+  - language
   - node
   - page_cache
   - path_alias

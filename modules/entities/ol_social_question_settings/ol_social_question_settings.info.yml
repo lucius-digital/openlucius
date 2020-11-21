@@ -1,5 +1,0 @@
-name: 'OL Social Question Settings'
-type: module
-description: 'OL Social Question Settings'
-core_version_requirement: ^9
-package: 'OL App'
