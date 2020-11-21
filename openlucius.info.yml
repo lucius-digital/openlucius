@@ -2,6 +2,8 @@ name: OpenLucius
 core_version_requirement: '^8.8 || ^9'
 type: profile
 description: 'A lean, fast social productivity Drupal distribution.'
+distribution:
+  name: OpenLucius
 install:
   - admin_toolbar
   - admin_toolbar_tools
