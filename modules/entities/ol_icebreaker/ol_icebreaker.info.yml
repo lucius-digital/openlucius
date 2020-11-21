@@ -1,5 +1,0 @@
-name: 'OL Icebreaker'
-type: module
-description: 'OL Icebreaker'
-core_version_requirement: ^9
-package: 'OL App'

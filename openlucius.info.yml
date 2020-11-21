@@ -41,6 +41,7 @@ install:
   - ol_like
   - ol_post
   - ol_posts
+  - ol_post_settings
   - ol_text_doc
 themes:
   - seven
