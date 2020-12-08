@@ -36,7 +36,7 @@ class OLMainSubscriber implements EventSubscriberInterface {
       && $current_path != '/register_culture'
       && $user_reset != true
     ){
-    //  $event->setResponse(new RedirectResponse('/user/login', 301));
+      $event->setResponse(new RedirectResponse('/user/login', 301));
     }
   }
 

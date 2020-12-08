@@ -1,0 +1,7 @@
+ol_stories:
+  version: 1.x
+  css:
+    theme:
+      css/ol_stories.css: {}
+  js:
+    js/ol_stories.js: {}

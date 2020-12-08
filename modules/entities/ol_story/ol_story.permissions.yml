@@ -1,0 +1,20 @@
+add ol story entities:
+  title: 'Create new OL Story entities'
+
+administer ol story entities:
+  title: 'Administer OL Story entities'
+  description: 'Allow to access the administration form to configure OL Story entities.'
+  restrict access: true
+
+delete ol story entities:
+  title: 'Delete OL Story entities'
+
+edit ol story entities:
+  title: 'Edit OL Story entities'
+
+view published ol story entities:
+  title: 'View published OL Story entities'
+
+view unpublished ol story entities:
+  title: 'View unpublished OL Story entities'
+

@@ -1,5 +1,5 @@
 
-<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark" id="main-nav">
   <a class="navbar-brand mr-3" href="{{ url('<front>') }}"><i class="lni lni-spiner-solid "></i> Lucius</a>
   <button class="navbar-toggler p-0 border-0" type="button" data-toggle="offcanvas">
     <span class="navbar-toggler-icon"></span>
@@ -9,13 +9,13 @@
   <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" href="{{ url('<front>') }}">Home{# <span class="sr-only">(current)</span>#}</a>
+        <a class="nav-link" href="{{ url('<front>') }}">{{ 'Home'|t }}</a>
       </li>
-
+      <!-- Groups drop down-->
       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Groups</a>
+        <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ 'Groups'|t }}</a>
         <ul class="dropdown-menu" aria-labelledby="dropdown01">
-          <input class="form-control mb-2 project-filter" id="myInput" type="text" placeholder="Search..">
+          <input class="form-control mb-2 project-filter" id="groupFilter" type="text" placeholder="{{ 'Search..'|t }}">
           {% for group in vars.groups  %}
             <li>
               <a class="dropdown-item" href="{{ base_path }}group/{{ group.id }}/{{ group.landing }}">{{ group.name }}
@@ -23,7 +23,7 @@
                   <span class="badge badge-danger"> {{ group.non_chat_count }}</span>
                 {% endif %}
                 {% if group.chat_count %}
-                  <span class="badge badge-info"><i class="lni lni-comments"></i> {{ group.chat_count }}</span>
+                  <span class="badge badge-primary"><i class="lni lni-comments"></i> {{ group.chat_count }}</span>
                 {% endif %}
               </a>
             </li>
@@ -33,27 +33,29 @@
         </ul>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ url('ol_members.all_members') }}">People</a>
+        <a class="nav-link" href="{{ url('ol_members.all_members') }}">{{ 'People'|t }}</a>
       </li>
-{#      <li class="nav-item">
-        <a class="nav-link" href="#todo">Everything</a>
+      {# Todo: everything
+        <li class="nav-item">
+        <a class="nav-link" href="#">Everything</a>
       </li>#}
     </ul>
 
     <!-- main nav right-->
     <ul class="navbar-nav">
-      <!-- Add group button -->
-{#      <li class="nav-item mr-3">
-        <a class="nav-link" href="#todo">
+      {#  Todo: Search
+      <li class="nav-item mr-3">
+        <a class="nav-link" href="#">
           <i class="lni lni-search-alt"></i>
         </a>
       </li>#}
+      <!-- Global 'add' drop down -->
       <li class="nav-item dropdown plus-dropdown mr-3">
-        <a class="nav-link dropdown-toggle" href="#todo" id="navbarDropdownMenuPlus" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuPlus" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="lni lni-plus"></i>
         </a>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuPlus">
-          <a class="dropdown-item" href="{{ url('ol_main.add_group') }}"><i class="lni lni-users"></i> Add Group</a>
+          <a class="dropdown-item" href="{{ url('ol_main.add_group') }}"><i class="lni lni-users"></i> {{ 'Add Group'|t }}</a>
         </div>
       </li>
       <!-- User drop down -->
@@ -63,10 +65,10 @@
           {{ vars.username|length > 13 ? vars.username|slice(0, 13) ~ '..' : vars.username  }}
         </a>
         <div class="dropdown-menu  dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" href="{{ url('entity.user.edit_form', {'user': vars.uid} ) }}"><i class="lni lni-user"></i> Manage My Profile</a>
-          <a class="dropdown-item" href="{{ url('ol_stream.user', {'uid': vars.uid} ) }}"><i class="lni lni-timer"></i> My Activity</a>
+          <a class="dropdown-item" href="{{ url('entity.user.edit_form', {'user': vars.uid} ) }}"><i class="lni lni-user"></i> {{ 'Manage My Profile'|t }}</a>
+          <a class="dropdown-item" href="{{ url('ol_stream.user', {'uid': vars.uid} ) }}"><i class="lni lni-timer"></i> {{ 'My Activity'|t }}</a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="{{ url('user.logout') }}"><i class="lni lni-exit"></i> Log Out</a>
+          <a class="dropdown-item" href="{{ url('user.logout') }}"><i class="lni lni-exit"></i> {{ 'Log Out'|t }}</a>
         </div>
       </li>
     </ul>
@@ -74,20 +76,15 @@
 {% endif %}
 </nav>
 
-{#
-<!-- Add group Modal -->
-<div class="modal fade" id="addGroupModal"  role="dialog" aria-labelledby="addGroupModal" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ 'Add new group'|t }} </h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+{% if vars.global_message %}
+  <div class="container-fluid">
+    <div class="d-flex align-items-center p-3 m-3 text-white-50 bg-secondary rounded shadow-sm">
+      <span class="global-message-icon h1 mr-3"><i class="lni lni-warning"></i></span>
+      <div class="lh-100">
+        <h6 class="mb-0 text-white lh-100">
+          {{ vars.global_message }}
+        </h6>
       </div>
-      {{ vars.add_group_form }}
     </div>
   </div>
-</div>
-<!-- / Modal -->
-#}
+{% endif %}

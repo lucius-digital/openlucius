@@ -10,6 +10,7 @@ regions:
   main_nav: 'Main Navigation'
   main_title: 'Main Title'
   main_sections: 'Main Sections'
+  content_top: 'Content top'
   content: Content
 libraries-override:
   system/base: false

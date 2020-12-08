@@ -132,6 +132,7 @@ function ol_main_file_download($uri) {
     throw new AccessDeniedHttpException();
   }
 
+  // Check if this is a FILE SOMEWHERE IN A GROUP.
   // Check for result: belongs current user to organization and group of uploaded file?
   $query = \Drupal::database()->select('ol_file', 'file');
   $query->addField('file', 'file_id');
@@ -142,7 +143,7 @@ function ol_main_file_download($uri) {
   $access = $query->execute()->fetchField();
 
 
-  // Check if this maybe is a user picture.
+  // Check if this maybe is a USER PICTURE.
   // Provide access to user picture if current user is somewhere in a group with requested user picture.
   // This way we are also prepared for 'external' role.
   if(empty($access)){
@@ -150,9 +151,29 @@ function ol_main_file_download($uri) {
     $query = \Drupal::database()->select('file_managed', 'file');
     $query->addField('ogu', 'group_id');
     $query->join('ol_group_user', 'ogu', 'ogu.member_uid = file.uid');
-    // This join, so we only query user pictures.
+    // This join is needed, so we only query user pictures.
     $query->join('user__field_user_picture', 'fup', 'fup.field_user_picture_target_id = file.fid');
     $query->condition('file.uri', $uri);
+    $group_ids = $query->execute()->fetchCol();
+
+    // Get all groups current user is in.
+    $group_ids_current_user = getUserGroups($user_id);
+    // Grant access if they have a common group.
+    $access = !empty(array_intersect($group_ids, $group_ids_current_user));
+  }
+
+  // Check if this maybe is a STORY IMAGE.
+  // Provide access to story image if current user is somewhere in a group with requested image.
+  // This way we are also prepared for 'external' role.
+  if(empty($access)) {
+    // Get all groups user of story image is in.
+    $query = \Drupal::database()->select('file_managed', 'file');
+    $query->addField('ogu', 'group_id');
+    $query->join('ol_group_user', 'ogu', 'ogu.member_uid = file.uid');
+    // This join is needed, so we only query story images.
+    $query->join('ol_file', 'ol_file', 'ol_file.file_id = file.fid');
+    $query->condition('file.uri', $uri);
+    $query->condition('ol_file.entity_type', 'story');
     $group_ids = $query->execute()->fetchCol();
 
     // Get all groups current user is in.

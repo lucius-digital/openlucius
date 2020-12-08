@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Contains ol_story.module.
+ */
+
+
+/**
+ * Implements hook_theme().
+ */
+function ol_stories_theme() {
+  return [
+    'stories_list' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'stories-list',
+    ],
+    'story_card' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'story-card',
+    ],
+  ];
+}
+
+
+

@@ -187,6 +187,7 @@ class OlGroups{
       $query->condition('ogu.group_id', $gid);
       $query->condition('ogu.member_uid', $uid);
       $timestamp_user_group =  $query->execute()->fetchField();
+
       // Get timestamp last stream_item in group
       $query = \Drupal::database()->select('ol_stream_item', 'osi');
       $query->addField('osi', 'created');
@@ -194,8 +195,7 @@ class OlGroups{
       $query->orderBy('osi.id', 'desc');
       $timestamp_stream_item =  $query->execute()->fetchField();
       // Get new items for this user, if timestamps differ.
-      if ($timestamp_stream_item > $timestamp_user_group) {
-        // Count query stream items where created > user_group_timestamp
+      if ($timestamp_stream_item > $timestamp_user_group ) {
         // Non-chat
         $query = \Drupal::database()->select('ol_stream_item', 'osi');
         $query->addField('osi', 'id');
@@ -203,12 +203,22 @@ class OlGroups{
         $query->condition('osi.created', $timestamp_user_group ,'>');
         $query->condition('osi.entity_type', 'chat' ,'!=');
         $group_data->non_chat_count =  $query->countQuery()->execute()->fetchField();
+      }
+
+      // Get timestamp last chat_item in group.
+      $query = \Drupal::database()->select('ol_chat_item', 'osi');
+      $query->addField('osi', 'created');
+      $query->condition('osi.group_id', $gid);
+      $query->orderBy('osi.id', 'desc');
+      $timestamp_chat_item =  $query->execute()->fetchField();
+      // Get new chat for this user, if timestamps differ.
+      if ($timestamp_chat_item > $timestamp_user_group) {
         // Chat, needed for different badge, to prevent badge-cluttering.
-        $query = \Drupal::database()->select('ol_stream_item', 'osi');
-        $query->addField('osi', 'id');
-        $query->condition('osi.group_id', $gid);
-        $query->condition('osi.created', $timestamp_user_group ,'>');
-        $query->condition('osi.entity_type', 'chat');
+        $query = \Drupal::database()->select('ol_chat_item', 'oci');
+        $query->addField('oci', 'id');
+        $query->condition('oci.group_id', $gid);
+        $query->condition('oci.created', $timestamp_user_group ,'>');
+        $query->condition('oci.entity_type', 'chat');
         $group_data->chat_count =  $query->countQuery()->execute()->fetchField();
       }
     }

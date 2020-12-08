@@ -1,0 +1,19 @@
+.story-scroller {
+  position: relative;
+  z-index: 2;
+  height: 8rem;
+  overflow-y: hidden;
+}
+
+.story-scroller .story-nav {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: nowrap;
+  flex-wrap: nowrap;
+  padding-bottom: 1rem;
+  /*margin-top: -1px;*/
+  overflow-x: auto;
+  text-align: center;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}

@@ -191,6 +191,9 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
       case 'shoutouts':
         $table = 'ol_shout_out';
         break;
+      case 'notebooks':
+        $table = 'ol_text_doc';
+        break;
     }
     // Fallback.
     if(empty($table)){

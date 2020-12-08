@@ -103,9 +103,9 @@ class GroupConfigForm extends FormBase {
       '#weight' => '10',
       '#suffix' => '</div></div>'
     ];
-/*    $form['file'] = array(
-      '#prefix' => '<div class="form-group">',
-      '#title' => t('Header image'),
+    $form['file'] = array(
+      '#prefix' => '<div class="form-group p-5">',
+      '#title' => t('Group image'),
       '#type' => 'managed_file',
       '#required' => FALSE,
       '#default_value' => $default_fid,
@@ -116,7 +116,7 @@ class GroupConfigForm extends FormBase {
       ),
       '#weight' => '15',
       '#suffix' => '</div>'
-    );*/
+    );
     $form['sections'] = [
       '#prefix' => '<div class="form-group">',
       '#type' => 'checkboxes',
@@ -249,7 +249,7 @@ class GroupConfigForm extends FormBase {
     // Handle files.
     $file = $form_state->getValue('file');
     $current_header_fid = $this->groups->getHeaderImage();
-    // If there is no file, remove existing if any.
+    // If there is no file, remove existing (if any).
     if(empty($file[0])){
       $this->removeExistingHeaderFile();
     }

@@ -51,8 +51,18 @@ form.user-pass p{
 }
 .group-config-form .js-form-type-checkbox label,
 .group-config-form .modal-body .col-form-label{
-  font-size:0.9rem
+  font-size:0.9rem;
 }
+.group-config-form #ajax-wrapper #edit-file--label{
+  font-size:1.2rem;
+}
+.group-config-form #ajax-wrapper{
+  margin-bottom: 20px;
+}
+
 li.nav-item.dropdown.plus-dropdown {
   margin-top: 1px; /* Details matter :) */
+}
+.js-filter-wrapper{
+  display:none;
 }

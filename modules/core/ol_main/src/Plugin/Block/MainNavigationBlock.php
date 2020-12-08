@@ -79,15 +79,16 @@ class MainNavigationBlock extends BlockBase  implements ContainerFactoryPluginIn
     // Groups data.
     $groups_data = $this->groups->getGroups(1);
     $groups = $this->groups->addActivityBadge($groups_data);
-//    $add_group_form = \Drupal::formBuilder()->getForm(\Drupal\ol_main\Form\AddGroupForm::class);
+    // Global message.
+    $global_message = \Drupal::config('ol_main.admin_settings')->get('global_message');
 
     // Build.
     $theme_vars = [
       'groups' => $groups,
-//      'add_group_form' => $add_group_form,
       'uid' => $uid,
       'username' => $username,
       'user_picture' => $user_picture,
+      'global_message' => $global_message,
     ];
     $build = [
       '#theme' => 'main_nav_block',

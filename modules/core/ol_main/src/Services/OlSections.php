@@ -52,6 +52,12 @@ class OlSections{
     return $query->execute()->fetchField();
   }
 
+  /**
+   * @param $section_key
+   * @param $default_title
+   *
+   * @return mixed
+   */
   public function getSectionOverrideTitle($section_key, $default_title){
     $gid = \Drupal::service('current_route_match')->getParameter('gid');
     $section_overrides_json = $this->getSectionOverridesData($gid);

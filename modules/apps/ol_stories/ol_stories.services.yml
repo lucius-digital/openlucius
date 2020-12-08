@@ -1,0 +1,4 @@
+services:
+  olstories.stories:
+    class: Drupal\ol_stories\Services\OlStories
+    arguments: ['@current_route_match','@olmembers.members','@olstream.stream','@olmain.mail', '@olmain.groups','@olmain.comments','@olmain.files']

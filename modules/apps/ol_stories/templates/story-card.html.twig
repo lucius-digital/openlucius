@@ -1,0 +1,16 @@
+<div class="ml-2">
+  <a data-toggle="modal" data-target="#showStory" class="mb-0 pb-0" href="#"
+     data-story_body="{{ vars.body }}"
+     data-story_image_url="{{ vars.image_url }}"
+  >
+  <figure class="mb-0">
+    <img src="{{ vars.user_picture }}" height="50" alt="story image" class="rounded-circle border-danger img-thumbnail" />
+    <figcaption><span class="text-black-50 small">{{ vars.username }}</span></figcaption>
+  </figure>
+  </a>
+  {% if vars.owner %}
+    <a data-toggle="modal" class="small m-0 p-0 text-muted" data-target="#removeStory" href="#"
+       data-story_id="{{ vars.story_id }}"
+    ><i class="lni lni-close"></i></a>
+  {% endif %}
+</div>

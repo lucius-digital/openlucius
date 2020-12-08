@@ -6,7 +6,6 @@ use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\ol_file\Entity\OlFile;
-use Drupal\ol_text_doc\Entity\OlTextDoc;
 
 /**
  * Class OlGroups.
@@ -140,39 +139,6 @@ class OlFiles{
   }
 
   /**
-   * @param null $ol_file_id
-   * @param null $show_in_stream
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
-   */
-  public function removeOlFileAndTextDoc($ol_file_id = null, $show_in_stream = null){
-    // Get parameters from url
-    $gid = $this->route->getParameter('gid');
-    // Delete if file owner is true.
-    if($this->isTextDocOwner($ol_file_id)) {
-      $name = $this->getTextDocName($ol_file_id);
-      $text_doc_id = $this->getTextDocId($ol_file_id);
-            // Delete reference from dbase (and search index).
-      $ol_file = OlFile::load($ol_file_id);
-      $ol_file->delete();
-
-      //die();
-      $ol_text_doc = OlTextDoc::load($text_doc_id);
-      $ol_text_doc->delete();
-
-      // Add stream item.
-      if($show_in_stream) {
-        // We can't have this as dependency, else install profile will bitch during install.
-        // So for now, procedural use of this service.
-        $stream = \Drupal::service('olstream.stream');
-        $stream_body = t('Removed a text document: @file', ['@file' => $name]);
-        $stream->addStreamItem($gid, 'text_doc_removed', $stream_body, 'text_doc', $ol_file_id);
-      }
-      // Set message.
-      \Drupal::messenger()->addStatus( $name .t(' successfully deleted.'));
-    }
-  }
-  /**
    * This function should be in a service of the ol_files app
    *
    * @param $num_per_page
@@ -233,15 +199,11 @@ class OlFiles{
     // Needed to show/hide folder options in drop down.
     // Loop through files and build html.
     foreach ($file_list_data as $file_data) {
-      // Switch on being a 'File' or 'Text doc'.
-      if(!empty($file_data->file_id)){
-        $file_row_data = $this->buildFileDetails($file_data->id);
-        // If current user is owner in 1 of the records: show modals.
-        if ($file_row_data['owner'] == 1){
-          $owner_show_modals = true;
-        }
-      } else {
-        $file_row_data = $this->buildTextDocDetails($file_data->id);
+      // Get file details.
+      $file_row_data = $this->buildFileDetails($file_data->id);
+      // If current user is owner in 1 of the records: show modals.
+      if ($file_row_data['owner'] == 1){
+        $owner_show_modals = true;
       }
       // Needed to show/hide folder drop down items.
       $file_row_data['has_folders'] = $has_folders;
@@ -277,63 +239,6 @@ class OlFiles{
    * @param $id
    * @return mixed
    */
-  private function buildTextDocDetails($id){
-    // Get file data details.
-    $file = $this->getTextDocData($id);
-    // Build row.
-    $file_row_data['ol_fid'] = $file->ol_fid;
-    $file_row_data['group_id'] = $file->group_id;
-    $file_row_data['filename'] = shortenString($file->name, 45);
-    $file_row_data['folder_id'] = $file->folder_id;
-    $file_row_data['created'] = $file->created;
-    $file_row_data['user_name'] = $this->members->getUserName($file->user_id);
-    $file_row_data['owner'] = $file->user_id == $this->members->getUserId();
-    $file_row_data['foldername'] = $file->foldername;
-    $file_row_data['id_folder'] = $file->folder_id;
-    $file_row_data['file_type'] = 'text_doc';
-    $file_row_data['url'] = Url::fromRoute('ol_files.text_doc',
-                            ['gid' => $file->group_id, 'id' => $file->entity_id ])->toString();
-    return $file_row_data;
-  }
-
-  /**
-   * @param $file_id
-   * @return mixed
-   */
-  private function getTextDocData($id){
-    $query = \Drupal::database()->select('ol_file', 'lfr');
-    $query->addField('lfr', 'id', 'ol_fid');
-    $query->addField('lfr', 'user_id');
-    $query->addField('lfr', 'name');
-    $query->addField('lfr', 'created');
-    $query->addField('lfr', 'entity_id');
-    $query->addField('lfr', 'entity_type');
-    //$query->addField('lfr', 'file_id');
-    $query->addField('lfr', 'folder_id');
-    $query->addField('lfr', 'group_id');
-    $query->addField('user', 'name', 'username');
-    //$query->addField('file', 'uri');
-    //$query->addField('file', 'filemime');
-    //$query->addField('file', 'filesize');
-    $query->addField('folder', 'name', 'foldername');
-    $query->condition('lfr.id', $id);
-    $query->join('users_field_data', 'user', 'user.uid = lfr.user_id');
-    $query->join('ol_text_doc', 'olt','olt.id = lfr.entity_id');
-    $query->leftJoin('ol_folder', 'folder','folder.id = lfr.folder_id');
-    return $query->execute()->fetchObject();
-  }
-
-  private function getTextDocName($id){
-    $query = \Drupal::database()->select('ol_file', 'lfr');
-    $query->addField('lfr', 'name');
-    $query->condition('lfr.id', $id);
-    return $query->execute()->fetchField();
-  }
-
-  /**
-   * @param $id
-   * @return mixed
-   */
   private function buildFileDetails($id){
     // Get file data details.
     $file = $this->getfileData($id);
@@ -346,16 +251,12 @@ class OlFiles{
     $file_row_data['ol_fid'] = $file->ol_fid;
     $file_row_data['created'] = $file->created;
     $file_row_data['user_name'] = shortenString($this->members->getUserName($file->user_id),12);
-/*    print $file->user_id;
-    print ' | ';
-    print $this->members->getUserId();*/
     $file_row_data['owner'] = $file->user_id == $this->members->getUserId();
     $file_row_data['url'] = Url::fromUri(file_create_url($file->uri));
     $file_row_data['file_size'] = $this->formatBytes($file->filesize,1);
     $file_row_data['foldername'] = $file->foldername;
     $file_row_data['id_folder'] = $file->folder_id;
     $file_row_data['file_type'] = 'file';
-    //$file_row_data['file_in_folder_form'] = \Drupal::formBuilder()->getForm(\Drupal\ol_files\Form\PlaceFileInFolderForm::class, $file->group_id, $file->file_id);
     // Check if current file is an allowed image, print a thumbnail if so.
     $file_extension = str_replace('image/','', $file->filemime);
     // Check if mime type is available in allowed types.
@@ -392,7 +293,6 @@ class OlFiles{
     $query->leftJoin('ol_folder', 'folder','folder.id = lfr.folder_id');
     return $query->execute()->fetchObject();
   }
-
 
   /**
    * @param $entity_type
@@ -486,17 +386,6 @@ class OlFiles{
   }
 
   /**
-   * @param $ol_file_id
-   * @return mixed
-   */
-  private function getTextDocId($ol_file_id){
-    $query = \Drupal::database()->select('ol_file', 'olf');
-    $query->addField('olf', 'entity_id');
-    $query->condition('olf.id', $ol_file_id);
-    return $query->execute()->fetchField();
-  }
-
-  /**
    * @param $fid
    * @return bool
    */
@@ -504,18 +393,6 @@ class OlFiles{
     $query = \Drupal::database()->select('ol_file', 'fr');
     $query->addField('fr', 'user_id');
     $query->condition('fr.file_id', $fid);
-    $uid = $query->execute()->fetchField();
-    return ($uid == $this->current_user->id());
-  }
-
-  /**
-   * @param $ol_file_id
-   * @return bool
-   */
-  private function isTextDocOwner($ol_file_id){
-    $query = \Drupal::database()->select('ol_file', 'fr');
-    $query->addField('fr', 'user_id');
-    $query->condition('fr.id', $ol_file_id);
     $uid = $query->execute()->fetchField();
     return ($uid == $this->current_user->id());
   }
@@ -537,10 +414,12 @@ class OlFiles{
   /**
    * @param $entity_type
    *
+   * @param null $group_id
+   *
    * @return string
    */
-  public function buildFileLocaton($entity_type){
-    $group_id = $this->route->getParameter('gid');
+  public function buildFileLocaton($entity_type, $group_id = null){
+    $group_id = (is_null($group_id)) ? $this->route->getParameter('gid') : $group_id;
     $uid = $this->current_user->id();
     return $group_id .'/'.$entity_type.'/'.date('Y_W'.'/'.$uid);
   }
