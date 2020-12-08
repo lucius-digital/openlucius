@@ -205,21 +205,23 @@ class OlGroups{
         $group_data->non_chat_count =  $query->countQuery()->execute()->fetchField();
       }
 
-      // Get timestamp last chat_item in group.
-      $query = \Drupal::database()->select('ol_chat_item', 'osi');
-      $query->addField('osi', 'created');
-      $query->condition('osi.group_id', $gid);
-      $query->orderBy('osi.id', 'desc');
-      $timestamp_chat_item =  $query->execute()->fetchField();
-      // Get new chat for this user, if timestamps differ.
-      if ($timestamp_chat_item > $timestamp_user_group) {
-        // Chat, needed for different badge, to prevent badge-cluttering.
-        $query = \Drupal::database()->select('ol_chat_item', 'oci');
-        $query->addField('oci', 'id');
-        $query->condition('oci.group_id', $gid);
-        $query->condition('oci.created', $timestamp_user_group ,'>');
-        $query->condition('oci.entity_type', 'chat');
-        $group_data->chat_count =  $query->countQuery()->execute()->fetchField();
+      if (\Drupal::moduleHandler()->moduleExists('ol_chat')) {
+        // Get timestamp last chat_item in group.
+        $query = \Drupal::database()->select('ol_chat_item', 'osi');
+        $query->addField('osi', 'created');
+        $query->condition('osi.group_id', $gid);
+        $query->orderBy('osi.id', 'desc');
+        $timestamp_chat_item = $query->execute()->fetchField();
+        // Get new chat for this user, if timestamps differ.
+        if ($timestamp_chat_item > $timestamp_user_group) {
+          // Chat, needed for different badge, to prevent badge-cluttering.
+          $query = \Drupal::database()->select('ol_chat_item', 'oci');
+          $query->addField('oci', 'id');
+          $query->condition('oci.group_id', $gid);
+          $query->condition('oci.created', $timestamp_user_group, '>');
+          $query->condition('oci.entity_type', 'chat');
+          $group_data->chat_count = $query->countQuery()->execute()->fetchField();
+        }
       }
     }
     return $groups_data;

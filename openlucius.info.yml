@@ -43,6 +43,8 @@ install:
   - ol_posts
   - ol_post_settings
   - ol_text_doc
+  - ol_story
+  - ol_stories
 themes:
   - seven
   - ol_base

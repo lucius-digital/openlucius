@@ -1,0 +1,25 @@
+uuid: 76b22af5-eb28-4e41-b0aa-b48c6960ec52
+langcode: en
+status: true
+dependencies:
+  module:
+    - ol_stories
+    - system
+  theme:
+    - ol_base
+id: storiesblock
+theme: ol_base
+region: content_top
+weight: 0
+provider: null
+plugin: ol_stories
+settings:
+  id: ol_stories
+  label: 'Stories block'
+  provider: ol_stories
+  label_display: '0'
+visibility:
+  request_path:
+    id: request_path
+    pages: '<front>'
+    negate: false
