@@ -31,7 +31,7 @@ function openlucius_set_front_page() {
  * Adds first group.
  */
 function openlucius_add_first_group() {
-  $enabled_sections = 'stream,messages,posts,files,members';
+  $enabled_sections = 'stream,chat,messages,posts,notebooks,files,members';
   $group = \Drupal::service('olmain.groups');
   $group->addGroup('1st Group (example)', 'company', 1, false, $enabled_sections);
 }
