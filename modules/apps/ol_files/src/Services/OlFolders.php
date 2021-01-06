@@ -38,11 +38,6 @@ class OlFolders{
   protected $members;
 
   /**
-   * @var $stream
-   */
-  protected $stream;
-
-  /**
    * OlFolder constructor.
    *
    * @param $route
@@ -52,7 +47,7 @@ class OlFolders{
    * @param $members
    * @param $files
    */
-  public function __construct($route, $connection, $messenger, $current_user, $members, $stream) {
+  public function __construct($route, $connection, $messenger, $current_user, $members) {
     $this->route = $route;
     $this->database = $connection;
     $this->messenger = $messenger;
@@ -74,7 +69,8 @@ class OlFolders{
     ]);
     $folder->save();
     $id = $folder->id();
-    $this->stream->addStreamItem($gid, 'folder_added', $name, 'folder', $id);
+    $stream = \Drupal::service('olstream.stream');
+    $stream->addStreamItem($gid, 'folder_added', $name, 'folder', $id);
     return $id;
   }
 
@@ -101,7 +97,8 @@ class OlFolders{
         ->execute();
       // Add stream item.
       $stream_body = $folder_name;
-      $this->stream->addStreamItem($gid, 'folder_removed', $stream_body, 'folder', $folder_id);
+      $stream = \Drupal::service('olstream.stream');
+      $stream->addStreamItem($gid, 'folder_removed', $stream_body, 'folder', $folder_id);
       \Drupal::messenger()->addStatus(t('Folder removed successfully.'));
     }
     $path = Url::fromRoute('ol_files.group_files',['gid' => $gid, 'folder_id' => $folder_id])->toString();

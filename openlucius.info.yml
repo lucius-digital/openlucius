@@ -1,5 +1,5 @@
 name: OpenLucius
-core_version_requirement: '^8.8 || ^9'
+core_version_requirement: ^9
 type: profile
 description: 'A lean, fast social productivity Drupal distribution.'
 distribution:
@@ -26,16 +26,14 @@ install:
   - text
   - toolbar
   - user
+  - ol_main
+  - ol_group
   - ol_members
   - ol_comment
   - ol_file
   - ol_folder
-  - ol_group
   - ol_group_user
   - ol_message
-  - ol_stream_item
-  - ol_main
-  - ol_stream
   - ol_files
   - ol_messages
   - ol_like
@@ -43,8 +41,12 @@ install:
   - ol_posts
   - ol_post_settings
   - ol_text_doc
+  - ol_text_docs
   - ol_story
   - ol_stories
+  - ol_chat
+  - ol_chat_item
+  - ol_stream_item
 themes:
   - seven
   - ol_base

@@ -11,11 +11,6 @@ use Drupal\ol_stream_item\Entity\OlStreamItem;
 class OlStream{
 
   /**
-   * @var $groups
-   */
-  protected $groups;
-
-  /**
    * @var $members
    */
   protected $members;
@@ -24,21 +19,6 @@ class OlStream{
    * @var $renderer
    */
   protected $renderer;
-
-  /**
-   * @var $files
-   */
-  protected $files;
-
-  /**
-   * @var $sections
-   */
-  protected $sections;
-
-  /**
-   * @var $comments
-   */
-  protected $comments;
 
   /**
    * OlMembers constructor.
@@ -50,13 +30,9 @@ class OlStream{
    * @param $sections
    * @param $comments
    */
-  public function __construct($groups, $members, $renderer, $files, $sections, $comments) {
-    $this->groups = $groups;
+  public function __construct($members, $renderer) {
     $this->members = $members;
     $this->renderer = $renderer;
-    $this->files = $files;
-    $this->sections = $sections;
-    $this->comments = $comments;
   }
 
   /**
@@ -278,7 +254,10 @@ class OlStream{
         if($show_this_block){
           $stream_wrapper['group_id'] = $group_id;
           $stream_wrapper['in_group'] = \Drupal::service('current_route_match')->getParameter('gid');
-          $stream_wrapper['group_name'] = $this->groups->getGroupName($group_id);
+          // We can't have this as dependency, else install profile will bitch during install.
+          // So for now, procedural use of this service.
+          $groups = \Drupal::service('olmain.groups');
+          $stream_wrapper['group_name'] = $groups->getGroupName($group_id);
           $stream_wrapper['group_thumbnail_url'] = $this->getGroupImageLink($group_id);
           $stream_wrapper['stream_html'] = $item_render_html;
           $render = ['#theme' => 'stream_wrapper', '#vars' => $stream_wrapper];
@@ -296,7 +275,8 @@ class OlStream{
    */
   private function getSectionIconClass($entity_type){
     // Get sections data.
-    $sections = $this->sections->getSectionsData();
+    $sections_service = \Drupal::service('olmain.sections');
+    $sections = $sections_service->getSectionsData();
     // Fill icon_class.
     foreach ($sections as $section){
       if ((string) $section['path'] == $entity_type){
@@ -327,9 +307,11 @@ class OlStream{
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   private function getGroupImageLink($group_id){
-    $header_fid = $this->groups->getHeaderImage($group_id);
+    $groups = \Drupal::service('olmain.groups');
+    $header_fid = $groups->getHeaderImage($group_id);
     if (!empty($header_fid)) {
-      $header_uri = $this->files->getFileUri($header_fid);
+      $files = \Drupal::service('olmain.files');
+      $header_uri = $files->getFileUri($header_fid);
       $style = \Drupal::entityTypeManager()->getStorage('image_style')->load('50x50');
       return $style->buildUrl($header_uri);
     }
@@ -344,8 +326,9 @@ class OlStream{
     $file_ids = json_decode($file_ids_json, true);
     $files = array();
     foreach ($file_ids as $file_id) {
-      $files[$file_id]['file_name'] = $this->files->getFileName($file_id);
-      $file_uri = $this->files->getFileUri($file_id);
+      $files = \Drupal::service('olmain.files');
+      $files[$file_id]['file_name'] = $files->getFileName($file_id);
+      $file_uri = $files->getFileUri($file_id);
       $files[$file_id]['file_path'] = Url::fromUri(file_create_url($file_uri));
     }
     return $files;
@@ -404,7 +387,8 @@ class OlStream{
       break;
       // Files.
       case 'files':
-        $file_uri = $this->files->getFileUri($stream_item->entity_id);
+        $files = \Drupal::service('olmain.files');
+        $file_uri = $files->getFileUri($stream_item->entity_id);
         if ($file_uri) {
           $path = Url::fromUri(file_create_url($file_uri));
         }
@@ -412,7 +396,8 @@ class OlStream{
       // Comments.
       case 'comment':
         // Get comment data.
-        $comment_data = $this->comments->getCommentData($stream_item->entity_id);
+        $comments = \Drupal::service('olmain.comments');
+        $comments = $this->getCommentData($stream_item->entity_id);
         // Edge cases fallback.
         if(empty($comment_data->entity_type)){
           break;
@@ -448,7 +433,8 @@ class OlStream{
    */
   function getLastMessageTimestamp($uuid){
     // Get internal group_id from uuid.
-    $group_id = $this->groups->getGroupIdByUuid($uuid);
+    $groups = \Drupal::service('olmain.groups');
+    $group_id = $groups->getGroupIdByUuid($uuid);
     // Query for me, b*tch :)
     $query = \Drupal::database()->select('ol_stream_item', 'osi');
     $query->addField('osi', 'created');
