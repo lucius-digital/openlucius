@@ -5,10 +5,17 @@
 
   {% if vars.stream_html %}
   <h6 class="border-bottom border-gray pb-2 mb-0">
-    {% if vars.group_id %}
-      <a href="/group/{{ vars.group_id }}/stream" class="text-muted"><i class="lni lni-users text-muted"></i> {{ vars.group_name }}</a>
+    {% if not vars.in_group %}
+      <a href="/group/{{ vars.group_id }}/stream" class="text-muted">
+        {% if vars.group_thumbnail_url %}
+          <img style="height: 40px;" class="img-thumbnail small" src="{{ vars.group_thumbnail_url }}" alt="group image" />
+        {% else %}
+          <i class="lni lni-users text-muted"></i>
+        {% endif %}
+        {{ vars.group_name }}
+      </a>
     {% else %}
-      {{ vars.group_name }}
+      &nbsp;
     {% endif %}
     <span class="badge badge-light float-right text-muted">{{ vars.readable_date }}</span>
   </h6>

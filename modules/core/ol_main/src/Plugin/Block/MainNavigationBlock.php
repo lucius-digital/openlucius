@@ -82,6 +82,9 @@ class MainNavigationBlock extends BlockBase  implements ContainerFactoryPluginIn
     // Global message.
     $global_message = \Drupal::config('ol_main.admin_settings')->get('global_message');
 
+    // Get extra menu items.
+    \Drupal::moduleHandler()->invokeAll('add_menu_top_right_links', [&$items]);
+
     // Build.
     $theme_vars = [
       'groups' => $groups,
@@ -89,6 +92,7 @@ class MainNavigationBlock extends BlockBase  implements ContainerFactoryPluginIn
       'username' => $username,
       'user_picture' => $user_picture,
       'global_message' => $global_message,
+      'menu_right_items' => $items,
     ];
     $build = [
       '#theme' => 'main_nav_block',

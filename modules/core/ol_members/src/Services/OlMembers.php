@@ -101,6 +101,18 @@ class OlMembers{
     return $members_html;
   }
 
+  public function getGroupMembersDropDown(){
+    $members = $this->getUsersInGroup();
+
+    $options = array();
+    foreach ($members as $member){
+      $label = $member->name;
+      $key = $member->mail;
+      $options[$key] = $label;
+    }
+    return $options;
+  }
+
   /**
    * @param bool $exclude_current_uid
    *
@@ -151,6 +163,8 @@ class OlMembers{
     $group_admin_uid = $this->isGroupAdmin($uid);
     // Only remove if it's not group admin.
     if ($group_admin_uid == null) {
+      // Get username for stream item.
+      $user_name = $this->getUserName($uid);
       // Remove user from group.
       $this->database->delete('ol_group_user')
         ->condition('group_id', $gid)
@@ -158,6 +172,10 @@ class OlMembers{
         ->execute();
       // Message and redirect.
       $this->messenger->addStatus(t('Member successfully removed from this group'));
+      // We can't have this as dependency, else install profile will bitch during install.
+      // So for now, procedural use of this service.
+      $stream = \Drupal::service('olstream.stream');
+      $stream->addStreamItem($gid, 'user_removed', $user_name, 'user', $uid);
     }
     if (is_numeric($group_admin_uid)){
       \Drupal::messenger()->addWarning( t('You can\'t remove group administrator from a group'));

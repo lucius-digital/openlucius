@@ -45,10 +45,12 @@ class OlComments{
    * @param $reference_type
    * @param int $privacy
    *
+   * @param bool $in_stream
+   *
    * @return int|string|null
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function saveComment($body, $entity_id, $reference_type, $privacy = 0){
+  public function saveComment($body, $entity_id, $reference_type, $privacy = 0, $in_stream = true){
     // Prepare data.
     $gid = $this->route->getParameter('gid');
     $name = shortenString(strip_tags($body),20);
@@ -63,18 +65,15 @@ class OlComments{
     ]);
     $ol_comment->save();
     $id = $ol_comment->id();
-    // Add stream item.
-    $stream_body = t('Added a new comment: @comment', array('@comment' => $name)); // Create new stream item.
-    // Only create stream item if comment was not private,
-    if($privacy == 0) {
+    // Only create stream item if comment was not private.
+    if($privacy != 1 && $in_stream) {
       // We can't have this as dependency, else install profile will bitch during install.
       // So for now, procedural use of this service.
       $stream = \Drupal::service('olstream.stream');
-      $stream->addStreamItem($gid, 'comment_added', $stream_body, 'comment', $id); // Create stream item.
+      $stream->addStreamItem($gid, 'comment_added', $name, 'comment', $id); // Create stream item.
     }
     // Message.
     \Drupal::messenger()->addStatus(t('Your comment was added successfully.'));
-    // Maybe implement: https://www.drupal.org/docs/8/modules/webform/webform-cookbook/how-to-provide-anchor-link-submit-for-page-wizard
     return $id;
   }
 
@@ -87,11 +86,12 @@ class OlComments{
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function updateComment($cid, $body, $privacy){
-    // Update comment with spoofing protection.
+    // Update comment with security check.
     if($this->isCommentOwner($cid)) {
       // Load and save, update.
       $entity = OlComment::load($cid);
       $entity->set("body", $body);
+      // Privacy = 0 means published.
       $entity->set("privacy", $privacy);
       $entity->set("name", strip_tags(shortenString($body, 40)));
       $entity->save();
@@ -142,10 +142,11 @@ class OlComments{
       $pager = $pager_manager->createPager($total_result, $num_per_page);
       $pager->getCurrentPage();
     } else {
-      $comments = $this->getCommentsByEntity($entity_id, $entity_type);
+      $comments = $this->getCommentsByEntity($entity_id, $entity_type, null, null, $order);
     }
     // Build html.
     $comments_html = '';
+    $edit_form_html = '';
     $current_uid = $this->members->getUserId();
     $group_admin_uid = \Drupal::service('olmembers.members')->isGroupAdmin($current_uid);
     // Loop though comments and build html.
@@ -155,30 +156,34 @@ class OlComments{
         continue;
       }
       $comment_row_data['privacy'] = $comment->privacy;
-      $comment_row_data['body'] = ($show_small) ? detectAndCreateLink($comment->body) : $comment->body;
+      $comment_row_data['body'] = ($show_small) ? nl2br(detectAndCreateLink($comment->body)) : nl2br($comment->body);
       $comment_row_data['username'] = $this->members->getUserName($comment->user_id);
       $comment_row_data['user_id'] = $comment->user_id;
       $comment_row_data['owner'] = $comment->user_id == $current_uid;
       $comment_row_data['comment_id'] = $comment->id;
       $comment_row_data['created'] = time_elapsed_string('@'.$comment->created);
       $comment_row_data['user_picture'] = $this->members->getUserPictureUrl($comment->user_id);
+      $comment_row_data['like_button'] = \Drupal::formBuilder()->getForm(\Drupal\ol_like\Form\LikeForm::class, 'comment', $comment->id);
+      $comment_row_data['files'] = $this->files->getAttachedFiles('comment', $comment->id);
       if($comment_row_data['owner'] == TRUE){
         $comment_row_data['edit_form'] = \Drupal::formBuilder()->getForm(\Drupal\ol_main\Form\CommentForm::class, 'edit', $comment->id, $entity_type, $entity_id);
       }
-      $template = ($show_small) ? 'comment_item_small' : 'comment_item';
-      $comment_row_data['like_button'] = \Drupal::formBuilder()->getForm(\Drupal\ol_like\Form\LikeForm::class, 'comment', $comment->id);
-      $comment_row_data['files'] = $this->files->getAttachedFiles('comment', $comment->id);
+      // Work around for now, in near future make inline editing consistent for all small comments.
+      if($entity_type == 'task'){
+        $comment_row_data['is_task_comment'] = true;
+      }
       // Render HTML.
       // Files lib needed for handling file attachments in comments.
       // Libraries renders multiple times, but only 1 css visible, that's good. But not too much unneeded load?
+      $template = ($show_small) ? 'comment_item_small' : 'comment_item';
       $render = [
         '#theme' => $template,
-        '#attached' => ['library' => ['ol_main/ol_comments','ol_files/ol_files']],
+        '#attached' => ['library' => ['ol_main/ol_comments']],
         '#vars' => $comment_row_data,
       ];
       $comments_html .= \Drupal::service('renderer')->render($render);
     }
-    // Build render array.
+    // Paged output.
     if($pager){
       $pager = [];
       $pager[] = ['#type' => 'pager'];
@@ -225,6 +230,21 @@ class OlComments{
     else {
       return $query->execute()->fetchAll();
     }
+  }
+
+  /**
+   * @param $comment_id
+   *
+   * @return mixed
+   */
+  public function getCommentData($comment_id){
+    // Query for me, b*tch
+    $query = \Drupal::database()->select('ol_comment', 'olc');
+    $query->addField('olc', 'entity_type');
+    $query->addField('olc', 'entity_id');
+    $query->condition('olc.id', $comment_id);
+    $query->condition('olc.status', 1);
+    return $query->execute()->fetchObject();
   }
 
   /**

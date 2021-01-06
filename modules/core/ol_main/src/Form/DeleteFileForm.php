@@ -80,10 +80,7 @@ class DeleteFileForm extends FormBase {
     $file_type = $form_state->getValue('file_type');
     if ($file_type == 'file') {
       $fid = $this->files->getFileId($ol_file_id);
-      $this->files->removeOlFileAndFile($fid, true);
-    }
-    elseif ($file_type == 'text_doc') {
-      $this->files->removeOlFileAndTextDoc($ol_file_id, true);
+      $this->files->removeOlFileAndFile($fid, false);
     }
   }
 

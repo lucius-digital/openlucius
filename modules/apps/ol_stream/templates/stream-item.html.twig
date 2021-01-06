@@ -7,7 +7,9 @@
     {% if vars.group_name %}
       <span class="badge badge-secondary"><i class="lni lni-users"> </i> {{ vars.group_name }}</span>
     {% endif %}
-      {{ vars.stream_body|raw }}
+    <i class="{{ vars.icon_class }}"> </i>
+      <span class="text-black-50"> {{ vars.body_text_label }}:</span>
+      "{{ vars.stream_body }}"
     {% if vars.path %}
       <a href="{{ vars.path }}" class="stream-inline-link">{{ 'View'|t }}</a>
     {% endif %}

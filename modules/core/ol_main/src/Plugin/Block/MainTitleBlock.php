@@ -4,6 +4,7 @@ namespace Drupal\ol_main\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\ol_main\Services\OlFiles;
 use Drupal\ol_main\Services\OlGroups;
 use Drupal\ol_members\Services\OlMembers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -29,6 +30,11 @@ class MainTitleBlock extends BlockBase  implements ContainerFactoryPluginInterfa
   protected $members;
 
   /**
+   * @var $files
+   */
+  protected $files;
+
+  /**
    * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
    * @param array $configuration
    * @param string $plugin_id
@@ -43,6 +49,7 @@ class MainTitleBlock extends BlockBase  implements ContainerFactoryPluginInterfa
       $plugin_definition,
       $container->get('olmain.groups'),
       $container->get('olmembers.members'),
+      $container->get('olmain.files')
     );
   }
 
@@ -53,10 +60,11 @@ class MainTitleBlock extends BlockBase  implements ContainerFactoryPluginInterfa
    * @param \Drupal\ol_main\Services\OlGroups $groups
    * @param \Drupal\ol_main\Services\OlFiles $files
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, OlGroups $groups, OlMembers $members) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, OlGroups $groups, OlMembers $members, OlFiles $files ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->groups = $groups;
     $this->members = $members;
+    $this->files = $files;
   }
 
   /**
@@ -77,12 +85,25 @@ class MainTitleBlock extends BlockBase  implements ContainerFactoryPluginInterfa
       $title = $route->getDefault('_title');
     }
 
+    // Get group image.
+    $group_image_url = null;
+    if($group_id) {
+      $header_fid = $this->groups->getHeaderImage();
+      if (!empty($header_fid)) {
+        $header_uri = $this->files->getFileUri($header_fid);
+        $style = \Drupal::entityTypeManager()->getStorage('image_style')->load('50x50');
+        $group_image_url = $style->buildUrl($header_uri);
+      }
+    }
+
+
     // Build.
     $theme_vars = [
       'title' => $title,
       'group_id' => $group_id,
       'is_group_admin' => $is_group_admin,
       'title_icon' => $title_icon,
+      'group_image_url' => $group_image_url,
     ];
     $build = [
       '#theme' => 'main_title_block',

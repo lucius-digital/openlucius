@@ -1,0 +1,20 @@
+add ol category entities:
+  title: 'Create new OL Category entities'
+
+administer ol category entities:
+  title: 'Administer OL Category entities'
+  description: 'Allow to access the administration form to configure OL Category entities.'
+  restrict access: true
+
+delete ol category entities:
+  title: 'Delete OL Category entities'
+
+edit ol category entities:
+  title: 'Edit OL Category entities'
+
+view published ol category entities:
+  title: 'View published OL Category entities'
+
+view unpublished ol category entities:
+  title: 'View unpublished OL Category entities'
+

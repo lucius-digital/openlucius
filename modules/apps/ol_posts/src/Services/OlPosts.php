@@ -194,8 +194,8 @@ class OlPosts{
     $post->save();
     $id = $post->id();
     // Add stream item.
-    $stream_body = t('Added a post: @post', array('@post' => $name)); // Create new stream item.
-    $this->stream->addStreamItem($gid, 'post_added', $stream_body, 'post', $id); // Create stream item.
+    $stream_body = $name; // Create new stream item.
+    $this->stream->addStreamItem($gid, 'post_added', $stream_body, 'posts', $id); // Create stream item.
     // Mail if true
     if($send_mail == true){
       // Generate url and send mails.

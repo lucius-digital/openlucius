@@ -6,7 +6,6 @@
  */
 
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_theme().
@@ -160,6 +159,18 @@ function ol_main_file_download($uri) {
     $group_ids_current_user = getUserGroups($user_id);
     // Grant access if they have a common group.
     $access = !empty(array_intersect($group_ids, $group_ids_current_user));
+  }
+
+  // OWN USER PICTURE during upload?
+  if(empty($access)){
+    // Get all groups user picture owner is in.
+    $query = \Drupal::database()->select('file_managed', 'file');
+    $query->addField('file', 'fid');
+    $query->condition('file.uri', $uri);
+    $query->condition('file.uid', $user_id);
+    $fid = $query->execute()->fetchField();
+    // Grant access if this is a picture user owns, even status 0.
+    $access = !empty($fid);
   }
 
   // Check if this maybe is a STORY IMAGE.

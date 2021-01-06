@@ -3,7 +3,6 @@ ol_files:
   css:
     theme:
       css/ol_files.css: {}
-      DataTables/datatables.min.css: {}
+      css/bootstrap-icons/bootstrap-icons.css: {}
   js:
     js/ol_files.js: {}
-    DataTables/datatables.min.js: {}

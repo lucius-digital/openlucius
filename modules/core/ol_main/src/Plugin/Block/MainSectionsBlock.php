@@ -90,7 +90,7 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
       return null;
     }
     $sections = $this->sections->getSectionsData();
-    // Yeah.., this is not a good way to build url's, needs work.
+    // Yeah.., this is not an ideal way to build url's, needs work.
     $themeable_sections = $this->makeSectionsThemeable($sections, $gid);
 
     // Nasty active styling for now.
@@ -162,34 +162,25 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
    * @return |null
    */
   private function getSectionCount($key){
-    // Switch to query the right table.
-    // This should be done in a more constructive way.
+
+    // Check if an external modules must be involved to generate link.
+    $count = \Drupal::moduleHandler()->invokeAll('sections_badges_count', [$key]);
+
+    // Return if there is a $count invoked by hook.
+    if(!empty($count['count'])) {
+      return $count['count'];
+    }
+
+    // If there was no count returned, than maybe it's a core one.
     switch ($key) {
-      case 'stream':
-        return null;
       case 'messages':
         $table = 'ol_message';
         break;
       case 'posts':
         $table = 'ol_post';
         break;
-      case 'icebreakers':
-        $table = 'ol_icebreaker';
-        break;
-      case 'files':
-        $table = 'ol_file';
-        break;
       case 'members':
         $table = 'ol_group_user';
-        break;
-      case 'culture_questions':
-        $table = 'ol_culture_question';
-        break;
-      case 'social_questions':
-        $table = 'ol_social_question';
-        break;
-      case 'shoutouts':
-        $table = 'ol_shout_out';
         break;
       case 'notebooks':
         $table = 'ol_text_doc';
@@ -199,6 +190,7 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
     if(empty($table)){
       return null;
     }
+
     // Count query.
     $gid = $this->route->getParameter('gid');
     $query = \Drupal::database()->select($table, 'oltable');

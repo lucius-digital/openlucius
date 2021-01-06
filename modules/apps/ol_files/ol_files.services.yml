@@ -2,6 +2,3 @@ services:
   olfiles.folders:
     class: Drupal\ol_files\Services\OlFolders
     arguments: ['@current_route_match', '@database','@messenger','@current_user','@olmembers.members','@olstream.stream']
-  olfiles.textdocs:
-    class: Drupal\ol_files\Services\OlTextDocs
-    arguments: ['@current_route_match','@olmembers.members','@olstream.stream','@olmain.mail', '@olmain.groups','@olmain.comments','@olmain.files']

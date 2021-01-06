@@ -10,7 +10,9 @@
         </button>
       </div>
       <div class="modal-body">
+        {% trans %}
         <p>You are about to remove <b><span class="folder_name"></span></b>. Are you sure?</p>
+        {% endtrans %}
       </div>
       <div class="modal-footer">
         {{ vars.remove_folder_modal }}

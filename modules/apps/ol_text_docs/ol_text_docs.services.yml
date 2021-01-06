@@ -1,0 +1,7 @@
+services:
+  oltextdocs.categories:
+    class: Drupal\ol_text_docs\Services\OlCategories
+    arguments: ['@current_route_match', '@database','@messenger','@current_user','@olmembers.members','@olstream.stream']
+  oltextdocs.textdocs:
+    class: Drupal\ol_text_docs\Services\OlTextDocs
+    arguments: ['@current_route_match','@olmembers.members','@olstream.stream','@olmain.mail', '@olmain.groups','@olmain.comments','@olmain.files']

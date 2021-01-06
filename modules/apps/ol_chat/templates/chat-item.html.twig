@@ -1,0 +1,59 @@
+<li class="media">
+  <img class="mr-3 rounded-circle" src="{{ vars.user_picture_url }}" alt="Image" height="30">
+  <div class="media-body">
+    <h6 class="mt-0 mb-1">{{ vars.user_name }}
+      <span class="badge badge-light comment">
+         {{ vars.created }}
+      </span>
+      {% if vars.owner == true %}
+        <button class="btn btn-link p-0 lh-100" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="lni lni-line-dotted p-0"></i>
+        </button>
+        <div class="dropdown-menu" aria-labelledby="ol-drop2">
+          {% if vars.files %}
+            <button class="dropdown-item file-delete-via-modal-btn"
+                    data-toggle="modal"
+                    data-target="#deleteFileModal"
+                    data-chat_id="{{ vars.id }}"
+              ><i class="lni lni-close"></i> {{ 'Delete Files...'|t }}
+            </button>
+          {% else %}
+            <button class="dropdown-item file-delete-via-modal-btn"
+                    data-toggle="modal"
+                    data-target="#editChatItemModal"
+                    data-chat_id="{{ vars.id }}"
+            ><i class="lni lni-pencil"></i> {{ 'Edit...'|t }}
+            </button>
+          {% endif %}
+        </div>
+      {% endif %}
+    </h6>
+      <span class="chat-item-body {{ vars.item_type }}" id="chat-body-id_{{ vars.id }}">
+        <span class="body-text">
+        {% if vars.is_files %}
+          {{ 'Uploaded' }}:
+        {% else %}
+          {{ vars.chat_body|raw }}
+        {% endif %}
+        </span>
+        {% if vars.path %}
+          <a href="{{ vars.path }}" class="chat-inline-link">{{ 'View'|t }}</a>
+        {% endif %}
+        {% if vars.edited %}
+          {% if vars.is_files %}
+            <span class="small text-muted font-italic"> {{ '-files removed-' }}</span>
+          {% else %}
+            <span class="small text-muted font-italic"> {{ '-edited-' }}</span>
+          {% endif %}
+        {% endif %}
+      </span>
+    {% if vars.is_files %}
+      <span id="files-body-id_{{ vars.id }}">
+        {% for file in vars.files  %}
+          <a href="{{ file.file_path }}" class="chat-inline-link" target="_blank">{{ file.file_name }}</a>
+          {% if not loop.last %},{% endif %}
+        {% endfor %}
+      </span>
+    {% endif %}
+  </div>
+</li>

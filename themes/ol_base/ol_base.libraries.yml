@@ -1,4 +1,3 @@
-# CSS/JS libraries declared here.
 global:
   version: 1
   css:
@@ -6,7 +5,6 @@ global:
       '//stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css': { type: external, minified: true}
       '//cdn.lineicons.com/2.0/LineIcons.css': { type: external, minified: true}
       '//cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css': { type: external, minified: true}
-      css/components/status-messages.css: {}
       css/components/pager.css: {}
       css/components/tabs.css: {}
       css/components/user.css: {}

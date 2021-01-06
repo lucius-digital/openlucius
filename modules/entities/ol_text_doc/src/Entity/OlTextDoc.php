@@ -186,6 +186,11 @@ class OlTextDoc extends ContentEntityBase implements OlTextDocInterface {
       ->setDescription(t('The Group this message belongs to.'))
       ->setRequired(TRUE);
 
+    $fields['category_id'] = BaseFieldDefinition::create('integer')
+      ->setLabel(t('category_id'))
+      ->setDescription(t('category_id'))
+      ->setRequired(TRUE);
+
     $fields['body'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Message Body'))
       ->setDescription(t('The body of the message.'))

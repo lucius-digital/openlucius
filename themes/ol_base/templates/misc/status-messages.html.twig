@@ -35,7 +35,10 @@
           {% if type == 'status' %}
             {% set type = 'success'|t %}
           {% endif %}
-          <div class="toast mr-4 mt-3" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+          {% if type == 'warning' %}
+            {% set type = 'notice'|t %}
+          {% endif %}
+          <div class="toast mr-4 mt-3" role="alert" aria-live="assertive" aria-atomic="true" data-delay="4000" data-autohide="false">
             <div {{ attributes.addClass(classes)|without('role', 'aria-label') }}>
               <strong class="mr-auto">
                 {{ type }}

@@ -1,0 +1,30 @@
+ol_chat.group:
+  path: '/group/{gid}/chat'
+  defaults:
+    _controller: '\Drupal\ol_chat\Controller\ChatController::getChat'
+    _title: 'Chat'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _group_access_check: 'TRUE'
+    group_id: '[0-9]+'
+# Ajax for getting latest chat items
+ol_chat.get_latest_chat_items:
+  path: '/group/{uuid}/get-latest-chat-items'
+  defaults:
+    _controller: '\Drupal\ol_chat\Controller\ChatAjaxController::getChatItems'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _group_uuid_access_check: 'TRUE'
+#    _csrf_token: 'TRUE'
+# Ajax for getting timestamp of last message
+ol_chat.get_last_message_timestamp:
+  path: '/group/{uuid}/get-last-message-timestamp'
+  defaults:
+    _controller: '\Drupal\ol_chat\Controller\ChatAjaxController::getLastMessageTimestamp'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _group_uuid_access_check: 'TRUE'
+#    _csrf_token: 'TRUE'

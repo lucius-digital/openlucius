@@ -1,0 +1,20 @@
+add ol chat item entities:
+  title: 'Create new OL Chat Item entities'
+
+administer ol chat item entities:
+  title: 'Administer OL Chat Item entities'
+  description: 'Allow to access the administration form to configure OL Chat Item entities.'
+  restrict access: true
+
+delete ol chat item entities:
+  title: 'Delete OL Chat Item entities'
+
+edit ol chat item entities:
+  title: 'Edit OL Chat Item entities'
+
+view published ol chat item entities:
+  title: 'View published OL Chat Item entities'
+
+view unpublished ol chat item entities:
+  title: 'View unpublished OL Chat Item entities'
+

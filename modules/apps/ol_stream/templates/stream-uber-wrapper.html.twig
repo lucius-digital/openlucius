@@ -1,10 +1,6 @@
 <div class="container">
   {# Only use flex-row-reverse when there is a 'groups' block, like on homepage. #}
-  {% if vars.group_id is empty %}
     <div class="row flex-row-reverse">
-  {% else %}
-    <div class="row">
-  {% endif %}
     {% if vars.group_id is empty %}
       <div class="col-lg-3 bd-content mb-5">
         <div class="pb-2 pt-1">
@@ -31,13 +27,28 @@
           {% endfor %}
         </div>
       </div>
+      {% else %}
+      <div class="col-lg-3 pl-md-5 bd-content">
+        {#  This is to outline the blocks on their tops #}
+        <div class="pb-2 pt-1	d-none d-sm-none d-lg-block">
+          <h2 class="h5 pl-3 pt-3">&nbsp; </h2>
+        </div>
+        {% if vars.header_image_url %}
+        <div>
+          <img alt="group image" class="img-fluid rounded img-thumbnail" src="{{ vars.header_image_url }}" />
+        </div>
+        {% endif %}
+      </div>
     {% endif %}
-    <div class="col-lg-9 pl-md-5 bd-content mb-5">
+
+    <div class="col-lg-9 pl-md-5  bd-content mb-5">
       <div>
         {% if vars.username %}
           <h1 class="h4 pl-3 pt-3">{{ vars.username }}'s {{ 'activity'|t }}</h1>
+        {% elseif vars.group_id is empty %}
+          <h1 class="h4 pl-3 pt-3"> {{ 'Activity in all your groups'|t }}</h1>
         {% else %}
-          <h1 class="h4 pl-3 pt-3">{{ vars.username }} {{ 'Activity'|t }}</h1>
+          <h1 class="h4 pl-3 pt-3"> {{ 'Activity in this group'|t }}</h1>
         {% endif %}
       </div>
       {% if vars.stream_html is empty %}

@@ -1,0 +1,89 @@
+<div class="col-md-11 col-xl-10 pl-md-5 p-0 bd-content mb-5">
+  <div class="col-md-9">
+
+    {% if vars.no_item_here == false %}
+      {{ vars.load_more }}
+    {% endif %}
+
+    <span id="last_message_timestamp">{{ vars.last_message_timestamp }}</span>
+    <span id="last_message_timestamp_db">testing</span>
+{#    <span id="last_message_timestamp_db">testing</span>#}
+    {#Mobile: <span id="mobile_check">mobile?</span>
+    Tablet: <span id="tablet_check">tablet?</span>
+    IOS: <span id="ios_check">ios?</span>#}
+    <div class="container chat-wrapper">
+      <div class="row">
+        <div class="col-12 chat-bar">
+          <div class="chat-list-holder">
+              <ul class="list-unstyled chat-list" id="message-container">
+                <span id="append_here"></span>
+                <div id="chat-items-container">
+                  {% if vars.user_chat %}
+                  {{ vars.chat_html|raw }}
+                  {% else %}
+                  <div class="loader"></div>
+                  <br />
+                    {{ 'Loading...'|t }}
+                  {% endif %}
+                </div>
+              </ul>
+          </div>
+          {{ vars.chat_form }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Files modal-->
+<div class="modal fade modal-large" id="chatFilesModal"
+     tabindex="-1" role="dialog" aria-labelledby="chatFilesModal" aria-hidden="true"
+     data-keyboard="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{ 'Upload Files'|t }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+        {{ vars.files_form }}
+    </div>
+  </div>
+</div>
+
+<!-- Edit chat item modal-->
+<div class="modal fade modal-large" id="editChatItemModal"
+     tabindex="-1" role="dialog" aria-labelledby="editChatItemModal" aria-hidden="true"
+     data-keyboard="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{ 'Edit Your Message'|t }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {{ vars.edit_chat_form }}
+    </div>
+  </div>
+</div>
+
+
+<!-- Delete file modal-->
+<div class="modal fade modal-large" id="deleteFileModal"
+     tabindex="-1" role="dialog" aria-labelledby="deleteFileModal" aria-hidden="true"
+     data-keyboard="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{ 'Delete Files'|t }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {{ vars.file_delete_form }}
+    </div>
+  </div>
+</div>
+

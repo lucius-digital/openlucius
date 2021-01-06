@@ -10,6 +10,7 @@ use Drupal\Core\Messenger\Messenger;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
+use Drupal\ol_board\Services\OlTasks;
 use Drupal\ol_group\Entity\OlGroup;
 use Drupal\ol_group_user\Entity\OlGroupUser;
 use Drupal\ol_main\Services\OlGroups;
@@ -24,6 +25,11 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class AddGroupForm extends FormBase {
 
   /**
+   * @var $tasks
+   */
+  protected $tasks;
+
+  /**
    * @var $groups
    */
   protected $groups;
@@ -33,8 +39,9 @@ class AddGroupForm extends FormBase {
    *
    * @param \Drupal\ol_main\Services\OlGroups $groups
    */
-  public function __construct(OlGroups $groups) {
+  public function __construct(OlGroups $groups, OlTasks $tasks) {
     $this->groups = $groups;
+    $this->tasks = $tasks;
   }
 
   /**
@@ -42,7 +49,8 @@ class AddGroupForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('olmain.groups')
+      $container->get('olmain.groups'),
+      $container->get('olboard.tasks')
     );
   }
 
@@ -64,7 +72,7 @@ class AddGroupForm extends FormBase {
       '#attributes' => array('id' => array('group-type-id')),
     ];
     $form['name'] = [
-      '#prefix' => '<div class="col-md-6 col-xl-7 offset-xl-4 offset-md-4 py-3 bd-content mb-5 bg-white rounded shadow-sm">
+      '#prefix' => '<div class="col-md-4 col-xl-5 offset-xl-4 offset-md-4 py-3 bd-content mb-5 bg-white rounded shadow-sm">
                      <div class="modal-body">
                       <div class="form-group">',
       '#type' => 'textfield',
@@ -108,9 +116,11 @@ class AddGroupForm extends FormBase {
     // Get form data.
     $name = Html::escape($form_state->getValue('name'));
     $type = Html::escape($form_state->getValue('type'));
-    $enabled_sections = 'stream,messages,posts,files,members';
+    $enabled_sections = 'stream,board,chat,messages,posts,notebooks,files,members';
     // Save group.
     $this->groups->addGroup($name, $type, null, true, $enabled_sections);
+
+
     if ($type == 'company') {
       \Drupal::messenger()
         ->addStatus(t('All members were added to this company wide group.'));

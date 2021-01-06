@@ -1,0 +1,160 @@
+{# Yeah... this needs some chopping up, make it more modular / atomic #}
+<!-- Heading -->
+
+<div class="col-md-11 col-xl-10 pl-md-5 bd-content mb-5">
+  <div class="row py-2 pl-3">
+    <div class="col">
+      <h1 class="h4">{{ vars.page_title }}</h1>
+    </div>
+    <div class="col text-right">
+      <button class="btn btn-success btn-sm" type="button" id="files-add-drop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="lni lni-plus"></i> {{ 'Add'|t }} <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="files-add-drop">
+        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#textDoc"><i class="lni lni-plus"></i> {{ 'Add Notebook'|t }}</a>
+        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addEditCategoryModal"><i class="lni lni-tag"></i> {{ 'Add Category'|t }}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <!-- Categories -->
+      <div class="col-lg-3 categories mb-3">
+        <div class="list-group small">
+          {% if vars.current_category == 'all' or vars.current_category is empty %}
+            {% set active = 'active' %}
+          {% endif %}
+          <a href="{{ vars.path }}?category=all" class="list-group-item list-group-item-action flex-column align-items-start {{ active }}">
+            <div class="d-flex w-100 justify-content-between ">
+              <h7>{{ 'All Notebooks'|t }}</h7>
+              <small><span class="badge badge-light badge-pill">{{ vars.total_textdocs_count }}</span></small>
+            </div>
+          </a>
+        </div>
+        <div class="list-group category-left">
+          <ul class="list-group small">
+            {% for category in vars.categories %}
+              {# Nasty active styling for now :s #}
+              {% if vars.current_category ==  category.id  %}
+                {% set class = 'active' %}
+              {% else %}
+                {% set class = 'text-muted' %}
+              {% endif %}
+                <li class="list-group-item d-flex justify-content-between align-items-center {{ class }}">
+                  <a href="{{ vars.path }}?category={{ category.id }}" class="category-link {{ class }}">
+                    {% if vars.current_category ==  category.id %}
+                      <i class="lni lni-tag"></i>
+                    {% else %}
+                      <i class="lni lni-tag"></i>
+                    {% endif %}
+                    {{ category.name }}
+                  </a>
+                    {% if category.can_admin %}
+                      <button class="btn btn-link p-0"" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="lni lni-line-dotted"></i>
+                      </button>
+                      <div class="dropdown-menu dropdown-menu-left" aria-labelledby="ol-drop2">
+                        <button class="dropdown-item" data-toggle="modal" data-target="#addEditCategoryModal"
+                                data-name="{{ category.name }}"
+                                data-category_id="{{ category.id }}"
+                        ><i class="lni lni-pencil"></i> {{ 'Rename Category'|t }}
+                        </button>
+                        <button class="dropdown-item" data-toggle="modal" data-target="#removeCategory"
+                                data-category_name="{{ category.name }}"
+                                data-category_id="{{ category.id }}"
+                        ><i class="lni lni-close"></i> {{ 'Remove Category'|t }}</button>
+                      </div>
+                    {% endif %}
+                  <small><span class="badge badge-light badge-pill">{{ category.count_files }}</span></small>
+                </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% if vars.org_member == true %}
+          <div class="manage-category text-right">
+            {% if vars.categories is empty %}
+              <button type="button" class="btn btn-light text-muted" data-toggle="modal" data-target="#addCategoryeModal"><i class="lni lni-plus"></i> {{ 'Add First Category'|t }}</button>
+            {% else %}
+              <button type="button" class="btn btn-light text-muted" data-toggle="modal" data-target="#addCategoryeModal"><i class="lni lni-plus"></i> {{ 'Category'|t }}</button>
+              <button type="button" class="btn btn-light text-muted" data-toggle="modal" data-target="#manageCategoriesModal"> {{ 'Manage Categories'|t }}</button>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div> <!-- / Categories -->
+
+      <!-- Notebooks -->
+      <div class="col-lg-9 p-3 card mb-4">
+        <div class="row">
+        {% if vars.textdocs is not empty %}
+           {{ vars.textdocs|raw }}
+        {% else %}
+          <p class="text-muted small m-3">
+            <i class="lni lni-bulb"></i> <i> {{ 'Be the first to add a notebook.'|t }}</i><br />
+          </p>
+        {% endif %}
+        </div>
+      </div> <!-- / notebooks -->
+    </div> <!-- / Row -->
+  </div><!-- / Container -->
+
+  <!-- Modal add/edit category-->
+  {# Manipulated by ol_text_docs.js #}
+  <div class="modal fade" id="addEditCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addMessageModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-tag"></i> {{ 'Add Category'|t }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+          {{ vars.category_form }}
+      </div>
+    </div>
+  </div>
+  <!-- / Modal add category  -->
+
+  <!-- Modal remove file from category-->
+  {# Manipulated by ol_text_docs.js #}
+  <div class="modal fade" id="removeTextDocFromCategory" tabindex="-1" role="dialog" aria-labelledby="removeTextDocFromCategory" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ 'Remove from category'|t }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          {% trans %}
+          <p>You are about to remove <b><span class="textdoc_name"></span></b> from category <b><span class="category_name"></span></b>. Are you sure?</p>
+          {% endtrans %}
+        </div>
+        {{ vars.remove_from_category }}
+      </div>
+    </div>
+  </div>
+  <!-- / Modal remove file from category  -->
+
+  <!-- Text-doc modal-->
+  {# Manipulated by xyz.js #}
+  <div class="modal fade modal-large" id="textDoc" tabindex="-1" role="dialog" aria-labelledby="textDoc" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ 'Notebook'|t }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {{ vars.text_doc_form }}
+      </div>
+    </div>
+  </div>
+  <!-- / Text-doc modal  -->
+
+</div>
+<!-- Remove cat modal-->
+{{ vars.remove_category_html }}
+

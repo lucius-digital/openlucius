@@ -137,6 +137,11 @@ class MessageForm extends FormBase {
       '#type' => 'checkboxes',
       '#options' => $send_mail_title,
       '#default_value' => $mail_send_default,
+      '#attributes' => array(
+        'data-toggle' => 'toggle',
+        'data-onstyle' => 'success',
+        'data-size' => 'xs',
+      ),
       '#weight' => '40',
       '#suffix' => '</div></div></div>'
     );

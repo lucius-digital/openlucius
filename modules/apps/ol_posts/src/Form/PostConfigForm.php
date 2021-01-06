@@ -77,6 +77,11 @@ class PostConfigForm extends FormBase {
       '#options' => array( '1' => t('Enable this')),
       '#default_value' => array($enabled),
       '#weight' => '20',
+      '#attributes' => array(
+        'data-toggle' => 'toggle',
+        'data-onstyle' => 'success',
+        'data-size' => 'xs',
+      ),
       '#suffix' => '</div>'
     );
 
@@ -104,6 +109,11 @@ class PostConfigForm extends FormBase {
         'Fri' => t('Friday'),
         'Sat' => t('Saturday'),
         'Sun' => t('Sunday'),
+      ),
+      '#attributes' => array(
+        'data-toggle' => 'toggle',
+        'data-onstyle' => 'success',
+        'data-size' => 'xs',
       ),
       '#default_value' => $default_enabled,
       '#weight' => '40',

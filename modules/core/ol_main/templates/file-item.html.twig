@@ -19,7 +19,7 @@
 
 {# Everywhere else image #}
 {% else %}
-  <li class="media">
+  <li class="media" id="file-li-id_{{ vars.ol_fid }}">
     {#  <a id="file_id_{{ vars.file_id }}"></a>#}
     <a href="{{ vars.url }}" class="pull-left" target="_blank">
       {% if vars.thumbnail_url %}
@@ -31,20 +31,36 @@
     <div class="media-body">
       {% if vars.big_image == false %}
         <span class="text-muted filename">
-      <a href="{{ vars.url }}" target="_blank"> {{ vars.filename }}</a>
-    </span>
-        <span class="badge badge-light">{{ vars.file_size }}</span>
+          {% if vars.thumbnail_url %}
+          <a href="{{ vars.url }}" target="_blank"> {{ vars.filename }}</a>
+          {% else %}
+          <a href="{{ vars.url }}"> {{ vars.filename }}</a>
+          {% endif %}
+        </span>
+        <span class="badge badge-light  text-muted small"
+              data-toggle="tooltip" data-placement="top" title="{{ 'File size'|t }}" data-delay="500"
+        >{{ vars.file_size }}</span>
+        <span class="badge badge-light text-muted small"
+            data-toggle="tooltip" data-placement="top" title="{{ 'Uploaded by'|t }}" data-delay="500"
+        >{{ vars.username }} </span>
+        <span class="badge badge-light text-muted small"
+            data-toggle="tooltip" data-placement="top" title="{{ 'Date uploaded'|t }}" data-delay="500"
+        >{{ vars.created|date('d-M-Y, H:m') }} </span>
       {% endif %}
       {% if vars.owner == TRUE %}
         <button class="btn btn-link" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="lni lni-line-dotted"></i>
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="ol-drop2">
-          <button class="dropdown-item" data-toggle="modal" data-target="#removeFile"
+          {% if vars.is_task_file %}
+            <button class="dropdown-item delete-file-btn" data-ol_file_id="{{ vars.ol_fid }}" > <i class="lni lni-close"></i> {{ 'Remove File'|t }}</button>
+          {% else %}
+          <button class="dropdown-item file-delete-via-modal-btn" data-toggle="modal" data-target="#removeFile"
                   data-name="{{ vars.filename }}"
                   data-ol_fid="{{ vars.ol_fid }}"
                   data-file_type="{{ vars.file_type }}">
             <i class="lni lni-close"></i> {{ 'Remove File'|t }}</button>
+          {% endif %}
         </div>
       {% endif %}
     </div>

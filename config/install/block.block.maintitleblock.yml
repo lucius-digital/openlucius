@@ -3,6 +3,7 @@ status: true
 dependencies:
   module:
     - ol_main
+    - system
   theme:
     - ol_base
 id: maintitleblock
@@ -16,4 +17,8 @@ settings:
   label: 'Main title block'
   provider: ol_main
   label_display: '0'
-visibility: {  }
+visibility:
+  request_path:
+    id: request_path
+    pages: '<front>'
+    negate: true

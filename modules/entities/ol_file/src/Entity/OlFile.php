@@ -202,6 +202,7 @@ class OlFile extends ContentEntityBase implements OlFileInterface {
     $fields['entity_type'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Entity Type'))
       ->setDescription(t('The Entity Type this file belongs to.'));
+
     return $fields;
   }
 

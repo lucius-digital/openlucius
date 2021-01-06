@@ -74,8 +74,7 @@ class OlFolders{
     ]);
     $folder->save();
     $id = $folder->id();
-    $stream_body = t('Added a folder: @folder', array('@folder' => $name));
-    $this->stream->addStreamItem($gid, 'folder_added', $stream_body, 'folder', $id);
+    $this->stream->addStreamItem($gid, 'folder_added', $name, 'folder', $id);
     return $id;
   }
 
@@ -101,7 +100,7 @@ class OlFolders{
         ->condition('folder_id', $folder_id)
         ->execute();
       // Add stream item.
-      $stream_body = t('Removed a folder: @folder', array('@folder' => $folder_name));
+      $stream_body = $folder_name;
       $this->stream->addStreamItem($gid, 'folder_removed', $stream_body, 'folder', $folder_id);
       \Drupal::messenger()->addStatus(t('Folder removed successfully.'));
     }

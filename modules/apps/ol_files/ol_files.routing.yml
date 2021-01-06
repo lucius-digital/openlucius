@@ -9,28 +9,3 @@ ol_files.group_files:
     _group_access_check: 'TRUE'
     _permission: 'access ol content'
     gid: '[0-9]+'
-ol_files.text_doc:
-  path: '/group/{gid}/files/text_doc/{id}'
-  defaults:
-    _controller: '\Drupal\ol_files\Controller\FilesController::getTextDoc'
-    _title: 'Text Document'
-  options:
-    no_cache: 'TRUE'
-  requirements:
-    _group_access_check: 'TRUE'
-    _permission: 'access ol content'
-    id: '[0-9]+'
-    gid: '[0-9]+'
-
-
-# Migrated to dynamic form -and modal.
-#ol_files.remove_folder:
-#  path: '/group/{gid}/files/remove_folder/{folder_id}'
-#  defaults:
-#    _controller: '\Drupal\ol_files\Controller\FilesController::removeFolder'
-#  options:
-#    no_cache: 'TRUE'
-#  requirements:
-#    _group_access_check: 'TRUE'
-#    gid: '[0-9]+'
-#    folder_id: '[0-9]+'

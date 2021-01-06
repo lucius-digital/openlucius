@@ -1,0 +1,16 @@
+chat:
+  version: 1.x
+  header: true
+  css:
+    theme:
+      css/chat.css: {}
+  js:
+    js/chat.js: { weight: -10, attributes: { defer: true}  }
+    js/chat_layout.js: { weight: -10, attributes: { defer: true} }
+
+mentions:
+  css:
+    theme:
+      css/bootstrap-suggest.css: {}
+  js:
+    js/bootstrap-suggest.min.js: { }

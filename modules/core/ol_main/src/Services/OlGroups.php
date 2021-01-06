@@ -170,6 +170,16 @@ class OlGroups{
     return $query->execute()->fetchAll();
   }
 
+  public function getUserGroupsIds(){
+    // Get groups data.
+    $uid = $this->current_user->id();
+    $query = \Drupal::database()->select('ol_group', 'gr');
+    $query->addField('gr', 'id');
+    $query->condition('lgu.member_uid', $uid);
+    $query->join('ol_group_user', 'lgu', 'lgu.group_id = gr.id');
+    return $query->execute()->fetchAllKeyed();
+  }
+
 
   /**
    * @param $groups_data
@@ -205,8 +215,8 @@ class OlGroups{
         $group_data->non_chat_count =  $query->countQuery()->execute()->fetchField();
       }
 
+      // Get timestamp last chat_item in group.
       if (\Drupal::moduleHandler()->moduleExists('ol_chat')) {
-        // Get timestamp last chat_item in group.
         $query = \Drupal::database()->select('ol_chat_item', 'osi');
         $query->addField('osi', 'created');
         $query->condition('osi.group_id', $gid);
@@ -220,7 +230,9 @@ class OlGroups{
           $query->condition('oci.group_id', $gid);
           $query->condition('oci.created', $timestamp_user_group, '>');
           $query->condition('oci.entity_type', 'chat');
-          $group_data->chat_count = $query->countQuery()->execute()->fetchField();
+          $group_data->chat_count = $query->countQuery()
+            ->execute()
+            ->fetchField();
         }
       }
     }
@@ -410,7 +422,7 @@ class OlGroups{
    *
    * @return integer
    */
-  public function getHeaderImage() {
+  public function getHeaderImage($gid = null) {
     $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
     // Query if current user is group admin.
     $query = \Drupal::database()->select('ol_file', 'olf');

@@ -1,0 +1,10 @@
+.categories .active a,
+.categories .active .btn-link{
+  color:#fff;
+}
+table.dataTable thead th,
+table.dataTable thead td,
+table.dataTable.no-footer {
+  border-bottom: 1px solid #9a9a9a !important;
+}
+

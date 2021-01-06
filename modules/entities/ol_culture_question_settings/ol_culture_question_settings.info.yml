@@ -1,6 +1,0 @@
-name: 'OL Culture Question Settings'
-type: module
-description: 'OL Culture Question Settings'
-core_version_requirement: ^9
-package: 'OL App'
-

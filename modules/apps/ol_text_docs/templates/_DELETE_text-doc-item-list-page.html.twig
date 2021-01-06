@@ -1,0 +1,44 @@
+<tr>
+  <td>
+    <h3 class="text-muted"><i class="lni lni-book"></i></h3>
+  </td>
+  <td>
+    <a href="{{ vars.url }}">{{ vars.textdocname }}</a>
+  </td>
+  <td>
+    {{ vars.user_name }}
+  </td>
+  <td>
+    <span class="badge badge-light">{{ vars.created|date("Y-m-d H:i") }}</span>
+  </td>
+  <td>
+    {{ vars.category_name }}
+  </td>
+  <td>
+    {% if vars.owner == TRUE %}
+      <button class="btn btn-link" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="lni lni-line-dotted"></i>
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="ol-drop2">
+        {% if vars.has_categories %}
+          <button class="dropdown-item" data-toggle="modal" data-target="#putTextdocInCategoryModal"
+                  data-name="{{ vars.textdocname }}"
+                  data-category_id="{{ vars.category_id }}"
+                  data-textdoc_id="{{ vars.id }}"
+          ><i class="lni lni-tag"></i> {{ 'Put in Category'|t }}</button>
+        {% endif %}
+        {% if vars.category_id %}
+          <button class="dropdown-item" data-toggle="modal" data-target="#removeTextDocFromCategory"
+                  data-textdoc_id="{{ vars.id }}"
+                  data-textdoc_name="{{ vars.textdocname }}"
+                  data-category_name="{{ vars.category_name }}"
+          ><i class="lni lni-circle-minus"></i> {{ 'Remove From'|t }} '{{ vars.category_name }}'</button>
+        {% endif %}
+        <button class="dropdown-item" data-toggle="modal" data-target="#removeTextdoc"
+                data-name="{{ vars.textdocname }}"
+                data-textdoc_id="{{ vars.id }}"
+        ><i class="lni lni-close"></i> {{ 'Remove'|t }}</button>
+      </div>
+    {% endif %}
+  </td>
+</tr>

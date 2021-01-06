@@ -1,4 +1,4 @@
-<div class="col-md-10 col-xl-9 pl-md-5 bd-content mb-5 offset-lg-1">
+<div class="col-md-9 col-xl-8 pl-md-5 bd-content mb-5 offset-lg-1">
   <!-- Title and action buttons-->
   <div class="row py-2 pl-3">
     <div class="col">
@@ -42,8 +42,8 @@
   {% else %}
     <div class="card ol-card">
       <div class="card-header">
-        <p class="text-muted">
-          <i class="lni lni-bulb"></i> <i> {{ 'Be the first to post.'|t }}</i><br />
+        <p class="text-muted small m-3">
+          <i class="lni lni-bulb"></i> <i> {{ 'Be the first to add a post.'|t }}</i><br />
         </p>
       </div>
     </div>
@@ -54,7 +54,7 @@
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ vars.page_title }} </h5>
+          <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ 'Post'|t }} </h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>

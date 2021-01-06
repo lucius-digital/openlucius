@@ -1,0 +1,17 @@
+.multiselect-container .multiselect-all .form-check,
+.multiselect-container .multiselect-option .form-check {
+  padding: 0 5px 0 0 !important;
+}
+.form-check-input {
+  position: relative !important;
+}
+label[for="edit-notifications"] {
+  display:inline;
+  font-size: 0.8rem;
+}
+.multiselect{
+  font-size: 0.8rem !important;
+}
+.multiselect-search.form-control {
+  width: 200px;
+}

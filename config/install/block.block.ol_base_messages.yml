@@ -7,7 +7,7 @@ dependencies:
     - ol_base
 id: ol_base_messages
 theme: ol_base
-region: content
+region: main_nav
 weight: -2
 provider: null
 plugin: system_messages_block

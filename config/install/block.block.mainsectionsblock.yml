@@ -9,7 +9,7 @@ dependencies:
 id: mainsectionsblock
 theme: ol_base
 region: main_sections
-weight: 0
+weight: -3
 provider: null
 plugin: main_sections
 settings:

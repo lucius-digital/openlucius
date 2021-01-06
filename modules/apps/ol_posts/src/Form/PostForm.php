@@ -167,15 +167,15 @@ class PostForm extends FormBase {
 //    $body = $form_state->getValue('body')['value'];
 //    $body = check_markup($body,'ol_rich_text');
     $name = $name_shortened = shortenString($body);
-    $send_mail = $form_state->getValue('send_mail')[1];
+//    $send_mail = $form_state->getValue('send_mail')[1];
     $files = $form_state->getValue('files');
     // Existing, update post.
     if(is_numeric($id)){
-      $this->posts->updatePost($id, $name, $body, $send_mail);
+      $this->posts->updatePost($id, $name, $body);
     }
     // New, save post.
     elseif(empty($id)){
-      $id = $this->posts->savePost($name, $body, $send_mail);
+      $id = $this->posts->savePost($name, $body);
     }
     if(!empty($files)) {
       $this->files->saveFiles($files, 'post', $id);

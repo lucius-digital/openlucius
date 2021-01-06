@@ -1,5 +1,0 @@
-name: 'OL Culture Question'
-type: module
-description: 'OL Culture Question'
-core_version_requirement: ^9
-package: 'OL App'

@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * @file
+ * Contains lus_chat.module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function ol_chat_theme() {
+  return [
+    'chat_wrapper' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'chat-wrapper',
+    ],
+    'chat_item' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'chat-item',
+    ],
+    'chat_file_item' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'chat-file-item',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_add_ol_section()
+ * @param $sections
+ */
+function ol_chat_add_ol_section(&$sections){
+  $sections['chat'] = array('label' => t('Chat'), 'path' => t('chat'), 'weight' => 5);
+}
+
+/**
+ * Needed to load the node_server dynamically,
+ *   based on OpenLucius admin settings (admin/config/openlucius).
+ *
+ * Implements hook_library_info_build()
+ */
+function ol_chat_library_info_build() {
+  $node_server = \Drupal::config('ol_main.admin_settings')->get('nodejs_server_url');
+  $libraries = [];
+  $libraries['node_server'] = [
+    'version' => '1.x',
+    'header' => true,
+    'js' => [
+       $node_server.'/socket.io/socket.io.js' => [
+        'type' => 'external',
+        'weight' => '-20',
+        'attributes' => ['defer' => true],
+      ],
+    ],
+  ];
+  return $libraries;
+}

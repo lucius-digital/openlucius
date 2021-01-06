@@ -24,10 +24,21 @@ class OlStream{
    * @var $renderer
    */
   protected $renderer;
+
   /**
    * @var $files
    */
   protected $files;
+
+  /**
+   * @var $sections
+   */
+  protected $sections;
+
+  /**
+   * @var $comments
+   */
+  protected $comments;
 
   /**
    * OlMembers constructor.
@@ -36,12 +47,16 @@ class OlStream{
    * @param $members
    * @param $renderer
    * @param $files
+   * @param $sections
+   * @param $comments
    */
-  public function __construct($groups, $members, $renderer, $files) {
+  public function __construct($groups, $members, $renderer, $files, $sections, $comments) {
     $this->groups = $groups;
     $this->members = $members;
     $this->renderer = $renderer;
     $this->files = $files;
+    $this->sections = $sections;
+    $this->comments = $comments;
   }
 
   /**
@@ -52,8 +67,7 @@ class OlStream{
    * @return mixed
    */
   function getStreamList($gid = null, $offset = 0, $length = 15){
-    // Get plain group_id from uuid.
-    //$group_id = $this->groups->getGroupIdByUuid($group_uuid);
+
     // Get message data.
     $query = \Drupal::database()->select('ol_stream_item', 'osi');
     $query->addField('osi', 'id');
@@ -78,13 +92,17 @@ class OlStream{
    * @param int $offset
    * @param bool $get_total
    *
+   * @param null $gid
+   *
    * @return mixed
    */
-  function getUserStreamList($uid = null, $num_per_page = null, $offset = null, $get_total = false){
+  function getUserStreamList($uid = null, $num_per_page = null, $offset = null, $get_total = false, $gid = null){
 
-    // Get group id's of current user, to only query that data.
-    $current_user_gids = $this->getUserGroups();
-   // print_r($current_user_gids);
+    // Get group id's of current user, if this request wasn't from a single group.
+    $current_user_gids = null;
+    if(!$gid) {
+      $current_user_gids = $this->getUserGroups();
+    }
     // Get message data.
     $query = \Drupal::database()->select('ol_stream_item', 'osi');
     $query->addField('osi', 'id');
@@ -94,18 +112,31 @@ class OlStream{
     $query->addField('osi', 'group_id');
     $query->addField('osi', 'entity_type');
     $query->addField('osi', 'entity_id');
+    $query->addField('osi', 'name', 'stream_item_name');
     $query->addField('ufd', 'name');
     $query->addField('olg', 'name','group_name');
-    // This is optional for User profile page.
+    $query->condition('osi.status', 1);
+
+    // This is optional for user profile page.
     if($uid) {
       $query->condition('osi.user_id', $uid);
     }
-    $query->condition('osi.status', 1);
-    $query->condition('osi.group_id', $current_user_gids, 'IN');
+
+    // if $gid, then source is from a group.
+    if ($gid) {
+      $query->condition('osi.group_id', $gid);
+    }
+    // This is main home stream, that contains all groups user is in.
+    elseif (is_array($current_user_gids)) {
+      $query->condition('osi.group_id', $current_user_gids, 'IN');
+    }
+
+    // Joins and order.
     $query->join('users_field_data', 'ufd', 'ufd.uid = osi.user_id');
     $query->join('ol_group', 'olg', 'olg.id = osi.group_id');
     $query->orderBy('osi.id', 'desc');
-    // Data for message list.
+
+    // Data for list.
     if ($get_total == false) {
       $query->range($offset, $num_per_page);
       $stream_data = $query->execute()->fetchAll();
@@ -114,6 +145,7 @@ class OlStream{
     elseif ($get_total == true) {
       $stream_data = $query->countQuery()->execute()->fetchField();
     }
+
     return $stream_data;
   }
 
@@ -144,7 +176,7 @@ class OlStream{
       array_push($groups_array, $group->group_id);
     }
     // The join to order groups on activity above produces duplicate group_ids.
-    // TODO: Make query efficient so no overhead is caused there.
+    // To do: Make query efficient so no overhead is caused there.
     return array_unique($groups_array);
   }
 
@@ -155,6 +187,7 @@ class OlStream{
    * @return string
    */
   function renderStreamList($stream_items, $recent_on_top = null){
+    // Sort stream items.
     if ($recent_on_top != true) {
       // Sort array, so newest stream items will be on bottom
       usort($stream_items, function ($a, $b) {
@@ -165,7 +198,6 @@ class OlStream{
     $stream_html = '';
     // Loop through array and render HTML rows via twig file.
     foreach ($stream_items as $stream_item){
-      // Set last_id, for load more button.
       $stream_row_data['files'] = '';
       $stream_row_data['user_picture_url'] = $this->members->getUserPictureUrl($stream_item->user_id);
       // If stream_date is today, show 'time ago', else show hard date.
@@ -173,10 +205,8 @@ class OlStream{
       $stream_row_data['created'] = (date('d-m-Y') == date('d-m-Y', $stream_date)) ? date('H:i', $stream_date) : date('D, d M Y, H:i', $stream_date);
       $stream_row_data['user_name'] = $stream_item->name;
       $stream_row_data['uid'] = $stream_item->user_id;
-//      $stream_row_data['group_name'] = $stream_item->group_name;
       $stream_row_data['stream_body'] = detectAndCreateLink($stream_item->stream_body);
       $stream_row_data['path'] = $this->getStreamItemLink($stream_item);
-      //$stream_row_data['item_type'] = (!empty($stream_row_data['path'])) ? 'external': 'chat';
       if ($stream_item->entity_type == 'files_added'){
         $stream_row_data['files'] = $this->getFileLinks($stream_item->entity_id);
         $stream_row_data['stream_body'] = t('Added files: ');
@@ -192,10 +222,13 @@ class OlStream{
    * @param $group_ids
    *
    * @return string
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
   function renderStreamListMulti($stream_data, $group_ids){
 
     $active_date = null;
+    $body_text_labels = $this->getBodyTextLabels();
     foreach ($stream_data as $key => $stream_item) {
       // Create readable date.
       $current_date = date('d M Y', $stream_item->created);
@@ -225,6 +258,8 @@ class OlStream{
             if(!empty($stream_item->stream_body)){
               // Fill item
               $show_this_block = true;
+              $stream_row_item['icon_class'] = $this->getSectionIconClass($stream_item->entity_type);
+              $stream_row_item['body_text_label'] = $body_text_labels[$stream_item->stream_item_name];
               $stream_row_item['stream_body'] = $stream_item->stream_body;
               $stream_row_item['path'] = $this->getStreamItemLink($stream_item);
               $stream_row_item['created'] = date('H:m',$stream_item->created);
@@ -242,7 +277,9 @@ class OlStream{
         }
         if($show_this_block){
           $stream_wrapper['group_id'] = $group_id;
+          $stream_wrapper['in_group'] = \Drupal::service('current_route_match')->getParameter('gid');
           $stream_wrapper['group_name'] = $this->groups->getGroupName($group_id);
+          $stream_wrapper['group_thumbnail_url'] = $this->getGroupImageLink($group_id);
           $stream_wrapper['stream_html'] = $item_render_html;
           $render = ['#theme' => 'stream_wrapper', '#vars' => $stream_wrapper];
           $stream_html .= \Drupal::service('renderer')->render($render);
@@ -252,6 +289,57 @@ class OlStream{
     return $stream_html;
   }
 
+  /**
+   * @param $entity_type
+   *
+   * @return string|null
+   */
+  private function getSectionIconClass($entity_type){
+    // Get sections data.
+    $sections = $this->sections->getSectionsData();
+    // Fill icon_class.
+    foreach ($sections as $section){
+      if ((string) $section['path'] == $entity_type){
+        $icon_class = (string) $section['icon_class']; // Casting to string is needed here.
+      }
+    }
+    // If icon class not filled yet, check if it's a 'left over type'.
+    if (empty($icon_class)){
+      $left_overs_types = [
+        'comment' =>  'lni lni-comments',
+        'user' =>  'lni lni-user',
+        'category' => 'lni lni-tag',
+        'folder' => 'lni lni-folder',
+      ];
+      if(!empty($left_overs_types[$entity_type])) {
+        $icon_class = $left_overs_types[$entity_type];
+      }
+    }
+    return (!empty($icon_class)) ? $icon_class : null ;
+  }
+
+
+  /**
+   * @param $group_id
+   *
+   * @return mixed
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  private function getGroupImageLink($group_id){
+    $header_fid = $this->groups->getHeaderImage($group_id);
+    if (!empty($header_fid)) {
+      $header_uri = $this->files->getFileUri($header_fid);
+      $style = \Drupal::entityTypeManager()->getStorage('image_style')->load('50x50');
+      return $style->buildUrl($header_uri);
+    }
+  }
+
+  /**
+   * @param $file_ids_json
+   *
+   * @return array
+   */
   private function getFileLinks($file_ids_json){
     $file_ids = json_decode($file_ids_json, true);
     $files = array();
@@ -261,77 +349,98 @@ class OlStream{
       $files[$file_id]['file_path'] = Url::fromUri(file_create_url($file_uri));
     }
     return $files;
+  }
 
+  /**
+   * @return array
+   */
+  private function getBodyTextLabels(){
+    $labels = [
+      'user_added' => t('added a user to the group'),
+      'user_removed' => t('remove a user from the group'),
+      'comment_added' => t('added a comment'),
+      'message_added' => t('added a message'),
+      'post_added' => t('added a post'),
+      'text_doc_removed' => t('removed a notebook'),
+    ];
+    // Invoke hook to add labels from other modules.
+    $external_labels = \Drupal::moduleHandler()->invokeAll('stream_item_body_labels');
+    return array_merge($external_labels, $labels);
   }
 
   /**
    * @param $stream_item
-   * @return string
+   *
+   * @return array
    */
   private function getStreamItemLink($stream_item){
-    // This should be more dynamic, so hooked modules will also get involved.
-    $path = '';
+
+    // Check if an external modules must be involved to generate link.
+    $path = \Drupal::moduleHandler()->invokeAll('stream_item_links', [$stream_item]);
+
+    // Return if there is a $path.
+    if(!empty($path['path'])) {
+      return $path['path'];
+    }
+
+    // If $path still empty, than it's a core item, find it here.
     switch ($stream_item->entity_type) {
-      case 'text_doc':
-        $path = Url::fromRoute('ol_files.text_doc',
+      // Content.
+      case 'notebooks':
+        $path = Url::fromRoute('ol_text_docs.text_doc',
           ['gid' => $stream_item->group_id, 'id' => $stream_item->entity_id])->toString();
       break;
-      case 'message':
+      case 'messages':
         $path = Url::fromRoute('lus_message.message',
           ['gid' => $stream_item->group_id, 'id' => $stream_item->entity_id])->toString();
       break;
-      case 'file_added':
-        $file_uri = $this->files->getFileUri($stream_item->entity_id);
-        $path = Url::fromUri(file_create_url($file_uri));
-      break;
-      case 'icebreaker':
-        $path = Url::fromRoute('ol_icebreakers.list_page',
-          ['gid' => $stream_item->group_id])->toString();
-      break;
-      case 'culture_question':
-        $path = Url::fromRoute('ol_culture_questions.detail_page',
-          ['gid' => $stream_item->group_id, 'id' => $stream_item->entity_id])->toString();
-      break;
-      case 'post':
+      case 'posts':
         $path = Url::fromRoute('lus_post.posts',
           ['gid' => $stream_item->group_id])->toString();
       break;
-      case 'shoutout':
-        $path = Url::fromRoute('ol_shoutouts.list_page',
-          ['gid' => $stream_item->group_id])->toString();
+      case 'folder':
+        $path = Url::fromRoute('ol_files.group_files',
+          ['gid' => $stream_item->group_id, 'folder' => $stream_item->entity_id])->toString();
       break;
+      // Files.
+      case 'files':
+        $file_uri = $this->files->getFileUri($stream_item->entity_id);
+        if ($file_uri) {
+          $path = Url::fromUri(file_create_url($file_uri));
+        }
+      break;
+      // Comments.
       case 'comment':
-        // Get extra comment data and switch based on entity type
-        $comment_data = $this->getStreamItemCommentData($stream_item->entity_id);
-        // Needed for privacy = 1 comments.
+        // Get comment data.
+        $comment_data = $this->comments->getCommentData($stream_item->entity_id);
+        // Edge cases fallback.
         if(empty($comment_data->entity_type)){
           break;
-        };
+        }
+        // Check if an external modules must be involved to generate link for this comment.
+        $path = \Drupal::moduleHandler()->invokeAll('add_comment_links', [$comment_data, $stream_item->group_id]);
+        // Return if there is a $path for this comment found via above hook.
+        if(!empty($path['path'])) {
+          return $path['path'];
+        }
+        // Core comments.
         if($comment_data->entity_type == 'post') {
           $path = Url::fromRoute('lus_post.posts',
             ['gid' => $stream_item->group_id])->toString();
-        }
-        if($comment_data->entity_type == 'culture_question') {
-          $path = Url::fromRoute('ol_culture_questions.detail_page',
-            ['gid' => $stream_item->group_id, 'id' => $comment_data->entity_id])->toString();
         }
         if($comment_data->entity_type == 'message') {
           $path = Url::fromRoute('lus_message.message',
             ['gid' => $stream_item->group_id, 'id' => $comment_data->entity_id])->toString();
         }
-      break;
+        if($comment_data->entity_type == 'text_doc') {
+          $path = Url::fromRoute('ol_text_docs.text_doc',
+            ['gid' => $stream_item->group_id, 'id' => $comment_data->entity_id])->toString();
+        }
+      break; // End "case 'comment'":
     }
     return $path;
   }
-  private function getStreamItemCommentData($comment_id){
-    // Query for me, b*tch
-    $query = \Drupal::database()->select('ol_comment', 'olc');
-    $query->addField('olc', 'entity_type');
-    $query->addField('olc', 'entity_id');
-    $query->condition('olc.id', $comment_id);
-    $query->condition('olc.status', 1);
-    return $query->execute()->fetchObject();
-  }
+
   /**
    * @param $uuid
    *

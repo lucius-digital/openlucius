@@ -114,6 +114,11 @@ class GroupConfigForm extends FormBase {
       '#upload_validators' => array(
         'file_validate_extensions' => $this->files->getAllowedImageExtentions(),
       ),
+      '#theme' => 'image_widget',
+      '#preview_image_style' => '50x50',
+      '#attributes' => [
+        'class' => array('form-control')
+      ],
       '#weight' => '15',
       '#suffix' => '</div>'
     );

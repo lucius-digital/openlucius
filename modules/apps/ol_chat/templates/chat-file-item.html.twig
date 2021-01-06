@@ -1,0 +1,6 @@
+{% if vars.files %}
+  {% for file in vars.files  %}
+    <a href="{{ file.file_path }}" class="chat-inline-link" target="_blank">{{ file.file_name }}</a>
+    {% if not loop.last %},{% endif %}
+  {% endfor %}
+{% endif %}

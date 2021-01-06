@@ -66,3 +66,27 @@ li.nav-item.dropdown.plus-dropdown {
 .js-filter-wrapper{
   display:none;
 }
+body {
+  /*font-family: "Poppins", sans-serif !important;*/
+}
+nav.bg-dark {
+  background-color: #0811fb !important;
+}
+.btn-success,
+.badge-success{
+  background-color:#00b894;
+  border-color: #03b592;
+}
+.btn-success:hover,
+.btn-success.focus,
+.btn-success:focus{
+  background-color: #009e7c;
+  border-color: #03b592;
+}
+.text-success{
+  color:#00b894 !important;
+}
+.list-group-item.active {
+  background-color: #007bff;
+  border-color: #007bff;
+}

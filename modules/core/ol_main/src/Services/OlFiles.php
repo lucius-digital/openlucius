@@ -73,7 +73,7 @@ class OlFiles{
         'folder_id' => $folder_id,
       ]);
       $ol_file->save();
-//      $id = $ol_file->id();
+      $id = $ol_file->id();
     }
     $files_count = count($filenames);
     $filename =  ($files_count == 1) ? $filenames[0] : '';
@@ -85,11 +85,10 @@ class OlFiles{
     $stream = \Drupal::service('olstream.stream');
     // Build stream item, based on file count.
     if ($filename && $add_stream){
-      $stream_body = t('Added a file: @file', array('@file' => $filename));
-      $stream->addStreamItem($group_id, 'file_added', $stream_body, 'file_added', $new_fid );
+      $stream->addStreamItem($group_id, 'file_added', $filename, 'files', $new_fid );
     } elseif ($filenames_imploded && $add_stream) {
       $stream_body = t('Added files: @files', array('@files' => $filenames_imploded));
-      $stream->addStreamItem($group_id, 'files_added', $stream_body, 'files_added', $file_ids_json);
+      $stream->addStreamItem($group_id, 'files_added', $stream_body, 'files', $file_ids_json);
     }
     // Build message, based on file count.
     if ($filename){
@@ -99,6 +98,8 @@ class OlFiles{
     }
     // Add message.
     \Drupal::messenger()->addMessage($message);
+
+    return $id;
   }
 
   /**
@@ -109,7 +110,7 @@ class OlFiles{
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function removeOlFileAndFile($fid = null, $show_in_stream = null){
+  public function removeOlFileAndFile($fid = null, $show_in_stream = false){
     // Get parameters from url
     $gid = $this->route->getParameter('gid');
     $fid = ($fid == null) ? $this->route->getParameter('fid') : $fid;
@@ -126,12 +127,11 @@ class OlFiles{
       $file_ref_entity = OlFile::load($file_ref_id);
       $file_ref_entity->delete();
       // Add stream item.
-      if($show_in_stream) {
+      if($show_in_stream == true) {
         // We can't have this as dependency, else install profile will bitch during install.
         // So for now, procedural use of this service.
         $stream = \Drupal::service('olstream.stream');
-        $stream_body = t('Removed a file: @file', ['@file' => $name]);
-        $stream->addStreamItem($gid, 'file_removed', $stream_body, 'file', $fid);
+        $stream->addStreamItem($gid, 'file_removed', $name, 'files', $fid);
       }
       // Set message.
       \Drupal::messenger()->addStatus( $name .t(' successfully deleted.'));
@@ -164,11 +164,9 @@ class OlFiles{
       $query->condition('lfr.folder_id', $folder_id);
     }
     $query->orderBy('lfr.created', 'desc');
-    // if ($get_total == false) {
-     // No pager for now: we use DataTable with all files,
-     // Until this becomes too heavy,
-      // $query->range($offset, $num_per_page);
-    //}
+     if ($get_total == false) {
+       $query->range($offset, $num_per_page);
+    }
     // Data for list.
     if ($get_total == false) {
       $files_data = $query->execute()->fetchAll();
@@ -200,7 +198,8 @@ class OlFiles{
     // Loop through files and build html.
     foreach ($file_list_data as $file_data) {
       // Get file details.
-      $file_row_data = $this->buildFileDetails($file_data->id);
+      $extension_icons = $this->getExtensionIcons();
+      $file_row_data = $this->buildFileDetails($file_data->id, $extension_icons);
       // If current user is owner in 1 of the records: show modals.
       if ($file_row_data['owner'] == 1){
         $owner_show_modals = true;
@@ -237,20 +236,22 @@ class OlFiles{
 
   /**
    * @param $id
+   * @param null $extension_icons
+   *
    * @return mixed
    */
-  private function buildFileDetails($id){
+  private function buildFileDetails($id, $extension_icons = null){
     // Get file data details.
     $file = $this->getfileData($id);
     // Build row.
     $file_row_data['id'] = $id;
     $file_row_data['group_id'] = $file->group_id;
-    $file_row_data['filename'] = shortenString($file->name, 25);
+    $file_row_data['filename'] = $file->name;
     $file_row_data['uri'] = $file->uri;
     $file_row_data['folder_id'] = $file->folder_id;
     $file_row_data['ol_fid'] = $file->ol_fid;
     $file_row_data['created'] = $file->created;
-    $file_row_data['user_name'] = shortenString($this->members->getUserName($file->user_id),12);
+    $file_row_data['user_name'] = shortenString($this->members->getUserName($file->user_id),25);
     $file_row_data['owner'] = $file->user_id == $this->members->getUserId();
     $file_row_data['url'] = Url::fromUri(file_create_url($file->uri));
     $file_row_data['file_size'] = $this->formatBytes($file->filesize,1);
@@ -264,9 +265,37 @@ class OlFiles{
     $style_ol_filelist = ImageStyle::load('ol_filelist');
     if (strpos($allowed_extensions[0], $file_extension) !== false){
       $file_row_data['thumbnail_url'] = $style_ol_filelist->buildUrl($file->uri);
+    } else{
+      // Get icon based on extension.
+      $file_row_data['extension_icon'] = $extension_icons[substr(strrchr($file->name, '.'), 1)];
+      // Fallback for empty result.
+      $file_row_data['extension_icon'] = (empty($file_row_data['extension_icon'])) ? 'bi bi-file-earmark' : $file_row_data['extension_icon'];
     }
     return $file_row_data;
   }
+
+  /**
+   * @return array
+   */
+  private function getExtensionIcons(){
+    return [
+      'xlsx' => 'bi bi-file-earmark-spreadsheet',
+      'xls' => 'bi bi-file-earmark-spreadsheet',
+      'ods' => 'bi bi-file-earmark-spreadsheet',
+      'doc' => 'bi bi-file-word',
+      'docx' => 'bi bi-file-word',
+      'ppt' => 'bi bi-file-earmark-ppt',
+      'pps' => 'bi bi-file-earmark-slides',
+      'odp' => 'bi bi-file-earmark-slides',
+      'pptx' => 'bi bi-file-earmark-ppt',
+      'zip' => 'bi bi-file-earmark-zip',
+      'pdf' => 'bi bi-file-earmark-richtext',
+      'odt' => 'bi bi-file-earmark-richtext',
+      'txt' => 'bi bi-file-earmark-text',
+    ];
+  }
+
+
   /**
    * @param $file_id
    * @return mixed
@@ -299,25 +328,38 @@ class OlFiles{
    * @param $entity_id
    * @param string $image_preset
    *
+   * @param null $fids
+   *
    * @return string
    */
-  public function getAttachedFiles($entity_type, $entity_id, $image_preset = 'ol_attached_file'){
+  public function getAttachedFiles($entity_type, $entity_id, $image_preset = 'ol_attached_file', $fids = null){
     // Get data.
     $group_id = $this->route->getParameter('gid');
-    $files = $this->getFilesByEntity($group_id, $entity_type, $entity_id);
+    $files = $this->getFilesByEntity($group_id, $entity_type, $entity_id, $fids);
     $allowed_extensions = $this->getAllowedFileExtentions();
     $image_style = ImageStyle::load($image_preset);
     // Loop through files and build html.
     $files_html = '';
     $file_row_data['owner'] = false;
 
+    // Loop though files, build vars and html.
     foreach ($files as $file) {
-      // Build vars.
+      // Work around for ajax file delete, only in tasks atm.
+      // If task comment file: flag true.
+      if(!empty($file->comment_entity_type)) {
+        $file_row_data['is_task_file'] = ($file->comment_entity_type == 'task');
+      }
+      // No task comment file, maybe task file?
+      if($entity_type == 'task'){
+        $file_row_data['is_task_file'] = true;
+      }
       $file_row_data['thumbnail_url'] = '';
       $file_row_data['owner'] = $file->uid == $this->members->getUserId();
+      $file_row_data['olf'] = $file->created;
+      $file_row_data['username'] = shortenString($file->username, 15);
       $file_row_data['big_image'] = $image_preset == 'large';
       $file_row_data['post_image'] = $image_preset == 'post_image';
-      $file_row_data['filename'] = $file->filename;
+      $file_row_data['filename'] = shortenString($file->filename, 50);
       $file_row_data['uri'] = $file->uri;
       $file_row_data['ol_fid'] = $file->ol_fid;
       $file_row_data['url'] = Url::fromUri(file_create_url($file->uri));
@@ -333,7 +375,7 @@ class OlFiles{
       // Render HTML.
       $render = ['#theme' => 'file_item',
                   '#vars' => $file_row_data,
-                  '#attached' => ['library' => 'ol_main/ol_attached_files',],
+                  '#attached' => ['library' => 'ol_main/ol_attached_files'],
                 ];  // Library renders multiple times, but only 1 css visible, that's good.
                     // But not too much unneeded load here..?
       $files_html .= \Drupal::service('renderer')->render($render);
@@ -354,12 +396,26 @@ class OlFiles{
    * @param $entity_type
    * @param $entity_id
    *
+   * @param null $fids
+   *
    * @return mixed
    */
-  private function getFilesByEntity($group_id, $entity_type, $entity_id){
+  private function getFilesByEntity($group_id, $entity_type, $entity_id, $fids = null){
+
+    // This is to facilitate ajax calls that use uuid, like comments.
+    // We should clean this up, make all consistent.
+    if(empty($group_id)){
+      $group_uuid = $this->route->getParameter('uuid');
+      $groups = \Drupal::service('olmain.groups');
+      $group_id = $groups->getGroupIdByUuid($group_uuid);
+     }
+
+    // Preparing, for to do "figure our why we can't only append new images with he".
+    $fids = ($fids) ? implode(',', $fids) : null;
     // Get file detail data.
     $query = \Drupal::database()->select('ol_file', 'olf');
     $query->addField('olf', 'id', 'ol_fid');
+    $query->addField('olf', 'created');
     $query->addField('file', 'filename');
     $query->addField('file', 'uid');
     $query->addField('file', 'uri');
@@ -367,10 +423,19 @@ class OlFiles{
     $query->addField('file', 'filesize');
     $query->addField('olf', 'entity_type');
     $query->addField('olf', 'entity_id');
+    $query->addField('ufd', 'name', 'username');
     $query->condition('olf.group_id', $group_id);
     $query->condition('olf.entity_id', $entity_id);
     $query->condition('olf.entity_type', $entity_type);
+    //if($fids) {
+     // $query->condition('olf.file_id', [$fids], 'IN');
+    //}
     $query->join('file_managed', 'file','file.fid = olf.file_id');
+    $query->join('users_field_data', 'ufd','ufd.uid = olf.user_id');
+    if($entity_type == 'comment') {
+      $query->addField('comment', 'entity_type','comment_entity_type');
+      $query->join('ol_comment', 'comment', 'comment.id = olf.entity_id');
+    }
     return $query->execute()->fetchAll();
   }
 

@@ -1,0 +1,9 @@
+notifications:
+  version: 1.x
+  css:
+    theme:
+      css/bootstrap-multiselect.min.css: {}
+      css/multiselect_extras.css: {}
+  js:
+    js/bootstrap-multiselect.min.js: {}
+    js/multiselect_extras.js: {}

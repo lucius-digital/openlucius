@@ -184,8 +184,7 @@ class MembersForm extends FormBase {
     elseif (!empty($uid)) {
       $this->members->addUserToGroup($uid, $group_id);
       $username = $this->members->getUserName($uid);
-      $stream_body = t('Added a member: @user', array('@user' => $username)); // Create new stream item.
-      $this->stream->addStreamItem($group_id, 'user_added', $stream_body,'user', $uid); // Create stream item.
+      $this->stream->addStreamItem($group_id, 'user_added', $username,'user', $uid); // Create stream item.
       $this->messenger->addStatus(t( 'Member successfully added to this group'));
     }
   }

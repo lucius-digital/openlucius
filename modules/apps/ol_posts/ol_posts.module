@@ -33,7 +33,12 @@ function ol_posts_theme() {
  * @param $sections
  */
 function ol_posts_add_ol_section(&$sections){
-  $sections['posts'] = array('label' => t('Posts'), 'path' => 'posts', 'weight' => 60);
+  $sections['posts'] = array(
+    'label' => t('Posts'),
+    'path' => 'posts',
+    'weight' => 65,
+    'icon_class' => 'lni lni-pencil-alt',
+  );
 }
 
 /**

@@ -1,0 +1,8 @@
+name: 'Ol Text Docs'
+type: module
+description: 'Ol Text Docs'
+core_version_requirement: ^9
+package: 'OL app'
+dependencies:
+  - ol_members
+  - ol_stream

@@ -184,13 +184,13 @@ class OlMessages{
     $message->save();
     $id = $message->id();
     // Add stream item.
-    $stream_body = t('Added a message: @message', array('@message' => $name)); // Create new stream item.
-    $this->stream->addStreamItem($gid, 'message_added', $stream_body, 'message', $id); // Create stream item.
+    $this->stream->addStreamItem($gid, 'message_added', $name, 'messages', $id); // Create stream item.
     // Mail if true
     if($send_mail == true){
       // Generate url and send mails.
       $url = Url::fromRoute('lus_message.message', ['gid' => $gid, 'id' => $id])->toString();
-      $this->mail->sendMail($name, $url);
+      $intro_text = t('A new message was posted:');
+      $this->mail->sendMail($name, $url, $intro_text, null, null, null, t('Find out more'), null, strip_tags(shortenString($body,100)));
     }
     // Message.
     \Drupal::messenger()->addStatus(t('Your message was added successfully.'));

@@ -1,0 +1,8 @@
+name: 'lus_chat'
+type: module
+description: 'OL Chat'
+core_version_requirement: ^9
+package: 'OL app'
+dependencies:
+  - ol_main
+  - ol_members

@@ -1,4 +1,4 @@
-<div class="col-md-10 col-xl-9 pl-md-5 bd-content mb-5 offset-lg-1">
+<div class="col-md-9 col-xl-8 pl-md-5 bd-content mb-5 offset-lg-1">
   <!-- Title and action buttons-->
   <div class="row py-2 pl-3">
     <div class="col">
@@ -35,7 +35,7 @@
 {% if vars.member_cards is not empty %}
   {{ vars.member_cards|raw }}
 {% else %}
-  No results.
+  {{ 'No results'|t }}
 {% endif %}
 <!-- / Member cards -->
 

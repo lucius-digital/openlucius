@@ -8,7 +8,7 @@ dependencies:
 id: mainnavigationblock
 theme: ol_base
 region: main_nav
-weight: 0
+weight: -1
 provider: null
 plugin: main_navigation_block
 settings:

@@ -23,12 +23,6 @@ function ol_stream_theme() {
       ],
       'template' => 'stream-wrapper',
     ],
-/*    'stream_wrapper_user' => [
-      'variables' => [
-        'vars' => NULL,
-      ],
-      'template' => 'stream-wrapper-user',
-    ],*/
     'stream_item' => [
       'variables' => [
         'vars' => NULL,
@@ -43,7 +37,7 @@ function ol_stream_theme() {
  * @param $sections
  */
 function ol_stream_add_ol_section(&$sections){
-  $sections['stream'] = array('label' => t('Stream'), 'path' => t('stream'), 'weight' => 0);
+  $sections['stream'] = array('label' => t('Activity'), 'path' => t('stream'), 'weight' => 0);
 }
 
 /**

@@ -1,0 +1,7 @@
+ol_text_docs:
+  version: 1.x
+  css:
+    theme:
+      css/ol_text_docs.css: {}
+  js:
+    js/ol_text_docs.js: {}

@@ -1,0 +1,24 @@
+<!-- Modal remove file -->
+{# Manipulated by ol_text_docs/js/ol_text_docs.js #}
+<div class="modal fade" id="removeCategory" tabindex="-1" role="dialog" aria-labelledby="removeFile" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-exclamation-triangle"></i> {{ 'Remove Category'|t }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% trans %}
+        <p>You are about to remove <b><span class="category_name"></span></b>. Are you sure?</p>
+        <p>(No notebooks will be deleted, only this category)</p>
+        {% endtrans %}
+      </div>
+      <div class="modal-footer">
+        {{ vars.remove_category_modal }}
+      </div>
+    </div>
+  </div>
+</div>
+<!-- / Modal remove file from category  -->

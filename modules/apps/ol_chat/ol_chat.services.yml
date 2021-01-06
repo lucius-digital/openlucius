@@ -1,0 +1,4 @@
+services:
+  olchat.chat:
+    class: Drupal\ol_chat\Services\OlChat
+    arguments: ['@olmain.groups','@olmembers.members','@renderer','@olmain.files']

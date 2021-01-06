@@ -12,8 +12,14 @@
           $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
         });
       });
-      // Message toaster init.
-      $('.toast').toast('show');
     }
   };
+  $(document).ready(function() {
+    // Message toaster init.
+    $('.toast').toast('show');
+    // Tooltips init.
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
+  });
 })(jQuery, Drupal);

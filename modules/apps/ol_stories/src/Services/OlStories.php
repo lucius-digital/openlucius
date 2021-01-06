@@ -73,7 +73,7 @@ class OlStories{
     $query->addField('story', 'body');
     $query->condition('story.status', 1);
     // Show stories one day.
-    $query->condition('story.created', time()-86400, '>' );
+    // $query->condition('story.created', time()-86400, '>' );
     $query->orderBy('story.created', 'desc');
     $query->join('users_field_data', 'ufd', 'ufd.uid = story.user_id');
     $query->addTag('ol_user_list');
@@ -95,7 +95,7 @@ class OlStories{
     foreach ($story_list_data as $story){
       $story_data = $this->getStoryData($story->id);
       // Convert to clickable link.
-      $stories_row_data['body'] = nl2br($story_data->body);
+      $stories_row_data['body'] = htmlspecialchars_decode($story_data->body);
       $stories_row_data['username'] = shortenString($story_data->username,8);
       $stories_row_data['story_id'] = $story_data->id;
       $stories_row_data['user_id'] = $story_data->user_id;

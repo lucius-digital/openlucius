@@ -3,10 +3,12 @@
     {% if vars.group_id %}
       <div class="col pl-0">
     {% else %}
-      <div class="col pl-0 text-center">
+      <div class="col pl-0 text-center pb-2">
     {% endif %}
       <h1 class="h4 pl-3 pt-3 main-heading">
-        {% if vars.title_icon %}
+        {% if vars.group_image_url %}
+        <img style="height: 40px;" class="img-thumbnail small" src="{{ vars.group_image_url }}" alt="group image" />
+        {% elseif vars.title_icon %}
           <i class="lni lni-{{ vars.title_icon }} text-muted"></i>
         {% endif %}
         {# Make generic page titles translatable, not group titles #}

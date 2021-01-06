@@ -6,7 +6,7 @@
   </button>
 
 {% if logged_in %}
-  <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
+  <div class="navbar-collapse offcanvas-collapse" id="navbar-logged-in">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
         <a class="nav-link" href="{{ url('<front>') }}">{{ 'Home'|t }}</a>
@@ -42,13 +42,21 @@
     </ul>
 
     <!-- main nav right-->
-    <ul class="navbar-nav">
-      {#  Todo: Search
-      <li class="nav-item mr-3">
-        <a class="nav-link" href="#">
-          <i class="lni lni-search-alt"></i>
+    <ul class="navbar-nav mr-3">
+      <!-- Search -->
+      {% for item in vars.menu_right_items %}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ item.path }}"
+           data-toggle="tooltip" data-placement="bottom" title="{{ item.label }}"
+        >
+          {% if item.show == 'icon' %}
+            <i class="{{ item.icon_class }}"></i>
+          {% else %}
+            {{ item.label }}
+          {% endif %}
         </a>
-      </li>#}
+      </li>
+      {% endfor %}
       <!-- Global 'add' drop down -->
       <li class="nav-item dropdown plus-dropdown mr-3">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuPlus" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

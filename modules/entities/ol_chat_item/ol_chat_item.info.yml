@@ -1,0 +1,5 @@
+name: 'OL Chat Item'
+type: module
+description: 'OL Chat Item'
+core_version_requirement: ^9
+package: 'OL app'
