@@ -121,7 +121,7 @@ function _ol_main_form_submit(array $form, FormStateInterface $form_state){
  *
  * @return void
  */
-function ol_board_add_user_menu_links_bottom(&$items) {
+function ol_main_add_user_menu_links_bottom(&$items) {
   // Return org settings link, if user has org admin permisssions.
   $user = \Drupal::currentUser();
   if($user->hasPermission('administer organisation settings')) {

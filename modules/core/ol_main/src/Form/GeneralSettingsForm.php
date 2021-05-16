@@ -15,11 +15,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class GeneralSettingsForm extends FormBase {
 
   /**
-   * @var $tasks
-   */
-  protected $tasks;
-
-  /**
    * @var $groups
    */
   protected $groups;
@@ -29,9 +24,8 @@ class GeneralSettingsForm extends FormBase {
    *
    * @param \Drupal\ol_main\Services\OlGroups $groups
    */
-  public function __construct(OlGroups $groups, OlTasks $tasks) {
+  public function __construct(OlGroups $groups) {
     $this->groups = $groups;
-    $this->tasks = $tasks;
   }
 
   /**
@@ -39,8 +33,7 @@ class GeneralSettingsForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('olmain.groups'),
-      $container->get('olboard.tasks')
+      $container->get('olmain.groups')
     );
   }
 

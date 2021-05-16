@@ -11,29 +11,15 @@ use Drupal\user\Entity\User;
 class OlNotifications{
 
   /**
-   * @var $mail
-   */
-  protected $mail;
-
-  /**
    * @var $route
    */
   protected $route;
 
   /**
-   * @var $members
-   */
-  protected $members;
-
-  /**
-   * @param $mail
    * @param $route
-   * @param $members
    */
-  public function __construct($mail, $route, $members) {
-    $this->mail = $mail;
+  public function __construct($route) {
     $this->route = $route;
-    $this->members = $members;
   }
 
   /**
@@ -46,7 +32,8 @@ class OlNotifications{
       return;
     }
     // Get users in group.
-    $group_users = $this->members->getUsersInGroup();
+    $members = \Drupal::service('olmembers.members');
+    $group_users = $members->getUsersInGroup();
     // Mentions to whole group.
     if (strpos($message, '@Group') !== false) {
       // Loop through all users in group and send email.

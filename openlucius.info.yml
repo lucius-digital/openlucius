@@ -29,6 +29,7 @@ install:
   - ol_main
   - ol_group
   - ol_members
+  - ol_notifications
   - ol_comment
   - ol_file
   - ol_folder
@@ -47,6 +48,8 @@ install:
   - ol_chat
   - ol_chat_item
   - ol_stream_item
+  - ol_category
+  - ol_general_settings
 themes:
   - seven
   - ol_base
