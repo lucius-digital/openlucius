@@ -1,12 +1,12 @@
-ol_stream.home:
-  path: '/ol_home'
-  defaults:
-    _controller: '\Drupal\ol_stream\Controller\StreamController::getStream'
-    _title: 'Home'
-  requirements:
-    _permission: 'access ol content'
-  options:
-    no_cache: 'TRUE'
+#ol_stream.home:
+#  path: '/ol_home_2'
+#  defaults:
+#    _controller: '\Drupal\ol_stream\Controller\StreamController::getStream'
+#    _title: 'Home'
+#  requirements:
+#    _permission: 'access ol content'
+#  options:
+#    no_cache: 'TRUE'
 ol_stream.group:
   path: '/group/{gid}/stream'
   defaults:
@@ -18,10 +18,10 @@ ol_stream.group:
     _group_access_check: 'TRUE'
     gid: '[0-9]+'
 ol_stream.user:
-  path: '/user/{uid}/profile'
+  path: '/member/{uid}/profile'
   defaults:
     _controller: '\Drupal\ol_stream\Controller\UserStreamController::getUserStream'
-    _title: 'User Stream'
+    _title: 'User Activity'
   options:
     no_cache: 'TRUE'
   requirements:

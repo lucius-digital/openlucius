@@ -1,103 +1,95 @@
-
-<div class="row py-2 pl-3">
-  <div class="col">
-    <h1 class="h4">{{ 'Notebooks'|t }}</h1>
-  </div>
-  <div class="col text-right">
-    <button class="btn btn-success btn-sm" type="button" id="files-add-drop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <i class="lni lni-plus"></i> {{ 'Add'|t }} <i class="fa fa-caret-down"></i>
-    </button>
-    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="files-add-drop">
-      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#textDoc"><i class="lni lni-plus"></i> {{ 'Add Notebook'|t }}</a>
-      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#addEditCategoryModal"><i class="lni lni-tag"></i> {{ 'Add Category'|t }}</a>
-    </div>
-  </div>
-</div>
-
-<div class="container">
-  <div class="row">
-    <!-- Categories -->
-    <div class="col-lg-3 categories mb-3">
-      <div class="list-group small">
-        {% if vars.current_category == 'all' or vars.current_category is empty %}
-          {% set active = 'active' %}
-        {% endif %}
-        <a href="{{ vars.path }}?category=all" class="list-group-item list-group-item-action flex-column align-items-start {{ active }}">
-          <div class="d-flex w-100 justify-content-between ">
-            <h7>{{ 'All Notebooks'|t }}</h7>
-            <small><span class="badge badge-light badge-pill">{{ vars.total_textdocs_count }}</span></small>
+<div class="col-md-12 pl-md-5 bd-content mb-5">
+  <div class="container text-docs-container">
+    <div class="row">
+      {# Left menu #}
+      <div class="col-lg-3 mb-3">
+        <div class="row py-2">
+          <div class="col">
+            <h1 class="h4">{{ 'Book'|t }}</h1>
           </div>
-        </a>
-      </div>
-      <div class="list-group category-left">
-        <ul class="list-group small">
-          {% for category in vars.categories %}
-            {# Nasty active styling for now :s #}
-            {% if vars.current_category == category.id  %}
-              {% set class = 'active' %}
-            {% else %}
-              {% set class = 'text-muted' %}
-            {% endif %}
-            <li class="list-group-item d-flex justify-content-between align-items-center {{ class }}">
-              <a href="{{ vars.path }}?category={{ category.id }}" class="category-link {{ class }}">
-                {% if vars.current_category ==  category.id %}
-                  <i class="lni lni-tag"></i>
-                {% else %}
-                  <i class="lni lni-tag"></i>
-                {% endif %}
-                {{ category.name }}
-              </a>
-              {% if category.can_admin %}
-                <button class="btn btn-link p-0" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  <i class="lni lni-line-dotted"></i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-left" aria-labelledby="ol-drop2">
-                  <button class="dropdown-item" data-toggle="modal" data-target="#addEditCategoryeModal" data-name="{{ category.name }}" data-category_id="{{ category.id }}">
-                    <i class="lni lni-pencil"></i> {{ 'Rename Category'|t }}
-                  </button>
-                  <button class="dropdown-item" data-toggle="modal" data-target="#removeCategory"
-                          data-category_name="{{ category.name }}"
-                          data-category_id="{{ category.id }}"
-                  ><i class="lni lni-close"></i> {{ 'Remove Category'|t }}</button>
-                </div>
-              {% endif %}
-              <small><span class="badge badge-light badge-pill">{{ category.count_files }}</span></small>
-            </li>
-          {% endfor %}
-        </ul>
-      </div>
-    </div> <!-- / Categories -->
+        </div>
+        {# All Book pages #}
+        <div class="list-group small">
+          <a href="{{ vars.path }}?category=all" class="list-group-item list-group-item-action active">
+            <div class="d-flex w-100 justify-content-between pb-2 pr-2">
+              <h7><i class="lni lni-book"></i> {{ 'All Book Pages'|t }}</h7>
+              <small><span class="badge badge-light badge-pill">{{ vars.total_textdocs_count }}</span></small>
+            </div>
+          </a>
+        </div>
+        {# Book pages Tree #}
+        <div class="list-group mb-3 pb-2 pr-2 bg-white">
+          {{ vars.text_doc_tree|raw }}
+        </div>
+        {# Order button #}
+        {% if vars.can_order %}
+        <div class="my-3 text-right">
+          <button type="button" class="btn btn-light btn-sm text-muted" data-toggle="modal" data-target="#sortableContent">
+            <i class="lni lni-move"> </i> {{ 'Order pages'|t }}
+          </button>
+        </div>
+        {% endif %}
 
-    <!-- Notebooks -->
-    <div class="col-lg-9">
-      <h4 class="mb-3 ml-3"><i class="lni lni-book text-muted"></i> {{ vars.title }}</h4>
-      <div class="card shadow-sm mb-4">
-          {{ vars.text_doc|raw }}
       </div>
-      <div class="ml-5">
-      {% if vars.comment_items|render|striptags|trim %}
-        <!-- Comment items -->
-        {{ vars.comment_items|raw }}
-      {% endif %}
-      </div>
-      <!-- Comment form -->
-      {#  All this should move to CommentForm #}
-      <div class="row">
-        <div class="col-md-12">
-          <div class="comment-wrapper add-comment card p-4">
-            <div class="row">
-              <div class="d-none d-sm-block col-1 write-comment-picture">
-                <img class="rounded-circle" src="{{ vars.current_user_picture }}" alt="" height="30">
-              </div>
-              <div class="col-sm-11">
-                {{ vars.comment_form }}
+
+      <div class="col-lg-9 mt-3">
+        {# Notebook page #}
+        <h4 class="mb-3 ml-3"><i class="lni lni-empty-file text-muted"></i> {{ vars.title }}</h4>
+        <div class="card shadow-sm mb-4">
+            {{ vars.text_doc|raw }}
+        </div>
+        {# Comments #}
+        <div class="ml-5">
+        {% if vars.comment_items|render|striptags|trim %}
+          {{ vars.comment_items|raw }}
+        {% endif %}
+        </div>
+        {# Comment form #}
+        {# All this should move to CommentForm #}
+        <div class="row">
+          <div class="col-md-12">
+            <div class="comment-wrapper add-comment card p-4">
+              <div class="row">
+                <div class="d-none d-sm-block col-1 write-comment-picture">
+                  <img class="rounded-circle" src="{{ vars.current_user_picture }}" alt="" height="30">
+                </div>
+                <div class="col-sm-11">
+                  {{ vars.comment_form }}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div> <!-- / Row -->
-</div><!-- / Container -->
-<!-- Remove cat modal-->
-{{ vars.remove_category_html }}
+  </div>
+  {# Remove cat modal #}
+  {{ vars.remove_category_html }}
+</div>
+
+{% if vars.can_order %}
+<!-- Order text-docs modal-->
+<div class="modal fade modal-large" id="sortableContent" tabindex="-1" role="dialog" aria-labelledby="sortableContent" aria-hidden="true">
+  <div class="modal-dialog " role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="sortableContentHeader"><i class="lni lni-move pr-1"></i> {{ 'Order pages'|t }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="sortable-text-docs">
+          <div id="nestedDemo" class="list-group nested-sortable">
+            {{ vars.sortable_modal_content|raw }}
+          </div>
+          <div id="sorted-message" class="text-success small mt-3 ml-3"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="{{ path('<current>') }}" role="button" class="btn btn-success">Done</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

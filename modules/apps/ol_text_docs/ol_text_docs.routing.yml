@@ -21,3 +21,13 @@ ol_text_docs.text_doc:
     _permission: 'access ol content'
     id: '[0-9]+'
     gid: '[0-9]+'
+
+#AJAX endpoint For saving text docs order
+ol_text_docs.save_text_docs_order:
+  path: '/group/{uuid}/save_text_docs_order'
+  defaults:
+    _controller: '\Drupal\ol_text_docs\Controller\TextDocsAjaxController::saveOrder'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _group_uuid_access_check: 'TRUE'

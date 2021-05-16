@@ -7,10 +7,10 @@ chat:
   js:
     js/chat.js: { weight: -10, attributes: { defer: true}  }
     js/chat_layout.js: { weight: -10, attributes: { defer: true} }
-
 mentions:
   css:
     theme:
-      css/bootstrap-suggest.css: {}
+      css/bootstrap-suggest.css: { }
   js:
     js/bootstrap-suggest.min.js: { }
+    js/bootstrap-suggest-init.js: { }

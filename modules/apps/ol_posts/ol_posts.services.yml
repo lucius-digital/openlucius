@@ -1,4 +1,4 @@
 services:
   olposts.posts:
     class: Drupal\ol_posts\Services\OlPosts
-    arguments: ['@current_route_match','@olmembers.members','@olstream.stream','@olmain.mail', '@olmain.groups','@olmain.comments','@olmain.files']
+    arguments: ['@current_route_match','@olmembers.members','@olstream.stream','@olmain.mail', '@olmain.groups','@olmain.comments','@olmain.files', '@olnotifications.notifications']

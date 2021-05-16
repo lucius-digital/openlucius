@@ -29,7 +29,7 @@
       created +
       '        </span>\n' +
       '      </strong>\n' +
-      '      <span class="body-text">\n' +
+      '      <span class="body-text img-fluid">\n' +
       message +
       '      </span>\n' +
       '    </p>\n'

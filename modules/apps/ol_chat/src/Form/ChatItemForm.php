@@ -94,7 +94,8 @@ class ChatItemForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, $node_server = null) {
 
     $disabled = (empty($node_server));
-    $placeholder_text = (empty($node_server)) ? t('Disabled, because Node.js server is not set.')
+    $placeholder_text = (empty($node_server))
+                        ? t('Disabled, because Node.js server is not set.')
                         : t('Chat-message.. (@.. to notify)');
 
     $form['message'] = [
@@ -104,7 +105,7 @@ class ChatItemForm extends FormBase {
       '#type' => 'textfield',
       '#disabled' => $disabled,
       '#attributes' => [
-        'class' => ['form-control'],
+        'class' => ['form-control','mention-suggest'],
         'placeholder' => $placeholder_text,
         'maxlength' => 4000,
         'autocomplete' => 'off',
@@ -168,10 +169,6 @@ class ChatItemForm extends FormBase {
     // Post message via js method post_message, that will handle appending and emitting to other users via socket.io.
     $response->addCommand(new InvokeCommand(NULL, 'post_message',
                                             [$group_id, $message, $user_picture, $created, $timestamp]));
-    // Handle mentions
-    if (strpos($message, '@') !== false) {
-      $this->sendMentions($message);
-    }
 
     // Wipe all messages, so on page refresh nothing comes up.
     $this->messenger->deleteAll();
@@ -179,42 +176,6 @@ class ChatItemForm extends FormBase {
     return $response;
 
   }
-
-  /**
-   * @param $message
-   */
-  private function sendMentions($message) {
-    // Get users in group.
-    // To do optimize: get an array of group users and use in_array: no loop needed.
-    $group_users = $this->members->getUsersInGroup();
-    // Loop though all users in group and send email if match.
-    foreach($group_users as $group_user){
-      if (strpos($message, $group_user->name) !== false) {
-        $email = $group_user->mail;
-        $this->sendNotifications($email, $message);
-      }
-    }
-  }
-
-  /**
-   * @param $email
-   * @param $message
-   */
-  private function sendNotifications($email, $message){
-    // Build mail vars.
-    $emails = [$email];
-    $mail = \Drupal::service('olmain.mail');
-    $uid = \Drupal::currentUser()->id();
-    $sender = User::load($uid)->getAccountName();
-    $gid = $this->route->getParameter('gid');
-    $url = Url::fromRoute('ol_chat.group', ['gid' => $gid])->toString();
-    $cta_text = t('View Chat');
-    $mail_body = t('@user notified you in this chat message:', ['@user' => $sender]);
-    $subject = t('Mention from @username', ['@username' => $sender]);
-    // Send mails via service.
-    $mail->sendMail($subject, $url, $mail_body, $emails, null, null, $cta_text, null, $message);
-  }
-
 
   /**
    * {@inheritdoc}

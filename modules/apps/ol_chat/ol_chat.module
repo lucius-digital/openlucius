@@ -61,3 +61,29 @@ function ol_chat_library_info_build() {
   ];
   return $libraries;
 }
+
+/**
+ * Implements hook_sections_badges_count()
+ * Add links at comments to use in activity stream.
+ *
+ * @param $key
+ *
+ * @return array[]
+ */
+function ol_chat_sections_badges_count($key){
+  // Check if current item concerns this module.
+  switch ($key) {
+    case 'chat':
+      $gid = \Drupal::service('current_route_match')->getParameter('gid');
+      $query = \Drupal::database()->select('ol_chat_item', 'olf');
+      $query->addField('olf', 'id');
+      $query->condition('olf.group_id', $gid);
+      $query->condition('olf.status', 1);
+      $count = $query->countQuery()->execute()->fetchField();
+      break;
+  }
+  // Return array with count.
+  if(isset($count)) {
+    return ['count' => $count];
+  }
+}

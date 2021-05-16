@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Xss;
 use Drupal\ol_main\Services\OlFiles;
+use Drupal\ol_main\Services\OlGroups;
 use Drupal\ol_members\Services\OlMembers;
 use Drupal\ol_text_docs\Services\OlTextDocs;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -33,12 +34,23 @@ class TextDocForm extends FormBase {
   protected $members;
 
   /**
-   * Class constructor.
+   * @var $groups
    */
-  public function __construct(OlTextDocs $text_docs, OlFiles $files, OlMembers $members) {
+  protected $groups;
+
+  /**
+   * Class constructor.
+   *
+   * @param \Drupal\ol_text_docs\Services\OlTextDocs $text_docs
+   * @param \Drupal\ol_main\Services\OlFiles $files
+   * @param \Drupal\ol_members\Services\OlMembers $members
+   * @param \Drupal\ol_main\Services\OlGroups $groups
+   */
+  public function __construct(OlTextDocs $text_docs, OlFiles $files, OlMembers $members, OlGroups $groups) {
     $this->text_docs = $text_docs;
     $this->files = $files;
     $this->members = $members;
+    $this->groups = $groups;
   }
 
   /**
@@ -48,7 +60,8 @@ class TextDocForm extends FormBase {
     return new static(
       $container->get('oltextdocs.textdocs'),
       $container->get('olmain.files'),
-      $container->get('olmembers.members')
+      $container->get('olmembers.members'),
+      $container->get('olmain.groups')
     );
   }
 
@@ -69,7 +82,6 @@ class TextDocForm extends FormBase {
     $body = '';
     $button_text = t('Save Notebook');
     $hdd_file_location = $this->files->buildFileLocaton('text_doc');
-    $mail_send_default = array('1');
     $num_users = $this->members->countMembers(null, true);
     $send_mail_title = array( '1' => t('Notify other group members') .' ('.$num_users .')',);
 
@@ -79,7 +91,6 @@ class TextDocForm extends FormBase {
       $name = $message_data->name;
       $body = $message_data->body;
       $button_text = t('Update Notebook');
-      $mail_send_default = array('0');
     }
     // Build form.
     $form['doc_id'] = [
@@ -97,51 +108,62 @@ class TextDocForm extends FormBase {
       '#suffix' => '</div>'
     ];
     $form['body'] = [
-      '#prefix' => '<div class="form-group message-body">',
-      '#type' => 'text_format',
-      '#format' => 'ol_rich_text',
+      '#prefix' => '<div class="form-group">',
+      '#type' => 'textarea',
+      '#attributes' => [
+        'class' => ['summernote'],
+      ],
       '#weight' => '20',
       '#default_value' => $body,
       '#required' => true,
       '#suffix' => '</div>'
     ];
-    $form['markup'] = [
-      '#type' => 'markup',
-      '#markup' => '<div class="row"><div class="col-12 col-md-6"><div class="form-group file-upload-wrapper">',
-      '#allowed_tags' => ['div'],
-      '#weight' => '25',
-    ];
-    $form['files'] = array(
-      '#title' => t('Attach files'),
-      '#type' => 'managed_file',
-      '#required' => FALSE,
-      '#upload_location' => 'private://'.$hdd_file_location,
-      '#multiple' => TRUE,
-      '#upload_validators' => array(
-        'file_validate_extensions' => $this->files->getAllowedFileExtentions(),
-      ),
-      '#weight' => '30',
-    );
-    $form['markup_2'] = [
-      '#type' => 'markup',
-      '#markup' => '</div></div>',
-      '#allowed_tags' => ['div'],
-      '#weight' => '35',
+    $form['body_old'] = [
+      '#type' => 'textarea',
+      '#attributes' => [
+        'class' => ['hidden'],
+      ],
+      '#weight' => '22',
+      '#default_value' => $body,
     ];
     $form['send_mail'] = array(
-      '#prefix' => '<div class="col-12 col-md-6"><div class="form-group send_mail_checkbox">',
-      '#title' => t('Email notifications'),
+      '#prefix' => '<div class="row"><div class="col-12 col-md-6 pl-4 small text-muted pb-2">',
       '#type' => 'checkboxes',
       '#options' => $send_mail_title,
-      '#default_value' => $mail_send_default,
-      '#weight' => '40',
+      '#default_value' => array('0'),
+      '#weight' => '25',
       '#attributes' => array(
         'data-toggle' => 'toggle',
         'data-onstyle' => 'success',
         'data-size' => 'xs',
       ),
-      '#suffix' => '</div></div></div>'
+      '#suffix' => '</div>'
     );
+    $form['markup'] = [
+      '#type' => 'markup',
+      '#markup' => '<div class="col-12 col-md-6 small">',
+      '#allowed_tags' => ['div'],
+      '#weight' => '30',
+    ];
+    $form['files'] = array(
+      '#type' => 'managed_file',
+      '#required' => FALSE,
+      '#upload_location' => 'private://'.$hdd_file_location,
+      '#multiple' => TRUE,
+      '#progress_indicator' => 'bar',
+      '#progress_message' => t('Please wait...'),
+      '#upload_validators' => array(
+        'file_validate_extensions' => $this->files->getAllowedFileExtentions(),
+      ),
+      '#weight' => '35',
+    );
+    $form['markup_2'] = [
+      '#type' => 'markup',
+      '#markup' => '</div></div>',
+      '#allowed_tags' => ['div'],
+      '#weight' => '40',
+    ];
+
     $form['submit'] = [
       '#prefix' => '</div><div class="modal-footer">',
       '#type' => 'submit',
@@ -150,6 +172,14 @@ class TextDocForm extends FormBase {
       '#value' => $button_text,
       '#suffix' => '</div>'
     ];
+    // For @-mentions.
+    $group_users = $this->members->getUsersNamesInGroupFlatArray();
+    $form['#attached']['library'][] = 'ol_main/summernote_inc_init';
+    $form['#attached']['drupalSettings']['group_users'] = $group_users;
+    // For uploading inline files.
+    $group_uuid = $this->groups->getGroupUuidById();
+    $form['#attached']['drupalSettings']['group_uuid'] = $group_uuid;
+    // Return form.
     return $form;
   }
 
@@ -171,13 +201,17 @@ class TextDocForm extends FormBase {
     // Get data.
     $id = Html::escape($form_state->getValue('doc_id'));
     $name = Xss::filter($form_state->getValue('name'));
-    $body = $form_state->getValue('body')['value'];
-    $body = check_markup($body,'ol_rich_text');
+    $body = Xss::filter($form_state->getValue('body'), getAllowedHTMLTags() );
+    $body = sanatizeSummernoteInput($body);
     $send_mail = $form_state->getValue('send_mail')[1];
     $files = $form_state->getValue('files');
     // Existing, update text doc.
     if(is_numeric($id)){
+      // Update doc.
       $this->text_docs->updateTextDoc($id, $name, $body, $send_mail);
+      // Remove files that are deleted.
+      $body_old = Xss::filter($form_state->getValue('body_old'), getAllowedHTMLTags() );
+      $this->files->deleteInlineFile($body_old, $body);
     }
     // New, save text doc.
     elseif(empty($id)){

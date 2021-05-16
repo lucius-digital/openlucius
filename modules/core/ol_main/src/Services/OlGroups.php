@@ -6,6 +6,7 @@ namespace Drupal\ol_main\Services;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\Core\Url;
+use Drupal\ol_general_settings\Entity\OlGeneralSettings;
 use Drupal\ol_group\Entity\OlGroup;
 use Drupal\ol_group_user\Entity\OlGroupUser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -98,16 +99,19 @@ class OlGroups{
    * @return int|string|null
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function addGroup($name, $type, $uid = null, $message_redirect = true, $enabled_sections = null){
+  public function addGroup($name, $type = 'team', $uid = null, $message_redirect = true, $enabled_sections = null, $status = 1){
+
     // Get uid if argument is empty.
     $uid = (empty($uid)) ? $this->current_user->id(): $uid;
     // Create Group.
+    // Status = 10, is 'placeholder' group for global / homepage content
     $ol_group = OlGroup::create([
       'name' => Html::escape($name),
       'type' => $type,
       'landing' => 'stream',
       'enabled_sections' => $enabled_sections, // Todo: jsonize.
       'user_id' => $uid,
+      'status' => $status,
     ]);
     $ol_group->save();
     $new_group_id = $ol_group->id();
@@ -153,7 +157,7 @@ class OlGroups{
    *
    * @return mixed
    */
-  public function getGroups($status){
+  public function getGroups($status, $type = null){
     // Get groups data.
     $uid = $this->current_user->id();
     $query = \Drupal::database()->select('ol_group', 'gr');
@@ -170,11 +174,17 @@ class OlGroups{
     return $query->execute()->fetchAll();
   }
 
+
+
+  /**
+   * @return mixed
+   */
   public function getUserGroupsIds(){
     // Get groups data.
     $uid = $this->current_user->id();
     $query = \Drupal::database()->select('ol_group', 'gr');
     $query->addField('gr', 'id');
+    $query->addField('lgu', 'member_uid');
     $query->condition('lgu.member_uid', $uid);
     $query->join('ol_group_user', 'lgu', 'lgu.group_id = gr.id');
     return $query->execute()->fetchAllKeyed();
@@ -191,6 +201,14 @@ class OlGroups{
       // Get current user id.
       $uid = $this->current_user->id();
       $gid = $group_data->id;
+
+      // Get user count.
+      $query = \Drupal::database()->select('ol_group_user', 'ogu');
+      $query->addField('ogu', 'id');
+      $query->condition('ogu.group_id', $gid);
+      $query->condition('ogu.status', 1);
+      $group_data->user_count = $query->countQuery()->execute()->fetchField();
+
       // Get timestamp user last visited group
       $query = \Drupal::database()->select('ol_group_user', 'ogu');
       $query->addField('ogu', 'changed');
@@ -243,7 +261,8 @@ class OlGroups{
    * @param $gid
    * @return mixed
    */
-  public function getGroupUuidById($gid) {
+  public function getGroupUuidById($gid = null) {
+    $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
     // Query if current user is group admin.
     $query = \Drupal::database()->select('ol_group', 'gr');
     $query->addField('gr', 'uuid');
@@ -281,7 +300,7 @@ class OlGroups{
     $query = \Drupal::database()->select('ol_group', 'gr');
     $query->addField('gr', 'name');
     $query->condition('gr.id', $gid);
-    return $query->execute()->fetchField();
+    return html::decodeEntities($query->execute()->fetchField());
   }
 
   /**
@@ -469,4 +488,80 @@ class OlGroups{
     $query->join('users_field_data', 'ufd','ufd.uid = gr.user_id');
     return $query->execute()->fetchField();
   }
+
+  /**
+   * @return int|string|null
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function initiateGlobalGroup($id_new_user){
+    // Add new 'global group' for home posts.
+    $global_group_id = $this->addGroup('home_','global_group', $id_new_user,false,'', 10);
+    // Save new group id to general settings.
+    // Create settings entity
+    $entity = OlGeneralSettings::create([
+      'global_group_id' => $global_group_id,
+      'user_id' => $id_new_user,
+    ]);
+    $entity->save();
+    // Return group_id.
+    return $global_group_id;
+  }
+
+  /**
+   * @param $uid
+   */
+  public function addUserToGlobalGroup($uid){
+    // Get global group id.
+    $global_group_id = $this->getGlobalGroupId();
+    // Add user to global group.
+    $this->members->addUserToGroup($uid, $global_group_id, 'global_group');
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getGlobalGroupId(){
+    // Get groups data.
+    $query = \Drupal::database()->select('ol_general_settings', 'ogs');
+    $query->addField('ogs', 'global_group_id');
+    $query->join('users_field_data', 'ufd', 'ufd.uid = ogs.user_id');
+    $query->addTag('ol_user_list');
+    return $query->execute()->fetchField();
+  }
+
+  /**
+   * @param $ordered_items
+   *
+   * @return bool
+   */
+  public function updateHomeTabsPositions($ordered_items){
+    // Encode for database.
+    $json_items  = json_encode($ordered_items);
+    // For security hardening.
+    $group_id = $this->getGlobalGroupId();
+    $in_group = $this->members->checkUserInGroup($group_id);
+    if($in_group && $group_id) {
+      \Drupal::database()->update('ol_general_settings')
+        ->fields([
+          'tabs' => $json_items,
+        ])
+        ->condition('global_group_id', $group_id)
+        ->execute();
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getHomeTabsPositions(){
+    // Get groups data.
+    $query = \Drupal::database()->select('ol_general_settings', 'ogs');
+    $query->addField('ogs', 'tabs');
+    $query->join('users_field_data', 'ufd', 'ufd.uid = ogs.user_id');
+    $query->addTag('ol_user_list');
+    return json_decode($query->execute()->fetchField());
+  }
+
 }

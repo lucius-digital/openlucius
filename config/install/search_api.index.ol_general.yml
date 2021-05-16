@@ -1,0 +1,363 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - ol_chat_item
+    - ol_comment
+    - ol_culture_question
+    - ol_file
+    - ol_folder
+    - ol_icebreaker
+    - ol_message
+    - ol_post
+    - ol_shout_out
+    - ol_social_question
+    - ol_task
+    - ol_text_doc
+    - search_api
+  config:
+    - search_api.server.mysql
+id: ol_general
+name: ol_general
+description: ''
+read_only: false
+field_settings:
+  chat_body:
+    label: 'Chat Body'
+    datasource_id: 'entity:ol_chat_item'
+    property_path: chat_body
+    type: text
+    dependencies:
+      module:
+        - ol_chat_item
+  chat_group_id:
+    label: 'Group ID'
+    datasource_id: 'entity:ol_chat_item'
+    property_path: group_id
+    type: integer
+    dependencies:
+      module:
+        - ol_chat_item
+  comment_body:
+    label: Body
+    datasource_id: 'entity:ol_comment'
+    property_path: body
+    type: text
+    dependencies:
+      module:
+        - ol_comment
+  comment_group_id:
+    label: 'Group ID'
+    datasource_id: 'entity:ol_comment'
+    property_path: group_id
+    type: integer
+    dependencies:
+      module:
+        - ol_comment
+  culture_question_group_id:
+    label: 'Group ID'
+    datasource_id: 'entity:ol_culture_question'
+    property_path: group_id
+    type: integer
+    dependencies:
+      module:
+        - ol_culture_question
+  culture_question_name:
+    label: Name
+    datasource_id: 'entity:ol_culture_question'
+    property_path: name
+    type: text
+    dependencies:
+      module:
+        - ol_culture_question
+  description:
+    label: description
+    datasource_id: 'entity:ol_task'
+    property_path: description
+    type: text
+    boost: 0.8
+    dependencies:
+      module:
+        - ol_task
+  file_group_id:
+    label: 'Group ID'
+    datasource_id: 'entity:ol_file'
+    property_path: group_id
+    type: integer
+    dependencies:
+      module:
+        - ol_file
+  file_name:
+    label: Name
+    datasource_id: 'entity:ol_file'
+    property_path: name
+    type: text
+    dependencies:
+      module:
+        - ol_file
+  folder_group_id:
+    label: 'Group ID'
+    datasource_id: 'entity:ol_folder'
+    property_path: group_id
+    type: integer
+    dependencies:
+      module:
+        - ol_folder
+  folder_name:
+    label: Name
+    datasource_id: 'entity:ol_folder'
+    property_path: name
+    type: text
+    dependencies:
+      module:
+        - ol_folder
+  icebreaker_body:
+    label: Body
+    datasource_id: 'entity:ol_icebreaker'
+    property_path: body
+    type: text
+    dependencies:
+      module:
+        - ol_icebreaker
+  icebreaker_group_id:
+    label: 'Group ID'
+    datasource_id: 'entity:ol_icebreaker'
+    property_path: group_id
+    type: integer
+    dependencies:
+      module:
+        - ol_icebreaker
+  icebreaker_name:
+    label: Name
+    datasource_id: 'entity:ol_icebreaker'
+    property_path: name
+    type: text
+    dependencies:
+      module:
+        - ol_icebreaker
+  message_body:
+    label: 'Message Body'
+    datasource_id: 'entity:ol_message'
+    property_path: body
+    type: text
+    dependencies:
+      module:
+        - ol_message
+  message_group_id:
+    label: 'Group ID'
+    datasource_id: 'entity:ol_message'
+    property_path: group_id
+    type: integer
+    dependencies:
+      module:
+        - ol_message
+  message_name:
+    label: Name
+    datasource_id: 'entity:ol_message'
+    property_path: name
+    type: text
+    boost: 0.8
+    dependencies:
+      module:
+        - ol_message
+  post_body:
+    label: 'Message Body'
+    datasource_id: 'entity:ol_post'
+    property_path: body
+    type: text
+    boost: 0.8
+    dependencies:
+      module:
+        - ol_post
+  post_group_id:
+    label: 'Group ID'
+    datasource_id: 'entity:ol_post'
+    property_path: group_id
+    type: integer
+    dependencies:
+      module:
+        - ol_post
+  post_name:
+    label: Name
+    datasource_id: 'entity:ol_post'
+    property_path: name
+    type: text
+    dependencies:
+      module:
+        - ol_post
+  shout_out_body:
+    label: 'Shout out body'
+    datasource_id: 'entity:ol_shout_out'
+    property_path: body
+    type: text
+    dependencies:
+      module:
+        - ol_shout_out
+  shout_out_group_id:
+    label: 'Group ID'
+    datasource_id: 'entity:ol_shout_out'
+    property_path: group_id
+    type: integer
+    dependencies:
+      module:
+        - ol_shout_out
+  social_question_group_id:
+    label: 'Group ID'
+    datasource_id: 'entity:ol_social_question'
+    property_path: group_id
+    type: integer
+    dependencies:
+      module:
+        - ol_social_question
+  social_question_name:
+    label: Name
+    datasource_id: 'entity:ol_social_question'
+    property_path: name
+    type: text
+    dependencies:
+      module:
+        - ol_social_question
+  task_group_id:
+    label: 'Group ID'
+    datasource_id: 'entity:ol_task'
+    property_path: group_id
+    type: integer
+    dependencies:
+      module:
+        - ol_task
+  task_name:
+    label: Name
+    datasource_id: 'entity:ol_task'
+    property_path: name
+    type: text
+    dependencies:
+      module:
+        - ol_task
+  textdoc_body:
+    label: 'Book page body'
+    datasource_id: 'entity:ol_text_doc'
+    property_path: body
+    type: text
+    boost: 0.8
+    dependencies:
+      module:
+        - ol_text_doc
+  textdoc_group_id:
+    label: 'Group ID'
+    datasource_id: 'entity:ol_text_doc'
+    property_path: group_id
+    type: integer
+    dependencies:
+      module:
+        - ol_text_doc
+  textdoc_name:
+    label: Name
+    datasource_id: 'entity:ol_text_doc'
+    property_path: name
+    type: text
+    dependencies:
+      module:
+        - ol_text_doc
+datasource_settings:
+  'entity:ol_chat_item': {  }
+  'entity:ol_comment': {  }
+  'entity:ol_culture_question': {  }
+  'entity:ol_file': {  }
+  'entity:ol_folder': {  }
+  'entity:ol_icebreaker': {  }
+  'entity:ol_message': {  }
+  'entity:ol_post': {  }
+  'entity:ol_shout_out': {  }
+  'entity:ol_social_question': {  }
+  'entity:ol_task': {  }
+  'entity:ol_text_doc': {  }
+processor_settings:
+  add_url: {  }
+  aggregated_field: {  }
+  ignore_character:
+    all_fields: true
+    fields:
+      - chat_body
+      - comment_body
+      - culture_question_name
+      - description
+      - file_name
+      - folder_name
+      - icebreaker_body
+      - icebreaker_name
+      - message_body
+      - message_name
+      - post_body
+      - post_name
+      - shout_out_body
+      - social_question_name
+      - task_name
+      - textdoc_body
+      - textdoc_name
+    ignorable: '[''¿¡!?,.:;]'
+    ignorable_classes:
+      - Pc
+      - Pd
+      - Pe
+      - Pf
+      - Pi
+      - Po
+      - Ps
+    weights:
+      preprocess_index: -10
+      preprocess_query: -10
+  ignorecase:
+    all_fields: true
+    fields:
+      - chat_body
+      - comment_body
+      - culture_question_name
+      - description
+      - file_name
+      - folder_name
+      - icebreaker_body
+      - icebreaker_name
+      - message_body
+      - message_name
+      - post_body
+      - post_name
+      - shout_out_body
+      - social_question_name
+      - task_name
+      - textdoc_body
+      - textdoc_name
+    weights:
+      preprocess_index: -20
+      preprocess_query: -20
+  language_with_fallback: {  }
+  rendered_item: {  }
+  transliteration:
+    all_fields: true
+    fields:
+      - chat_body
+      - comment_body
+      - culture_question_name
+      - description
+      - file_name
+      - folder_name
+      - icebreaker_body
+      - icebreaker_name
+      - message_body
+      - message_name
+      - post_body
+      - post_name
+      - shout_out_body
+      - social_question_name
+      - task_name
+      - textdoc_body
+      - textdoc_name
+    weights:
+      preprocess_index: -20
+      preprocess_query: -20
+tracker_settings:
+  default:
+    indexing_order: fifo
+options:
+  index_directly: true
+  cron_limit: 50
+server: mysql

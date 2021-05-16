@@ -5,6 +5,8 @@
  * Contains main.module.
  */
 
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
@@ -78,9 +80,59 @@ function ol_main_theme() {
       ],
       'template' => 'groups-card',
     ],
+    'home_wrapper' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'home-wrapper',
+    ],
+    'general_settings_page' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'general-settings-page',
+    ],
   ];
 }
 
+/**
+ * Implements hook_form_FORM_ID_alter().
+ * Redirect to home after saving form.
+ */
+function ol_main_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id)
+{
+  foreach (array_keys($form['actions']) as $action) {
+    if (isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+      $form['actions'][$action]['#submit'][] = '_ol_main_form_submit';
+    }
+  }
+}
+
+function _ol_main_form_submit(array $form, FormStateInterface $form_state){
+  //Add logic for checking is this is first time logged in User
+  $form_state->setRedirect('ol_main.home');
+}
+
+/**
+ * Implements hook_add_user_menu_links()
+ * Adds menu item to user menu.
+ *
+ * @param &$items
+ *
+ * @return void
+ */
+function ol_board_add_user_menu_links_bottom(&$items) {
+  // Return org settings link, if user has org admin permisssions.
+  $user = \Drupal::currentUser();
+  if($user->hasPermission('administer organisation settings')) {
+    $items['general_settings'] = [
+      'label' => t('General Settings'),
+      'path' => $url = Url::fromRoute('ol_main.general_settings_colors')->toString(),
+      'weight' => 0,
+      'icon_class' => 'lni lni-cog',
+    ];
+  }
+}
 
 /**
  * Implements hook_mail().
@@ -100,7 +152,7 @@ function ol_main_mail($key, &$message, $params) {
     case 'ol_main_mail':
       $message['headers']['Reply-To'] = \Drupal::config('system.site')->get('mail');
       $message['headers']['Content-Type'] = 'text/html';
-      $message['headers']['From'] = $params['sender_name'] .'<' . $params['sender_mail'] . '>';
+      $message['headers']['From'] = $params['sender_name'] .' ' .t('(via @sitename)', ['@sitename' => $site_name]) .'<' . $params['sender_mail'] . '>';
       $message['subject'] = $params['subject'];
       $message['body'][] = $params['body'];
       $message['cta_url'] = $params['cta_url'];
@@ -212,7 +264,7 @@ function ol_main_file_download($uri) {
  * Todo: find out where file_usage is for.
  *
  * Somehow the records Drupal inserts in the file_usage table blocks private image fields
- * downloads from controlling it with hook_file_download.
+ *  downloads from controlling it with hook_file_download.
  * We need this for control over user images downloads.
  *
  * So we delete these records for now :s
@@ -244,6 +296,80 @@ function getUserGroups($user_id){
   $query->condition('gr.member_uid', $user_id);
   return $query->execute()->fetchCol();
 }
+
+/**
+ * Allowed HTML tags, via Summer editor
+ */
+function getAllowedHTMLTags(){
+  return [
+    'a',
+    'b',
+    'u',
+    'p',
+    'i',
+    's',
+    'strike',
+    'h3',
+    'h4',
+    'h5',
+    'pre',
+    'em',
+    'strong',
+    'cite',
+    'blockquote',
+    'code',
+    'ul',
+    'ol',
+    'li',
+    'dl',
+    'dt',
+    'dd',
+    'br',
+    'div',
+    'table',
+    'thead',
+    'tbody',
+    'th',
+    'tr',
+    'td',
+    'img',
+    'style',
+    'data',
+  ];
+}
+
+/**
+ * @param $string
+ *
+ * @return string|string[]|null
+ */
+function sanatizeSummernoteInput($string){
+  // Remove all attributes from elements except in a, for links.
+//  $string = preg_replace("<(\w+)\s*(?:(?:(?:(?!href=|src=)[^>]))*((?:href=|src=)=['\"][^'\"]*['\"]\s*)?)+>",'<$1$2>', $string);
+  $string = preg_replace("~<(?!a|img\s)([a-z][a-z0-9]*)[^>]*?(/?)>~i",'<$1$2>', $string);
+  // Replace space entities.
+  $string = str_replace('&nbsp;', ' ', $string);
+  // Replace div with text to p with text as much as possible,
+  //  because divs get pasted and are essential for paragraphing for example in Gmail,
+  //  we allow them at paste in Summernote.
+  // Replace divs without attr.
+  $string = preg_replace('/<div>([^<]+)<\/div>/i', '<p>\\1</p>', $string);
+  // Replace divs with attr.
+  return preg_replace('/<div(?:\s[^>]*)?>([^<]+)<\/div>/i', '<p>\\1</p>', $string);
+}
+
+/**
+ * @param $string
+ *
+ * @return string|string[]
+ */
+/*function base64imgFilter($string){
+  // This is needed because xss:filter strips 'data', re-add this here.
+  // Todo: this should be one reg ex.
+  $string = str_replace('src="/image/', 'class="img-fluid" src="data:/image/', $string);
+  return str_replace('src="image/', 'class="img-fluid" src="data:/image/', $string);
+}*/
+
 /**
  * @param $x
  * @param $y

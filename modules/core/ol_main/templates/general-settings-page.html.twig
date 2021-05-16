@@ -1,0 +1,25 @@
+<div class="col-md-12 col-xl-11 pl-md-5 bd-content mb-5">
+  <div class="container">
+    <div class="row">
+      {# Tabs, with nasty active styling for now. #}
+      <div class="col-lg-3 mb-3">
+        <div class="nav flex-column nav-pills mb-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+          {% for tab in vars.config_tabs.tabs  %}
+            {# Nasty active styling, to do later #}
+            {% if tab.url == vars.config_tabs.current_url %}
+              {% set active = 'active' %}
+            {% endif %}
+            <a href="{{ tab.url }}" class="nav-item nav-link {{ active }}">
+              <i class="{{ tab.icon }} mr-2"></i>
+              {{ tab.label }}
+            </a>
+            {% set active = '' %}
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-lg-9 p-3 card shadow-sm mb-4 p-5">
+          {{ vars.tab_content }}
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+{% if vars.is_active %}
+{%
+  set active_class = [
+    'active',
+    'left-menu-link',
+  ]
+%}
+{% else %}
+{%
+  set active_class = [
+    'left-menu-link',
+]
+%}
+{% endif %}
+<div class="list-group-item left-menu border-top button-holder">
+  <div class="pb-2 d-flex justify-content-between align-items-center ">
+    {#  Link to book page. #}
+    <a href="{{ url('ol_text_docs.text_doc', {'gid': vars.text_doc.group_id, 'id': vars.text_doc.id } ) }}"
+      {{ attributes.addClass(active_class) }}
+    >
+      {{ vars.text_doc.name }}
+    </a>
+    {# Drop down button, only showed when current has children. #}
+    {% if vars.children %}
+    <button class="btn btn-link btn-sm p-0 m-0 drop-down-toggle" data-toggle="collapse"
+            data-target="#collapseExample_{{ vars.text_doc.id }}" aria-controls="collapseExample">
+      <i class="lni lni-chevron-down"></i> </button>
+    {% endif %}
+  </div>
+  {# Children, filled recursively. #}
+  <div id="collapseExample_{{ vars.text_doc.id }}" class="collapse">
+    {{ vars.children|raw }}
+  </div>
+</div>

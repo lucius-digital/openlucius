@@ -1,0 +1,5 @@
+name: 'OL General Settings'
+type: module
+description: 'OL General Settings'
+core_version_requirement: ^9.0
+package: 'Entities'

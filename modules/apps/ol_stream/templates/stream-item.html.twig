@@ -8,9 +8,13 @@
       <span class="badge badge-secondary"><i class="lni lni-users"> </i> {{ vars.group_name }}</span>
     {% endif %}
     <i class="{{ vars.icon_class }}"> </i>
+    {% if vars.path and vars.link_label %}
+      <a href="{{ vars.path }}" class="stream-inline-link"><i> {{ vars.link_label|raw }}</i> </a>
+      <i class="lni lni-arrow-right"></i>
+    {% endif %}
       <span class="text-black-50"> {{ vars.body_text_label }}:</span>
-      "{{ vars.stream_body }}"
-    {% if vars.path %}
+      <i>{{ vars.stream_body }}</i>
+    {% if vars.path and vars.link_label is empty %}
       <a href="{{ vars.path }}" class="stream-inline-link">{{ 'View'|t }}</a>
     {% endif %}
     {% if vars.files %}

@@ -72,7 +72,7 @@ function ol_files_stream_item_body_labels(){
   return [
     'files_added' => t('added files'),
     'folder_added' => t('added a folder'),
-    'text_doc_added' => t('added a notebook'),
+    'text_doc_added' => t('added a book page'),
     'folder_removed' => t('removed a folder'),
     'category_added' => t('added a notebook category'),
     'category_removed' => t('removed a notebook category'),
@@ -98,10 +98,9 @@ function ol_files_sections_badges_count($key){
       break;
   }
   // Return array with count.
-  if(!empty($count)) {
+  if(isset($count)) {
     return ['count' => $count];
   }
-  return null;
 }
 
 /**
@@ -116,6 +115,6 @@ function getTotalFileCount($gid){
   $query->condition('olf.group_id', $gid);
   $query->condition('olf.status', 1);
   // Only count stand alone files for now.
-  $query->condition('olf.entity_type', 'file');
+//  $query->condition('olf.entity_type', 'file');
   return $query->countQuery()->execute()->fetchField();
 }

@@ -1,28 +1,30 @@
 {
-    "name": "lucius-digital/openlucius",
-    "type": "drupal-profile",
-    "description": "A lean and fast social productivity Drupal installation profile",
+    "name": "drupal/recommended-project",
+    "description": "Project template for Drupal 8 projects with a relocated document root",
+    "type": "project",
     "license": "GPL-2.0-or-later",
-    "homepage": "https://www.drupal.org/project/openlucius",
-	"repositories": {
-	    "drupal": {
-	        "type": "composer",
-	        "url": "https://packages.drupal.org/8"
-	    },
-	    "assets": {
-	        "type": "composer",
-	        "url": "https://asset-packagist.org"
-	    }
-	},
+    "homepage": "https://www.drupal.org/project/drupal",
+    "support": {
+        "docs": "https://www.drupal.org/docs/user_guide/en/index.html",
+        "chat": "https://www.drupal.org/node/314178"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    ],
     "require": {
         "composer/installers": "^1.2",
         "drupal/admin_toolbar": "^2.2",
         "drupal/core-composer-scaffold": "^9",
         "drupal/core-project-message": "^9",
-        "drupal/core-recommended": "^9"
+        "drupal/core-recommended": "^9",
+        "drupal/exif_orientation": "^1.1",
+        "drupal/swiftmailer": "^2.0",
+        "drush/drush": "^10.2",
     },
     "require-dev": {
-        "drush/drush": "^10.2"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -33,6 +35,12 @@
         "sort-packages": true
     },
     "extra": {
+        "enable-patching": true,
+        "patches": {
+            "drupal/core": {
+                "Fix Date Notice": "https://www.drupal.org/files/issues/2018-06-30/date-type-error-2854722-26.patch"
+            }
+        },
         "drupal-scaffold": {
             "locations": {
                 "web-root": "web/"
@@ -51,21 +59,20 @@
         "drupal-core-project-message": {
             "include-keys": ["homepage", "support"],
             "post-create-project-cmd-message": [
+                "<bg=blue;fg=white>                                                         </>",
+                "<bg=blue;fg=white>  Congratulations, you’ve installed the Drupal codebase  </>",
+                "<bg=blue;fg=white>  from the drupal/recommended-project template!          </>",
+                "<bg=blue;fg=white>                                                         </>",
                 "",
-                "<bg=blue;fg=white>                                                              </>",
-                "<bg=blue;fg=white>  Congratulations, you’ve installed the OpenLucius codebase!  </>",
-                "<bg=blue;fg=white>                                                              </>",
-                "",
-                "<bg=yellow;fg=black>                </>",
-                "<bg=yellow;fg=black>   Next steps   </>",
-                "<bg=yellow;fg=black>                </>",
-                "  * Install guide: https://www.getlucius.com/en/product/open-source-install-guide",
-                "  * Get support: https://www.drupal.org/project/issues/openlucius",
-                "  * Post feature requests: https://www.drupal.org/project/issues/openlucius",
-                "  * Commercial support via: https://www.getlucius.com",
+                "<bg=yellow;fg=black>Next steps</>:",
+
+                "  * Install the site: https://www.drupal.org/docs/8/install",
+                "  * Read the user guide: https://www.drupal.org/docs/user_guide/en/index.html",
+                "  * Get support: https://www.drupal.org/support",
+                "  * Get involved with the Drupal community:",
+                "      https://www.drupal.org/getting-involved",
                 "  * Remove the plugin that prints this message:",
-                "      composer remove drupal/core-project-message",
-                ""
+                "      composer remove drupal/core-project-message"
             ]
         }
     }

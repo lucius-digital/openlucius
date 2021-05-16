@@ -11,6 +11,7 @@ global:
       css/components/nav.css: {}
       css/components/hidden.css: {}
       css/styles.css: {}
+      css/styles_mobile.css: {}
   js:
     '//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js': { type: external }
     '//stackpath.bootstrapcdn.com/bootstrap/4.4.0/js/bootstrap.min.js': { type: external }

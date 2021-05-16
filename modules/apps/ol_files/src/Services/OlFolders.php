@@ -13,8 +13,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class OlFolders{
 
   /**
-  * @var $database
-  */
+   * @var $database
+   */
   protected $database;
 
   /**
@@ -53,7 +53,6 @@ class OlFolders{
     $this->messenger = $messenger;
     $this->current_user = $current_user;
     $this->members = $members;
-    $this->stream = $stream;
   }
 
   /**

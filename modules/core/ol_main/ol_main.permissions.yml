@@ -1,6 +1,15 @@
 access ol content:
-  title: 'Access OL Content'
-  description: 'Access OL Content'
+  title: 'Access OL content'
+  description: 'Access ol content'
 administer ol users:
-  title: 'administer ol users'
-  description: 'administer ol users'
+  title: 'Administer OL users'
+  description: 'Administer ol users'
+access all users:
+  title: 'Access all users'
+  description: 'Access all users'
+administer organisation settings:
+  title: 'Administer organisation settings'
+  description: 'Administer organisation settings'
+access all openlucius content:
+  title: 'Access all OL content'
+  description: 'Access all ol content'

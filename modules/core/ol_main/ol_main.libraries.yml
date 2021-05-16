@@ -16,3 +16,39 @@ ol_add_group:
   version: 1.x
   js:
     js/ol_add_group.js: {}
+ol_home:
+  version: 1.x
+  js:
+    js/ol_home.js: {}
+ol_sortable:
+  version: 1.x
+  js:
+    js/ol_sortable.js: {}
+  dependencies:
+    - core/sortable
+ol_color_picker:
+  version: 1.x
+  css:
+    theme:
+      css/huebee.min.css: {}
+  js:
+    js/huebee.pkgd.min.js: {}
+ol_color_settings:
+  version: 1.x
+  js:
+    js/ol_color_settings.js: { weight: -10 }
+summernote:
+  css:
+    theme:
+      css/summernote-bs4.css: {}
+      css/summernote-extras.css: {}
+  js:
+    js/summernote-bs4.js: {  }
+summernote_inc_init:
+  css:
+    theme:
+      css/summernote-bs4.css: {}
+      css/summernote-extras.css: {}
+  js:
+    js/summernote-bs4.js: {  }
+    js/summernote_init.js: {  }

@@ -1,19 +1,18 @@
-<div class="col-md-3 ml-4 mb-3 card shadow-sm p-2 bg-light">
+<div class="col-md-3 ml-md-4 m-2 mb-3 card shadow-sm p-2 bg-light">
   <a href="{{ vars.url }}">
-  <div class="card-body p-1 py-2">
-    <h5 class="card-title h6 text-dark">{{ vars.textdocname }}</h5>
-    <p class="card-text small text-muted">{{ vars.body_intro|striptags }}</p>
-    <span class="badge badge-light small text-muted"><i class="lni lni-calendar"></i> {{ vars.created|date("d M Y") }}</span>
-    <span class="badge badge-light small text-muted"><i class="lni lni-user"></i> {{ vars.user_name }}</span>
-    {% if vars.category_name %}
-      <span class="badge badge-light small text-muted"><i class="lni lni-tag"></i> {{ vars.category_name }}</span>
-    {% endif %}
-  </div>
-
+    <div class="card-body p-1 py-2  text-left">
+      <h5 class="card-title h6 text-dark"><i class="lni lni-empty-file text-muted"></i> {{ vars.textdocname }}</h5>
+      <p class="card-text small text-muted lh-100"><small>{{ vars.body_intro|striptags|raw }}</small></p>
+      <span class="badge badge-light smallest text-muted"><i class="lni lni-calendar"></i> {{ vars.created|date("d M Y") }}</span>
+      <span class="badge badge-light smallest text-muted"><i class="lni lni-user"></i> {{ vars.user_name }}</span>
+      {% if vars.category_name %}
+        <span class="badge badge-light smallest text-muted"><i class="lni lni-tag"></i> {{ vars.category_name }}</span>
+      {% endif %}
+    </div>
   </a>
   {% if vars.owner == TRUE %}
-    <button class="btn btn-link" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <i class="lni lni-line-dotted"></i>
+    <button class="btn btn-link small" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <i class="lni lni-line-dotted align-left"></i>
     </button>
     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="ol-drop2">
       {% if vars.has_categories %}
@@ -36,5 +35,6 @@
       ><i class="lni lni-close"></i> {{ 'Remove'|t }}</button>
     </div>
   {% endif %}
+
 </div>
 

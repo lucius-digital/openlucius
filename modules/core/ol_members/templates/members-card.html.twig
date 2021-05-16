@@ -1,8 +1,4 @@
-
-<!-- POST  -->
 <div class="card shadow-sm mb-2">
-
-  <!-- POST BODY AREA-->
   <div class="card-body pb-1 px-3 ">
     <div class="media text-muted">
       <img class="rounded-circle mr-2" src="{{ vars.user_picture }}" alt="user tn" height="35">
@@ -18,7 +14,10 @@
             <span class="badge badge-info"><i class="lni lni-shield"></i> {{ 'Group Administrator'|t }}</span>
           {% endif %}
           {% if vars.is_user_admin == TRUE %}
-            <span class="badge badge-success"><i class="lni lni-shield"></i> {{ 'User Manager'|t }}</span>
+            <span class="badge badge-success"><i class="lni lni-shield"></i> {{ 'Manager'|t }}</span>
+          {% endif %}
+          {% if vars.role %}
+            <span class="badge badge-info"><i class="lni lni-user"></i> {{ vars.role }}</span>
           {% endif %}
         </span>
       </p>
@@ -32,11 +31,11 @@
               {% if vars.current_is_group_admin == TRUE and vars.group_id or vars.current_is_user_admin == TRUE and vars.group_id %}
                 <a class="dropdown-item" href="/group/{{ vars.group_id }}/members/remove/{{ vars.uid }}"><i class="lni lni-circle-minus"></i> {{ 'Remove from Group'|t }}</a>
               {% endif %}
-              {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.is_user_admin == false %}
-                <a class="dropdown-item" href="/members/user_manager_add/{{ vars.uid }}"><i class="lni lni-crown"></i> {{ 'Make User Manager'|t }}</a>
+              {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.is_user_admin == false and vars.role != 'External User' %}
+                <a class="dropdown-item" href="/members/user_manager_add/{{ vars.uid }}"><i class="lni lni-crown"></i> {{ 'Make Manager'|t }}</a>
               {% endif %}
               {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.is_user_admin == true %}
-                <a class="dropdown-item" href="/members/user_manager_remove/{{ vars.uid }}"><i class="lni lni-close"></i> {{ 'Remove as User Manager'|t }}</a>
+                <a class="dropdown-item" href="/members/user_manager_remove/{{ vars.uid }}"><i class="lni lni-close"></i> {{ 'Remove as Manager'|t }}</a>
               {% endif %}
               {% if vars.current_is_user_admin == TRUE and vars.group_id is empty and vars.status == 1 %}
                 <a class="dropdown-item" href="/members/block/{{ vars.uid }}"><i class="lni lni-circle-minus"></i> {{ 'Block this user'|t }}</a>

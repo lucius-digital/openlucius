@@ -62,6 +62,19 @@ class OlMembers{
     $this->renderer = $renderer;
   }
 
+
+  /**
+   * Helper function, provide roles to work with.
+   */
+  public function getRoles() {
+    return [
+      'standard_user' => t('Standard User'),
+      'manager' => t('Manager'),
+      'external_user' => t('External User'),
+    ];
+  }
+
+
   /**
    * @param $members_list_data
    * @param null $group_id
@@ -86,6 +99,8 @@ class OlMembers{
       $members_row_data['is_group_admin'] = $member->uid == $this->getGroupAdminUid();
       $members_row_data['user_picture'] = $this->getUserPictureUrl($member->uid);
       $user = User::load($member->uid);
+      $roles = $user->getRoles();
+      $members_row_data['role'] = (in_array('external_user', $roles)) ? 'External User' : '';
       $members_row_data['is_user_admin'] = $user->hasPermission('administer ol users');
       // Get additional members data and build rows.
       $members_data = $this->getMemberData($member->uid);
@@ -101,9 +116,13 @@ class OlMembers{
     return $members_html;
   }
 
+  /**
+   * @return array
+   */
   public function getGroupMembersDropDown(){
+    // Get members
     $members = $this->getUsersInGroup();
-
+    // build and return options.
     $options = array();
     foreach ($members as $member){
       $label = $member->name;
@@ -139,26 +158,69 @@ class OlMembers{
   }
 
   /**
+   * @param bool $exclude_current_uid
+   * @param null $gid
+   *
+   * @return array
+   */
+  public function getUsersNamesInGroupFlatArray($exclude_current_uid = false, $gid = null){
+    // Get current group id.
+    $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
+    // Get and return data.
+    $query = $this->database->select('ol_group_user', 'gu');
+    $query->addField('ufd', 'name');
+    $query->condition('gu.group_id', $gid);
+    $query->condition('gu.status', 1);
+    $query->condition('ufd.status', 1);
+    if($exclude_current_uid == true){
+      $query->condition('ufd.uid', $this->current_user->id(), '!=');
+    }
+    $query->join('users_field_data', 'ufd', 'ufd.uid = gu.member_uid');
+    $query->orderBy('gu.name', 'asc');
+    $usernames = $query->execute()->fetchAll();
+    // Build and return flat array with usernames.
+    // Start with 'Group' for sending mentions to whole group.
+    $usernames_array[] = 'Group';
+    foreach ($usernames as $username){
+      $usernames_array[]  = $username->name;
+    }
+    return $usernames_array;
+
+  }
+
+  /**
    * @param int $status
    *
    * @return mixed
    */
   public function getAllUsers($status = 1){
+    // Get current user roles.
+//    $has_full_access = \Drupal::currentUser()->hasPermission('access all ol content');
     // Get and return data.
     $query = $this->database->select('users_field_data', 'ufd');
     $query->addField('ufd', 'uid');
     $query->condition('ufd.status', $status);
     $query->orderBy('ufd.name', 'asc');
     $query->addTag('ol_user_list');
+    // Check if user is a collaborator, then only show users of shared groups.
+/*    if (!$has_full_access) {
+      // Get current user group id's.
+      $groups = \Drupal::service('olmain.groups');
+      $user_groups = array_keys($groups->getUserGroupsIds());
+      // Query only users in shared groups.
+      $query->condition('ogu.group_id', $user_groups, 'IN');
+      $query->join('ol_group_user', 'ogu', 'ogu.member_uid = ufd.uid');
+    }*/
     return $query->execute()->fetchAll();
   }
 
   /**
    * @param $uid
+   * @param null $gid
    */
   public function deleteUserGroupRelation($uid){
     // Get current group id.
-    $gid = $this->route->getParameter('gid');
+    $gid = ($gid) ? $gid : $this->route->getParameter('gid');
     // Check if uid is group admin, that can't be removed.
     $group_admin_uid = $this->isGroupAdmin($uid);
     // Only remove if it's not group admin.
@@ -184,6 +246,30 @@ class OlMembers{
     $response = new RedirectResponse($path);
     $response->send();
   }
+
+  /**
+   * @param $uid
+   */
+  public function deleteAllUserGroupRelations($uid){
+    // Get group ids of user that is blocked.
+    $gids = getUserGroups($uid);
+    // Get username for stream item.
+    $user_name = $this->getUserName($uid);
+    // Loop through groups and remove user.
+    //  Don't remove user from global_group.
+    foreach ($gids as $gid){
+      // Remove user from group.
+      $this->database->delete('ol_group_user')
+        ->condition('group_id', $gid)
+        ->condition('member_uid', $uid)
+        ->condition('name', 'global_group', '!=')
+        ->execute();
+      // Add stream item per group.
+      $stream = \Drupal::service('olstream.stream');
+      $stream->addStreamItem($gid, 'user_removed', $user_name, 'user', $uid);
+    }
+  }
+
 
   /**
    * @param null $user_id
@@ -243,19 +329,26 @@ class OlMembers{
       return $account->getAccountName();
     }
   }
+
   /**
    * @param $email
    * @param $language
+   * @param string $role
+   *
+   * @param null $name
+   *
    * @return \Drupal\Core\Entity\EntityInterface
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function addNewUser($email,$language ){
+  public function addNewUser($email, $language, $role, $name = null){
+    $name = ($name) ? $name : $email;
+    $password = \Drupal::service('password_generator')->generate();
     $account = User::create();
     $account->enforceIsNew();
-    $account->setPassword(user_password());
+    $account->setPassword($password);
     $account->setEmail($email);
-    $account->setUsername($email);
-    $account->addRole('standard_user');
+    $account->setUsername($name);
+    $account->addRole($role);
     $account->set('langcode', $language);
     $account->set('preferred_langcode', $language);
     $account->activate();
@@ -267,12 +360,16 @@ class OlMembers{
    * @param $uid
    * @param $gid
    *
+   * @param null $name
+   *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function addUserToGroup($uid, $gid){
-    // Create new relation.
+  public function addUserToGroup($uid, $gid, $name = null){
+    // Facilitate $name.
+    $name = ($name) ? $name : 'uid: '. $uid .' group id: '.$gid;
+      // Create new relation.
     $ol_group_user = OlGroupUser::create([
-      'name' => 'uid: '. $uid .' group id: '.$gid,
+      'name' => $name,
       'member_uid' => Html::escape($uid),
       'group_id' => $gid,
     ]);
@@ -312,7 +409,7 @@ class OlMembers{
     $user->save();
     $name = $user->get('name')->value;
     // Set message and redirect.
-    \Drupal::messenger()->addMessage( t('Successfully made @name User Manager.', array('@name' => $name)));
+    \Drupal::messenger()->addMessage( t('Successfully added role Manager to @name.', array('@name' => $name)));
     $path = Url::fromRoute('ol_members.all_members')->toString();
     $response = new RedirectResponse($path);
     $response->send();
@@ -335,7 +432,7 @@ class OlMembers{
       $name = $user->get('name')->value;
       // Set message and redirect.
       \Drupal::messenger()
-        ->addMessage(t('Successfully removed @name as User Manager.', ['@name' => $name]));
+        ->addMessage(t('Successfully removed Manager role from @name.', ['@name' => $name]));
     } elseif ($uid == $current_uid) {
       \Drupal::messenger()->addWarning(t('You can\'t remove your own roles.'));
     }
@@ -357,12 +454,15 @@ class OlMembers{
       $account = User::load($uid);
       $account->block();
       $account->save();
+      // Remove all group relations.
+      $this->deleteAllUserGroupRelations($uid);
       // Get name for message.
       $name = $account->label();
       \Drupal::messenger()->addStatus($name . t(' successfully blocked.'));
     } elseif ($uid == $current_uid) {
       \Drupal::messenger()->addWarning(t('You can\'t block yourself.'));
     }
+    $this->deleteAllUserGroupRelations($uid);
     $path = Url::fromRoute('ol_members.all_members')->toString();
     $response = new RedirectResponse($path);
     $response->send();
@@ -421,11 +521,27 @@ class OlMembers{
     return $user->hasPermission('administer ol users');
   }
 
+  /**
+   * @return mixed
+   */
   public function getUserId(){
     return $this->current_user->id();
   }
 
-
+  /**
+   * @param $gid
+   * @param null $uid
+   *
+   * @return bool
+   */
+  public function checkUserInGroup($gid, $uid = null){
+    $uid = empty($uid) ? $this->current_user->id() : $uid;
+    $query = \Drupal::database()->select('ol_group_user', 'lgu');
+    $query->addField('lgu', 'id');
+    $query->condition('lgu.member_uid', $uid);
+    $query->condition('lgu.group_id', $gid);
+    return ($query->execute()->fetchField()) ? true: false;
+  }
   /**
    * @param $uid
    *
@@ -441,6 +557,11 @@ class OlMembers{
     return $query->execute()->fetchObject();
   }
 
+  /**
+   * @param null $gid
+   *
+   * @return mixed
+   */
   private function getGroupAdminUid($gid = null){
     // Get $gid if not provided.
     $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;

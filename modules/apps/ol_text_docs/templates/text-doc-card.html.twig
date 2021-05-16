@@ -1,7 +1,19 @@
 
-  <div class="card-body pb-0">
+  <div class="card-body">
+    <!-- Body -->
+    <div class="px-md-4 p-1 pb-md-5 pt-md-3 border-bottom">
+    {{ vars.body|raw }}
+      <!-- Files -->
+      {% if vars.files %}
+        <div class="files_wrapper">
+          {{ vars.files|raw }}
+        </div>
+      {% endif %}
+
+    </div>
+
     <!-- User picture, date and drop down for edit -->
-    <div class="media text-muted">
+    <div class="media text-muted mt-4">
       <img class="rounded-circle mr-2" src="{{ vars.user_picture }}" alt="user thumbnail" height="35">
       <p class="media-body pb-3 mb-0 small lh-125 border-gray">
         <strong class="d-block text-gray-dark">
@@ -23,15 +35,6 @@
         </div>
       {% endif %}
     </div>
-    <!-- Body -->
-    {{ vars.body|raw }}
-
-    <!-- Files -->
-    {% if vars.files %}
-      <div class="files_wrapper">
-        {{ vars.files|raw }}
-      </div>
-    {% endif %}
 
 
   </div>
@@ -63,7 +66,7 @@
     <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-edit"></i> {{ 'Edit notebook'|t }}  </h5>
+          <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-edit"></i> {{ 'Edit book page'|t }}  </h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>

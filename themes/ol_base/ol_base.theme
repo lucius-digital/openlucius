@@ -117,4 +117,5 @@ function ol_base_preprocess_html(&$variables) {
 function ol_base_preprocess(array &$variables) {
   $variables['base_path'] = base_path();
   $variables['theme_path'] = base_path() . $variables['directory'];
+  $variables['is_front'] = \Drupal::service('path.matcher')->isFrontPage();
 }

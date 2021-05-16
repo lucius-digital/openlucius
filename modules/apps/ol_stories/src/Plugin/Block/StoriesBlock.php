@@ -76,6 +76,12 @@ class StoriesBlock extends BlockBase implements ContainerFactoryPluginInterface 
    */
   public function build() {
 
+    // Return empty if current user has no access to stories.
+    $user = \Drupal::currentUser();
+    if(!$user->hasPermission('access all openlucius content')) {
+      return [];
+    }
+
     // Get stories data.
     $story_form = \Drupal::formBuilder()->getForm(\Drupal\ol_stories\Form\StoryForm::class);
     $story_list_data = $this->stories->getStoriesList();

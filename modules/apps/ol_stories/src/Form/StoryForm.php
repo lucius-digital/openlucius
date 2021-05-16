@@ -33,6 +33,10 @@ class StoryForm extends FormBase {
 
   /**
    * Class constructor.
+   *
+   * @param \Drupal\ol_stories\Services\OlStories $stories
+   * @param \Drupal\ol_main\Services\OlFiles $files
+   * @param \Drupal\ol_members\Services\OlMembers $members
    */
   public function __construct(OlStories $stories, OlFiles $files, OlMembers $members) {
     $this->stories = $stories;
@@ -108,6 +112,8 @@ class StoryForm extends FormBase {
       '#required' => FALSE,
       '#upload_location' => 'private://'.$hdd_file_location,
       '#multiple' => FALSE,
+      '#progress_indicator' => 'bar',
+      '#progress_message' => t('Please wait...'),
       '#upload_validators' => array(
         'file_validate_extensions' => $this->files->getAllowedImageExtentions(),
       ),

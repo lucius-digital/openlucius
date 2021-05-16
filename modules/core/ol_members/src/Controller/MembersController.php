@@ -131,7 +131,7 @@ class MembersController extends ControllerBase {
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function makeUserManager($uid) {
-    $this->members->addUserRole($uid, 'user_manager');
+    $this->members->addUserRole($uid, 'manager');
   }
 
   /**
@@ -139,7 +139,7 @@ class MembersController extends ControllerBase {
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function removeUserManager($uid){
-    $this->members->removeUserRole($uid,'user_manager');
+    $this->members->removeUserRole($uid,'manager');
   }
 
   /**

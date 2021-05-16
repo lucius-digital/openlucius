@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies: {  }
+name: home_header_image
+label: 'Home Header Image'
+effects:
+  ce4ed34b-3744-4e81-9aa7-4c8aa6f18152:
+    uuid: ce4ed34b-3744-4e81-9aa7-4c8aa6f18152
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 1280
+      height: 200
+      anchor: left-center

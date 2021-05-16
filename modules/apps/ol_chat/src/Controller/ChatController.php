@@ -95,7 +95,7 @@ class ChatController extends ControllerBase {
           'node_server' => $node_server,
           'username' => $username,
           'user_picture' => $user_picture,
-          'group_users' => $group_users
+          'users_in_group' => $group_users
         ],
       ],
         '#vars' => $theme_vars,

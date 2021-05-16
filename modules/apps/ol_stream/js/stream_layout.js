@@ -20,7 +20,6 @@ function initBlockHeight(){
     if (messagesArea) {
       removeHeight = removeHeight + messagesArea;
     }
-    console.log('hoit' +messagesArea);
     jQuery('.chat-list-holder').css('max-height', 'calc(100vh - 130px - ' + removeHeight + 'px)');
 }
 

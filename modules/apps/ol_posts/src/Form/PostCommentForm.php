@@ -2,6 +2,7 @@
 
 namespace Drupal\ol_posts\Form;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
@@ -81,7 +82,16 @@ class PostCommentForm extends FormBase {
       '#prefix' => '<div class="form-row"><div class="col-10">',
       '#type' => 'textfield',
       '#required' => true,
-      '#attributes' => array('id' => array('edit-comment-'.$entity_id), 'class' => array('form-control form-control-sm'), 'placeholder' => t('Your comment...'), 'maxlength' => 4000),
+      '#attributes' => array(
+        'id' => array('edit-comment-'.$entity_id),
+        'class' => array(
+          'form-control',
+          'form-control-sm',
+          'mention-suggest',
+        ),
+        'placeholder' => t('Your comment...'),
+        'maxlength' => 4000
+      ),
       '#suffix' => '</div>',
     ];
     $form['actions'] = [
@@ -117,9 +127,8 @@ class PostCommentForm extends FormBase {
 
     // Initiate.
     $response = new AjaxResponse();
-    $comment = Xss::filter($form_state->getValue('comment'));
-    $entity_id = Xss::filter($form_state->getValue('entity_id'));
-    //$group_id = $this->groups->getCurrentGroupId();
+    $comment = Html::escape($form_state->getValue('comment'));
+    $entity_id = Html::escape($form_state->getValue('entity_id'));
     $user_picture = $this->members->getUserPictureUrl();
     $created = date('H:i' ); // Needed for appending and emitting message.
     $timestamp = time(); // Needed to help determine if screen has to refresh due to missed messages.

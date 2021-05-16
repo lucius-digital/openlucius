@@ -1,4 +1,5 @@
 .categories .active a,
+.category-left .active a,
 .categories .active .btn-link{
   color:#fff;
 }
@@ -8,3 +9,34 @@ table.dataTable.no-footer {
   border-bottom: 1px solid #9a9a9a !important;
 }
 
+/* Menu left, also used for sortable in modal */
+.sortable-text-docs .list-group-item {
+  padding: .45rem 0.9rem !important;
+  background-color: #fff;
+  font-size: 0.85rem;
+}
+/* For sortable modal */
+.nested-sortable > div:first-of-type {
+  margin-top:0.4rem;
+}
+/* For pages nav left */
+.text-docs-container .list-group-item{
+  padding: .5rem 0.9rem !important;
+  padding-bottom: 0!important;
+  background-color: #fff;
+  font-size: 0.85rem;
+  border:0;
+  padding-right: 0 !important;
+}
+a.active.left-menu-link {
+  color: #2c2c2c;
+  font-weight: bolder;
+  text-decoration: underline;
+  background-color:#fff !important;
+}
+.drag-handle{
+  cursor:grab;
+}
+.drag-handle:active {
+  cursor: grabbing;
+}

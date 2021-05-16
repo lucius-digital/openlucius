@@ -1,4 +1,5 @@
 (function ($, Drupal, drupalSettings) {
+
   Drupal.behaviors.globalOpenLuciusBehavior = {
     attach: function (context, settings) {
       // Responsive main navigation.
@@ -18,8 +19,8 @@
     // Message toaster init.
     $('.toast').toast('show');
     // Tooltips init.
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip()
-    })
+    $('[data-toggle="tooltip"]').tooltip()
+    // Add bootstrap classes to tables, as attributes are completely stripped on submit.
+    $('main table').addClass('table table-bordered table-striped table-hover ')
   });
 })(jQuery, Drupal);

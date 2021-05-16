@@ -2,6 +2,7 @@
 
 namespace Drupal\ol_posts\Form;
 
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Html;
@@ -34,6 +35,10 @@ class PostForm extends FormBase {
 
   /**
    * Class constructor.
+   *
+   * @param \Drupal\ol_posts\Services\OlPosts $posts
+   * @param \Drupal\ol_main\Services\OlFiles $files
+   * @param \Drupal\ol_members\Services\OlMembers $members
    */
   public function __construct(OlPosts $posts, OlFiles $files, OlMembers $members) {
     $this->posts = $posts;
@@ -62,15 +67,15 @@ class PostForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $op = null, $id = null, $post_settings = null) {
+  public function buildForm(array $form, FormStateInterface $form_state, $op = null, $id = null, $post_settings = null, $gid = null) {
 
     // Defaults.
     $body = '';
     $button_text = t('Submit');
     $hdd_file_location = $this->files->buildFileLocaton('post');
-    //$mail_send_default = array('0');
-    $num_users = $this->members->countMembers(null, true);
-    //$send_mail_title = array( '1' => t('Notify members') .' ('.$num_users .')',);
+    $mail_send_default = array('1');
+    $num_users = $this->members->countMembers($gid, true);
+    $send_mail_title = array( '1' => t('Notify all members') .' ('.$num_users .')',);
     $question = t('What\'s happening?');
 
     if(!empty($post_settings->question)){
@@ -91,25 +96,51 @@ class PostForm extends FormBase {
      '#default_value' => $id,
      '#weight' => '0',
     ];
+    // For homepage posts.
+    if($gid) {
+      $form['group_id'] = [
+        '#type' => 'hidden',
+        '#default_value' => $gid,
+        '#weight' => '0',
+      ];
+    }
     $form['body'] = [
-      '#prefix' => '<div class="modal-body"><div class="form-group post-body">',
+      '#prefix' => '<div class="modal-body"><div class="form-group">',
       '#type' => 'textarea',
-//      '#format' => 'ol_rich_text',
+      '#attributes' => [
+//        'class' => ['summernote'],
+        'class' => ['form-control'],
+        'placeholder' => $question,
+      ],
       '#weight' => '20',
-      '#attributes' => array('placeholder' => $question, 'class' => array('form-control')),
       '#default_value' => $body,
       '#required' => true,
-      '#suffix' => '</div>'
+      '#suffix' => '</div><div class="row">'
     ];
+    if($op != 'edit') {
+      $form['send_mail'] = [
+        '#prefix' => '<div class="col-12 col-md-6 pl-4 small text-muted pb-2">',
+        '#type' => 'checkboxes',
+        '#options' => $send_mail_title,
+        '#default_value' => $mail_send_default,
+        '#weight' => '25',
+        '#attributes' => array(
+          'data-toggle' => 'toggle',
+          'data-onstyle' => 'success',
+          'data-size' => 'xs',
+        ),
+        '#suffix' => '</div>'
+      ];
+    }
     $form['markup'] = [
       '#type' => 'markup',
-      '#markup' => '<div class="row"><div class="col-12 col-md-12"><div class="form-group file-upload-wrapper">',
+      '#markup' => '<div class="col-12 col-md-6">',
       '#allowed_tags' => ['div'],
-      '#weight' => '25',
+      '#weight' => '30',
     ];
 
     $form['files'] = array(
-      '#title' => t('Attach images or files'),
+//      '#title' => t('Attach images or files'),
       '#type' => 'managed_file',
       '#required' => FALSE,
       '#upload_location' => 'private://'.$hdd_file_location,
@@ -117,23 +148,20 @@ class PostForm extends FormBase {
       '#upload_validators' => array(
         'file_validate_extensions' => $this->files->getAllowedImageExtentions(),
       ),
-      '#weight' => '30',
+      '#attributes' => array(
+        'class' => ['small text-muted pl-md-3'],
+      ),
+      '#progress_indicator' => 'bar',
+      '#progress_message' => t('Please wait...'),
+      '#weight' => '35',
     );
     $form['markup_2'] = [
       '#type' => 'markup',
-      '#markup' => '</div></div>',
+      '#markup' => '</div>',
       '#allowed_tags' => ['div'],
-      '#weight' => '35',
-    ];
-/*    $form['send_mail'] = array(
-      '#prefix' => '<div class="col-12 col-md-6"><div class="form-group send_mail_checkbox">',
-      '#title' => t('Email notifications'),
-      '#type' => 'checkboxes',
-      '#options' => $send_mail_title,
-      '#default_value' => $mail_send_default,
       '#weight' => '40',
-      '#suffix' => '</div></div></div>'
-    );*/
+    ];
+
     $form['submit'] = [
       '#prefix' => '</div></div><div class="modal-footer">',
       '#type' => 'submit',
@@ -142,7 +170,12 @@ class PostForm extends FormBase {
       '#value' => $button_text,
       '#suffix' => '</div>'
     ];
-
+    // For @-mentions.
+    $group_users = $this->members->getUsersNamesInGroupFlatArray();
+  //  $form['#attached']['library'][] = 'ol_main/summernote_inc_init';
+    $form['#attached']['drupalSettings']['group_users'] = $group_users;
+ //   $form['#attached']['drupalSettings']['placeholder_override'] = t('What\'s happening?');
+    // Return form.
     return $form;
   }
 
@@ -163,22 +196,25 @@ class PostForm extends FormBase {
 
     // Get data.
     $id = Html::escape($form_state->getValue('post_id'));
-    $body = Html::escape($form_state->getValue('body'));
-//    $body = $form_state->getValue('body')['value'];
-//    $body = check_markup($body,'ol_rich_text');
+    $gid = Html::escape($form_state->getValue('group_id'));
+    $body = Xss::filter($form_state->getValue('body'), getAllowedHTMLTags() );
+    $body = sanatizeSummernoteInput($body);
     $name = $name_shortened = shortenString($body);
-//    $send_mail = $form_state->getValue('send_mail')[1];
     $files = $form_state->getValue('files');
+    $send_mail = $form_state->getValue('send_mail')[1];
+    // Only global posts have a group id here.
+    // This is needed for sending correct url mail.
+    $global_post = ($gid) ? true : false;
     // Existing, update post.
     if(is_numeric($id)){
-      $this->posts->updatePost($id, $name, $body);
+      $this->posts->updatePost($id, $name, $body, $send_mail, $global_post, $gid);
     }
     // New, save post.
     elseif(empty($id)){
-      $id = $this->posts->savePost($name, $body);
+      $id = $this->posts->savePost($name, $body, $send_mail, $gid, false, $global_post);
     }
     if(!empty($files)) {
-      $this->files->saveFiles($files, 'post', $id);
+      $this->files->saveFiles($files, 'post', $id, null, null, $gid);
     }
   }
 

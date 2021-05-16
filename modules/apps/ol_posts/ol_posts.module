@@ -19,6 +19,12 @@ function ol_posts_theme() {
       ],
       'template' => 'posts-list',
     ],
+    'posts_block' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'posts-block',
+    ],
     'post_card_list' => [
       'variables' => [
         'vars' => NULL,
@@ -39,6 +45,113 @@ function ol_posts_add_ol_section(&$sections){
     'weight' => 65,
     'icon_class' => 'lni lni-pencil-alt',
   );
+}
+
+/**
+ * Implements hook_add_home_tab()
+ * Provide content for home tab.
+ *
+ * @param &$tabs
+ *
+ */
+function ol_posts_add_home_tab(&$tabs) {
+  $tabs['posts'] = [
+    'label' => 'Posts',
+    'weight' => 10,
+    'query_link' => 'posts',
+    'new_badge' => null,
+    'icon' => 'lni lni-comments-alt',
+  ];
+}
+
+/**
+ * Implements hook_provide_home_tab_content()
+ * Add links at comments to use in activity stream.
+ *
+ * @param $active_tab
+ *
+ * @return mixed
+ */
+function ol_posts_provide_home_tab_content($active_tab) {
+  // Check if current item concerns this module.
+  if ($active_tab == 'posts') {
+    return getTabContentPosts();
+  }
+}
+
+/**
+ * Returns html for posts in home tab.
+ *
+ */
+ function getTabContentPosts(){
+
+  // Provide static services, because .module file can't inject dependencies.
+  $pager_service = \Drupal::service('pager.manager');
+  $pager_params = \Drupal::service('pager.parameters');
+  $posts_service = \Drupal::service('olposts.posts');
+  $groups = \Drupal::service('olmain.groups');
+
+   // Handle settings.
+   $global_group_id = $groups->getGlobalGroupId();
+
+  // TEMP solution for older accounts.
+  $global_group_id_new = handle_global_group_for_legacy_users($global_group_id, $groups);
+  $global_group_id = (is_numeric($global_group_id_new)) ? $global_group_id_new : $global_group_id;
+
+  // Pager init.
+  $page = $pager_params->findPage();
+  $num_per_page = 20;
+  $offset = $num_per_page * $page;
+
+  // Get group_id where home posts live.
+  $post_group_id = $groups->getGlobalGroupId();
+
+  // Get posts data.
+  $post_list_data = $posts_service->getPostsList(null, $num_per_page, $offset, null, $post_group_id);
+  $posts = $posts_service->renderPostsList($post_list_data);
+  $post_form = \Drupal::formBuilder()->getForm(\Drupal\ol_posts\Form\PostForm::class, null, null, null, $global_group_id);
+
+  // Pager, now that we have the total number of results.
+  $total_result = $posts_service->getPostsList(null, null, null, true, $global_group_id);
+  $pager = $pager_service->createPager($total_result, $num_per_page);
+  $pager->getCurrentPage();
+
+  // Build theme vars.
+  $theme_vars = [
+    'posts' => $posts,
+    'post_form' => $post_form,
+  ];
+  // Build render array.
+  $render = [];
+  $render[] = [
+    '#theme' => 'posts_block',
+    '#vars' => $theme_vars,
+    '#type' => 'remote',
+    '#attached' => [
+      'library' => [
+        'ol_posts/ol_posts'
+      ],
+    ],
+  ];
+  // Add pager and return.
+  $render[] = ['#type' => 'pager'];
+  return \Drupal::service('renderer')->render($render);
+}
+
+/**
+ * @param $gid
+ *
+ * @param $current_uid
+ *
+ * @return mixed
+ */
+function checkUserInGroup($gid, $current_uid){
+  $query = \Drupal::database()->select('ol_group_user', 'gu');
+  $query->addField('gu', 'id');
+  $query->condition('gu.member_uid', $current_uid);
+  $query->condition('gu.group_id', $gid);
+  return $query->execute()->fetchField();
+
 }
 
 /**
@@ -136,6 +249,37 @@ function getAllPostSettings() {
 }
 
 
+/**
+ * Temp function for legacy users.
+ *
+ * @param $global_group_id
+ * @param $groups
+ *
+ * @return mixed
+ */
+function handle_global_group_for_legacy_users($global_group_id, $groups){
+  // If there is a $global_group_id, current (older) user maybe is not in ol_group_user yet.
+  if(is_numeric($global_group_id)){
+    // Check if user already added to global_group.
+    $current_uid = \Drupal::currentUser()->id();
+    $user_in_group = checkUserInGroup($global_group_id, $current_uid);
+    // Add to global group, if not there yet.
+    if(!is_numeric($user_in_group)){
+      $groups->addUserToGlobalGroup($current_uid);
+    }
+  }
 
-
+  // Initiate global group and add user.
+  elseif(empty($global_group_id)) {
+    $has_full_access = \Drupal::currentUser()->hasPermission('access all ol content');
+    if ($has_full_access) {
+      // Initiate global_group.
+      $current_uid = \Drupal::currentUser()->id();
+      $groups->initiateGlobalGroup($current_uid);
+      // Add current user to global_group.
+      $groups->addUserToGlobalGroup($current_uid);
+      return $groups->getGlobalGroupId();
+    }
+  }
+}
 

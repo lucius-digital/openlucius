@@ -11,7 +11,7 @@
  */
 function ol_text_docs_add_ol_section(&$sections){
   $sections['notebooks'] = array(
-    'label' => t('Notebooks'),
+    'label' => t('Book'),
     'path' => t('notebooks'),
     'weight' => 68,
     'icon_class' => 'lni lni-book',
@@ -64,6 +64,18 @@ function ol_text_docs_theme() {
         'vars' => NULL,
       ],
       'template' => 'text-doc-modal-remove',
+    ],
+    'text_doc_tree' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'text-doc-tree',
+    ],
+    'text_doc_sortable_tree' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'text-doc-sortable-tree',
     ],
   ];
 }

@@ -1,0 +1,35 @@
+@media (max-width: 767px) {
+  .main-heading,
+  .h4 {
+    font-size: 1.3rem;
+  }
+  .container-fluid{
+    padding-right:0;
+    padding-left:0;
+  }
+  .note-btn-group .note-btn{
+    font-size: 8px;
+  }
+  .note-toolbar.card-header{
+    display:none;
+  }
+  .main-col{
+    padding-top:5px !important;
+  }
+  .story-container{
+    background-color:#fff;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 1rem;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+  }
+  .story-scroller{
+    height: 5rem;
+    font-size: 0.8rem;
+  }
+  .story-scroller .img-thumbnail {
+    height: 40px;
+  }
+  .modal-header .close {
+    padding:0.5rem 0;
+  }
+}

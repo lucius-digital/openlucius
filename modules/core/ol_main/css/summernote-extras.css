@@ -1,0 +1,14 @@
+/* Main toolbar size. */
+.note-btn-group .note-btn {
+  font-size: 9px;
+}
+/* Disable files drag-drop for now. */
+.note-group-select-from-files {
+  display: none;
+}
+.note-editable.card-block {
+  font-size: 0.9rem;
+}
+.note-placeholder{
+  font-size: 0.85rem;
+}

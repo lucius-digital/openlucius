@@ -1,6 +1,8 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - editor
 name: ol_rich_text
 format: ol_rich_text
 weight: 0
@@ -32,4 +34,10 @@ filters:
     provider: filter
     status: true
     weight: 10
+    settings: {  }
+  editor_file_reference:
+    id: editor_file_reference
+    provider: editor
+    status: true
+    weight: 0
     settings: {  }

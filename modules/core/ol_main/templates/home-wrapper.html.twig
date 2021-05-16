@@ -1,0 +1,56 @@
+<div class="container">
+  <div class="row">
+    {# Tabs, with nasty active styling for now. #}
+    <div class="col-lg-2 mb-1 p-0 m-2 m-md-0">
+      <div class="nav flex-column nav-pills mb-md-3 mb-1" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+        {% for tab in vars.tabs %}
+          {% if tab.query_link == vars.active_tab %}
+            {% set active = 'active' %}
+          {% endif %}
+          <a href="?tab={{ tab.query_link }}" class="nav-item nav-link {{ active }}">
+            <i class="{{ tab.icon }} mr-2"></i>
+            {{ tab.label }}
+          </a>
+          {% set active = '' %}
+        {% endfor %}
+      </div>
+    </div>
+    {# Content #}
+    <div class="col-lg-7 pl-md-3 bd-content mb-5">
+        {{ vars.tab_content }}
+    </div>
+    {# Groups #}
+    <div class="col-lg-3 bd-content mb-5">
+      <div class="card shadow-sm">
+        <div class="py-2 border-bottom">
+          <span class="pl-3 pt-2 text-muted font-weight-lighter"> {{ 'Groups'|t }}</span>
+        </div>
+        <div class="list-group list-group-flush">
+          {% for group in vars.groups %}
+            {# Nasty active styling for now ¯\_(ツ)_/¯ #}
+            {% if group.non_chat_count or group.chat_count %}
+              {% set active_class = 'font-weight-bold' %}
+            {% else %}
+              {% set active_class = 'text-muted' %}
+            {% endif %}
+            <a href="{{ base_path }}group/{{ group.id }}/{{ group.landing }}"
+               class="{{ active_class }} small py-2 list-group-item d-flex justify-content-between align-items-center list-group-item-action">
+              {{ group.name|raw }}
+              {% if group.non_chat_count %}
+                <span class="badge badge-danger badge-pill"> {{ group.non_chat_count }}</span>
+              {% endif %}
+              {% if group.chat_count %}
+                <span class="badge badge-primary badge-pill"><i class="lni lni-comments"></i> {{ group.chat_count }}</span>
+              {% endif %}
+              <span class="badge badge-light text-muted badge-pill"><i class="lni lni-user"></i> {{ group.user_count }}</span>
+            </a>
+          {% endfor %}
+          <a href="{{ url('ol_main.group_archived') }}" class="text-muted small py-2 list-group-item d-flex justify-content-between align-items-center list-group-item-action">
+           <span> <i class="lni lni-archive"></i> {{ 'Archived Groups'|t }}</span>
+          </a>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

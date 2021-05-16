@@ -7,20 +7,6 @@
     $("#edit-files .js-hide").addClass("hidden");
     $("#add-chat-file-form .js-hide").addClass("hidden");
     $("#add-chat-file-form label").addClass("hidden");
-    // Init mentions autocomplete.
-    $('#edit-message').suggest('@', {
-      data: drupalSettings.group_users,
-      dropdownClass:'chat-mentions',
-      filter: {
-        limit: 3,
-      },
-      map: function(user) {
-        return {
-          value: user.name,
-          text: '<strong>'+user.name+'</strong> <small>'+user.mail+'</small>'
-        }
-      }
-    })
   });
 
   // Modals

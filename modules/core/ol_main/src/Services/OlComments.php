@@ -2,6 +2,7 @@
 
 namespace Drupal\ol_main\Services;
 
+use Drupal\Core\Url;
 use Drupal\ol_comment\Entity\OlComment;
 
 /**
@@ -25,14 +26,21 @@ class OlComments{
   protected $files;
 
   /**
+   * @var $notifications
+   */
+  protected $notifications;
+
+  /**
    * @param $route
    * @param $members
    * @param $files
+   * @param $notifications
    */
-  public function __construct($route, $members, $files) {
+  public function __construct($route, $members, $files, $notifications) {
     $this->route = $route;
     $this->members = $members;
-    $this->files =  $files;
+    $this->files = $files;
+    $this->notifications = $notifications;
   }
 
   /**
@@ -54,6 +62,13 @@ class OlComments{
     // Prepare data.
     $gid = $this->route->getParameter('gid');
     $name = shortenString(strip_tags($body),20);
+    $mentions_url = null;
+    // Custom set $mentions_url if this is a task.
+    if ($reference_type == 'task'){
+      $mentions_url = Url::fromRoute('ol_board.task_open_modal', ['gid' => $gid, 'task_id' => $entity_id])->toString();
+    }
+    // Send Notifications to @-mentioned users.
+    $this->notifications->sendMentions($body, $mentions_url);
     // Save new comment.
     $ol_comment = OlComment::create([
       'body' =>  $body,
@@ -69,8 +84,9 @@ class OlComments{
     if($privacy != 1 && $in_stream) {
       // We can't have this as dependency, else install profile will bitch during install.
       // So for now, procedural use of this service.
+      $stream_body = shortenString(strip_tags($body), 200);
       $stream = \Drupal::service('olstream.stream');
-      $stream->addStreamItem($gid, 'comment_added', $name, 'comment', $id); // Create stream item.
+      $stream->addStreamItem($gid, 'comment_added', $stream_body, 'comment', $id);
     }
     // Message.
     \Drupal::messenger()->addStatus(t('Your comment was added successfully.'));
@@ -86,6 +102,8 @@ class OlComments{
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function updateComment($cid, $body, $privacy){
+    // Send Notifications to @-mentioned users.
+    $this->notifications->sendMentions($body);
     // Update comment with security check.
     if($this->isCommentOwner($cid)) {
       // Load and save, update.
@@ -156,7 +174,8 @@ class OlComments{
         continue;
       }
       $comment_row_data['privacy'] = $comment->privacy;
-      $comment_row_data['body'] = ($show_small) ? nl2br(detectAndCreateLink($comment->body)) : nl2br($comment->body);
+      $comment_row_data['body'] = $comment->body;
+      $comment_row_data['body'] = ($show_small && $entity_type != 'task') ? nl2br(detectAndCreateLink($comment->body)) : $comment->body;
       $comment_row_data['username'] = $this->members->getUserName($comment->user_id);
       $comment_row_data['user_id'] = $comment->user_id;
       $comment_row_data['owner'] = $comment->user_id == $current_uid;
@@ -178,7 +197,11 @@ class OlComments{
       $template = ($show_small) ? 'comment_item_small' : 'comment_item';
       $render = [
         '#theme' => $template,
-        '#attached' => ['library' => ['ol_main/ol_comments']],
+        '#attached' => [
+          'library' => [
+            'ol_main/ol_comments',
+          ]
+        ],
         '#vars' => $comment_row_data,
       ];
       $comments_html .= \Drupal::service('renderer')->render($render);

@@ -1,0 +1,13 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.external_user
+  module:
+    - user
+id: user_remove_role_action.external_user
+label: 'Remove the External User role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: external_user

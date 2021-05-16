@@ -1,0 +1,13 @@
+langcode: en
+status: true
+dependencies: {  }
+id: manager
+label: Manager
+weight: -7
+is_admin: null
+permissions:
+  - 'access all openlucius content'
+  - 'access all users'
+  - 'add ol group entities'
+  - 'administer ol users'
+  - 'sort book pages'

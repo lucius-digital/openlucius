@@ -5,24 +5,20 @@ namespace Drupal\ol_main\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Language\LanguageManager;
-use Drupal\Core\Messenger\Messenger;
-use Drupal\Core\Routing\CurrentRouteMatch;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Url;
 use Drupal\ol_board\Services\OlTasks;
-use Drupal\ol_group\Entity\OlGroup;
-use Drupal\ol_group_user\Entity\OlGroupUser;
 use Drupal\ol_main\Services\OlGroups;
-use Drupal\ol_members\Services\OlMembers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 
 /**
  * Class AddGroupForm.
  */
 class AddGroupForm extends FormBase {
+
+  /**
+   * @var $tasks
+   */
+  protected $tasks;
 
   /**
    * @var $groups
@@ -34,8 +30,9 @@ class AddGroupForm extends FormBase {
    *
    * @param \Drupal\ol_main\Services\OlGroups $groups
    */
-  public function __construct(OlGroups $groups) {
+  public function __construct(OlGroups $groups, OlTasks $tasks) {
     $this->groups = $groups;
+    $this->tasks = $tasks;
   }
 
   /**
@@ -43,7 +40,8 @@ class AddGroupForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('olmain.groups')
+      $container->get('olmain.groups'),
+      $container->get('olboard.tasks')
     );
   }
 
@@ -59,6 +57,21 @@ class AddGroupForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
+    // Security hardening.
+    $access = \Drupal::currentUser()->hasPermission('add ol group entities');
+    if(!$access){
+      $form['markup'] = [
+        '#type' => 'markup',
+        '#markup' => '<div class="my-3 p-3 bg-white rounded shadow-sm text-muted text-center small">
+                          <i class="lni lni-invention"></i> <i>'
+                        .t('Sorry, only Managers are allowed to add groups.')
+                    .'</div>',
+        '#allowed_tags' => ['div','i'],
+      ];
+      return $form;
+    };
+
+    // Build form.
     $form['type'] = [
       '#type' => 'hidden',
       '#weight' => '0',
@@ -112,7 +125,6 @@ class AddGroupForm extends FormBase {
     $enabled_sections = 'stream,board,chat,messages,posts,notebooks,files,members';
     // Save group.
     $this->groups->addGroup($name, $type, null, true, $enabled_sections);
-
 
     if ($type == 'company') {
       \Drupal::messenger()

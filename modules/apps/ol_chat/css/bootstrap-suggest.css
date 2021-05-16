@@ -24,3 +24,8 @@
 .suggest > .dropdown-menu > a.dropdown-item:first-child {
   border-top: 0;
 }
+
+.chat-mentions .dropdown-menu {
+  top: -100px !important;
+  left:40px !important;
+}

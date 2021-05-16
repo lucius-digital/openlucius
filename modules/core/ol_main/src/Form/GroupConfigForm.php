@@ -111,6 +111,8 @@ class GroupConfigForm extends FormBase {
       '#default_value' => $default_fid,
       '#upload_location' => 'private://'.$hdd_file_location,
       '#multiple' => FALSE,
+      '#progress_indicator' => 'bar',
+      '#progress_message' => t('Please wait...'),
       '#upload_validators' => array(
         'file_validate_extensions' => $this->files->getAllowedImageExtentions(),
       ),

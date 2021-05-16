@@ -95,6 +95,8 @@ class AddChatFilesForm extends FormBase {
       '#required' => FALSE,
       '#upload_location' => 'private://'.$hdd_file_location,
       '#multiple' => TRUE,
+      '#progress_indicator' => 'bar',
+      '#progress_message' => t('Please wait...'),
       '#upload_validators' => array(
         'file_validate_extensions' => $this->files->getAllowedFileExtentions(),
       ),

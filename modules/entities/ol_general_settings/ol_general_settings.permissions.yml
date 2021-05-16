@@ -1,0 +1,20 @@
+add ol general settings entities:
+  title: 'Create new Ol general settings entities'
+
+administer ol general settings entities:
+  title: 'Administer Ol general settings entities'
+  description: 'Allow to access the administration form to configure Ol general settings entities.'
+  restrict access: true
+
+delete ol general settings entities:
+  title: 'Delete Ol general settings entities'
+
+edit ol general settings entities:
+  title: 'Edit Ol general settings entities'
+
+view published ol general settings entities:
+  title: 'View published Ol general settings entities'
+
+view unpublished ol general settings entities:
+  title: 'View unpublished Ol general settings entities'
+

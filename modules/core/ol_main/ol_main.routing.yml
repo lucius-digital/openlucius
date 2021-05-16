@@ -1,3 +1,12 @@
+ol_main.home:
+  path: '/ol_home'
+  defaults:
+    _controller: '\Drupal\ol_main\Controller\MainController::getHome'
+    _title: 'Home'
+  requirements:
+    _permission: 'access ol content'
+  options:
+    no_cache: 'TRUE'
 ol_main.add_group:
   path: '/add-group'
   defaults:
@@ -42,3 +51,50 @@ ol_main.ol_config_form:
     _permission: 'access administration pages'
   options:
     _admin_route: TRUE
+
+# Settings
+ol_main.general_settings_colors:
+  path: '/general-settings/colors'
+  defaults:
+    _controller: '\Drupal\ol_main\Controller\MainSettingsController::getColorSettings'
+    _title: 'General Settings | Colors'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _permission: 'administer ol users'
+ol_main.general_settings_tabs:
+  path: '/general-settings/home_tabs'
+  defaults:
+    _controller: '\Drupal\ol_main\Controller\MainSettingsController::getHomeTabsSettings'
+    _title: 'General Settings | Tabs'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _permission: 'administer ol users'
+ol_main.home_header_image:
+  path: '/general-settings/home-header-image'
+  defaults:
+    _controller: '\Drupal\ol_main\Controller\MainSettingsController::getHomeImageSettings'
+    _title: 'General Settings | Home Image'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _permission: 'administer ol users'
+
+# AJAX Routes
+ol_main.update_home_tabs_positions:
+  path: '/update_home_tabs_positions'
+  defaults:
+    _controller: '\Drupal\ol_main\Controller\MainAjaxController::updateHomeTabsPositions'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _permission: 'administer organisation settings'
+ol_main.upload_files:
+  path: '/group/{uuid}/upload_inline_images'
+  defaults:
+    _controller: '\Drupal\ol_main\Controller\MainAjaxController::uploadInlineImage'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _group_uuid_access_check: 'TRUE'

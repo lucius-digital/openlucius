@@ -2,6 +2,7 @@
 
 namespace Drupal\ol_main\Services;
 
+use DOMDocument;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
@@ -47,9 +48,9 @@ class OlFiles{
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function saveFiles($files, $entity_type, $entity_id = null, $folder_id = null, $add_stream = null){
+  public function saveFiles($files, $entity_type, $entity_id = null, $folder_id = null, $add_stream = null, $gid = null){
     // Get current gid.
-    $group_id = $this->route->getParameter('gid');
+    $group_id = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
     // Needed For stream item message.
     $filenames = array();
     $file_ids = array();
@@ -153,12 +154,13 @@ class OlFiles{
     $group_id = $this->route->getParameter('gid');
     $query = \Drupal::database()->select('ol_file', 'lfr');
     $query->addField('lfr', 'id');
+    $query->addField('lfr', 'entity_type');
     if ($get_total == false) {
       // Needed for text docs.
       $query->addField('lfr', 'file_id');
     }
     $query->condition('lfr.group_id', $group_id);
-    $query->condition('lfr.entity_type', ['file','text_doc'],'IN');
+//    $query->condition('lfr.entity_type', ['file','text_doc'],'IN');
     $query->condition('lfr.status', 1);
     if($folder_id > 0){
       $query->condition('lfr.folder_id', $folder_id);
@@ -251,6 +253,8 @@ class OlFiles{
     $file_row_data['folder_id'] = $file->folder_id;
     $file_row_data['ol_fid'] = $file->ol_fid;
     $file_row_data['created'] = $file->created;
+    // Only show this, if it's not a stand alone uploaded file.
+    $file_row_data['entity_type'] = ($file->entity_type != 'file') ? str_replace("_", " ", $file->entity_type) : null ;
     $file_row_data['user_name'] = shortenString($this->members->getUserName($file->user_id),25);
     $file_row_data['owner'] = $file->user_id == $this->members->getUserId();
     $file_row_data['url'] = Url::fromUri(file_create_url($file->uri));
@@ -332,9 +336,9 @@ class OlFiles{
    *
    * @return string
    */
-  public function getAttachedFiles($entity_type, $entity_id, $image_preset = 'ol_attached_file', $fids = null){
+  public function getAttachedFiles($entity_type, $entity_id, $image_preset = 'ol_attached_file', $fids = null, $gid = null){
     // Get data.
-    $group_id = $this->route->getParameter('gid');
+    $group_id = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
     $files = $this->getFilesByEntity($group_id, $entity_type, $entity_id, $fids);
     $allowed_extensions = $this->getAllowedFileExtentions();
     $image_style = ImageStyle::load($image_preset);
@@ -400,7 +404,7 @@ class OlFiles{
    *
    * @return mixed
    */
-  private function getFilesByEntity($group_id, $entity_type, $entity_id, $fids = null){
+  public function getFilesByEntity($group_id, $entity_type, $entity_id, $fids = null){
 
     // This is to facilitate ajax calls that use uuid, like comments.
     // We should clean this up, make all consistent.
@@ -466,7 +470,7 @@ class OlFiles{
    * @return array
    */
   public function getAllowedFileExtentions(){
-    return array('jpg jpeg gif png txt doc docx zip xls xlsx pdf ppt pps odt ods odp');
+    return array('jpg jpeg gif png txt doc docx zip xls xlsx pdf ppt pps odt ods odp wav mp3');
   }
 
   /**
@@ -530,6 +534,47 @@ class OlFiles{
     $base = log($size, 1024);
     $suffixes = array('', 'KB', 'MB', 'GB', 'TB');
     return round(pow(1024, $base - floor($base)), $precision) .' '. $suffixes[floor($base)];
+  }
+
+  /**
+   * @param $old_content
+   * @param $new_content
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function deleteInlineFile($old_content, $new_content){
+    // Get fids from inline images, old and new.
+    $fids_old = $this->getFidsFromContent($old_content);
+    $fids_new = $this->getFidsFromContent($new_content);
+    // Leave only fids that are not present anymore in new content.
+    $fids_delete = array_diff($fids_old, $fids_new);
+    // Delete $fids (files) that are not there anymore.
+    foreach($fids_delete as $fid_delete) {
+      $this->removeOlFileAndFile($fid_delete);
+      \Drupal::logger('inline_file_removed')->warning('<pre><code>' . print_r($fid_delete, TRUE) . '</code></pre>');
+    }
+  }
+
+  /**
+   * @param $content
+   *
+   * @return array
+   */
+  private function getFidsFromContent($content){
+    if (empty($content)){
+      return [];
+    }
+    $dom = new domDocument;
+    $dom->loadHTML(html_entity_decode($content));
+    $dom->preserveWhiteSpace = false;
+    $imgs = $dom->getElementsByTagName("img");
+    $fids = array();
+    for($i = 0; $i < $imgs->length; $i++) {
+      $fids[] = $imgs->item($i)->getAttribute("data-fid");
+    }
+    return $fids;
   }
 
 }

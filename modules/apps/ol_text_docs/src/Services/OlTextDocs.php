@@ -46,6 +46,11 @@ class OlTextDocs{
   protected $files;
 
   /**
+   * @var $notifications
+   */
+  protected $notifications;
+
+  /**
    * @param $route
    * @param $members
    * @param $stream
@@ -53,8 +58,9 @@ class OlTextDocs{
    * @param $groups
    * @param $comments
    * @param $files
+   * @param $notifications
    */
-  public function __construct($route, $members, $stream, $mail, $groups, $comments, $files) {
+  public function __construct($route, $members, $stream, $mail, $groups, $comments, $files, $notifications) {
     $this->route = $route;
     $this->members = $members;
     $this->stream = $stream;
@@ -62,6 +68,7 @@ class OlTextDocs{
     $this->groups = $groups;
     $this->comments = $comments;
     $this->files = $files;
+    $this->notifications = $notifications;
   }
 
 
@@ -86,15 +93,19 @@ class OlTextDocs{
     ]);
     $doc->save();
     $text_doc_id = $doc->id();
-
+    // Generate url for mails.
+    $url = Url::fromRoute('ol_text_docs.text_doc', ['gid' => $gid, 'id' => $text_doc_id])->toString();    $cta_text = t('Find Out More');
+    // Send @-mentions.
+    $this->notifications->sendMentions($body, $url);
     // Add stream item.
-    $stream_body = $name; // Create new stream item.
-    $this->stream->addStreamItem($gid, 'text_doc_added', $stream_body, 'notebooks', $text_doc_id); // Create stream item.
-    // Mail if true
+    $this->stream->addStreamItem($gid, 'text_doc_added', $name, 'notebooks', $text_doc_id);
+    // Mail if true.
     if($send_mail == true){
-      // Generate url and send mails.
-      $url = Url::fromRoute('ol_text_docs.textdocs', ['gid' => $gid])->toString();
-      $this->mail->sendMail($name, $url);
+      // Mail vars.
+      $mail_body = t('A new notebook was added: \'@name\':', ['@name' => $name]);
+      $subject = t('New notebook: @name', ['@name' => $name]);
+      // Send mails via service.
+      $this->mail->sendMail($subject, $url, $mail_body, null, null, null, $cta_text, null, shortenString(strip_tags($body), 300));
     }
     // Message.
     \Drupal::messenger()->addStatus(t('Your Notebook was added successfully.'));
@@ -115,19 +126,19 @@ class OlTextDocs{
       $entity->set("name", $name);
       $entity->set("body", $body);
       $entity->save();
-
       // Update name in ol_file table | Duplicate stuff, guilty, will do better in future :)
       \Drupal::database()->update('ol_file')
         ->fields(['name' => $name])
         ->condition('entity_id', $id)
         ->condition('entity_type', 'text_doc')
         ->execute();
-
+      // Generate url for emailing.
+      $gid = $this->route->getParameter('gid');
+      $url = Url::fromRoute('ol_text_docs.text_doc', ['gid' => $gid, 'id' => $id])->toString();
+      // Send @-mentions.
+      $this->notifications->sendMentions($body, $url);
       // Mail if checked by user.
       if($send_mail == true){
-        // Generate url and send mails.
-        $gid = $this->route->getParameter('gid');
-        $url = Url::fromRoute('ol_text_docs.text_doc', ['gid' => $gid, 'id' => $id])->toString();
         $this->mail->sendMail($name, $url);
       }
       // Add message.
@@ -182,7 +193,7 @@ class OlTextDocs{
     if($category_id > 0){
       $query->condition('olt.category_id', $category_id);
     }
-    $query->orderBy('olt.created', 'desc');
+    $query->orderBy('olt.changed', 'desc');
      if ($get_total == false) {
      $query->range($offset, $num_per_page);
     }
@@ -306,7 +317,7 @@ class OlTextDocs{
     $textdoc_row_data['id'] = $textdoc->id;
     $textdoc_row_data['group_id'] = $textdoc->group_id;
     $textdoc_row_data['textdocname'] = shortenString($textdoc->name, 45);
-    $textdoc_row_data['body_intro'] = shortenString($textdoc->body, 145);
+    $textdoc_row_data['body_intro'] = shortenString($textdoc->body, 350);
     $textdoc_row_data['created'] = $textdoc->created;
     $textdoc_row_data['user_name'] = $this->members->getUserName($textdoc->user_id);
     $textdoc_row_data['category_name'] = $this->getTextDocCategoryName($textdoc->category_id);
@@ -320,6 +331,57 @@ class OlTextDocs{
                                               )->toString();
     return $textdoc_row_data;
   }
+
+
+
+
+
+
+  public function getTextDocsData(){
+    // Get data
+    $group_id = $this->route->getParameter('gid');
+    $query = \Drupal::database()->select('ol_text_doc', 'olt');
+    $query->addField('olt', 'id');
+    $query->addField('olt', 'name');
+    $query->addField('olt', 'group_id');
+    $query->addField('olt', 'weight');
+    $query->addField('olt', 'parent_id');
+    $query->condition('olt.group_id', $group_id);
+    $query->condition('olt.status', 1);
+    $query->orderBy('olt.weight', 'asc');
+    return $query->execute()->fetchAll();
+  }
+
+
+
+
+
+  public function updatePagePositions($ordered_items, $uuid){
+    // Decode.
+    $ordered_items = json_decode($ordered_items);
+    // Security hardening.
+    $group_id = $this->groups->getGroupIdByUuid($uuid);
+    $in_group = $this->members->checkUserInGroup($group_id);
+    if($in_group && $group_id) {
+      // Loop through ordered items and save data.
+      foreach ($ordered_items as $item) {
+        \Drupal::database()->update('ol_text_doc')
+          ->fields([
+            'weight' => $item->weight,
+            'parent_id' => $item->parent_id,
+          ])
+          ->condition('group_id', $group_id)
+          ->condition('id', $item->id)
+          ->execute();
+      }
+      return true;
+    }
+    return false;
+  }
+
+
+
+
 
   /**
    * @param $data

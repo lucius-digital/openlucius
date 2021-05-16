@@ -9,14 +9,3 @@ lus_post.posts:
     _group_access_check: 'TRUE'
     _permission: 'access ol content'
     group_id: '[0-9]+'
-lus_post.post:
-  path: '/group/{gid}/posts/{id}'
-  defaults:
-    _controller: '\Drupal\ol_posts\Controller\PostsController::getPost'
-    _title: 'Post'
-  options:
-    no_cache: 'TRUE'
-  requirements:
-    _group_access_check: 'TRUE'
-    _permission: 'access ol content'
-    id: '[0-9]+'

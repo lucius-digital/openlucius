@@ -23,12 +23,8 @@ class OlStream{
   /**
    * OlMembers constructor.
    *
-   * @param $groups
    * @param $members
    * @param $renderer
-   * @param $files
-   * @param $sections
-   * @param $comments
    */
   public function __construct($members, $renderer) {
     $this->members = $members;
@@ -91,6 +87,7 @@ class OlStream{
     $query->addField('osi', 'name', 'stream_item_name');
     $query->addField('ufd', 'name');
     $query->addField('olg', 'name','group_name');
+    $query->condition('olg.status', 1);
     $query->condition('osi.status', 1);
 
     // This is optional for user profile page.
@@ -236,8 +233,10 @@ class OlStream{
               $show_this_block = true;
               $stream_row_item['icon_class'] = $this->getSectionIconClass($stream_item->entity_type);
               $stream_row_item['body_text_label'] = $body_text_labels[$stream_item->stream_item_name];
-              $stream_row_item['stream_body'] = $stream_item->stream_body;
-              $stream_row_item['path'] = $this->getStreamItemLink($stream_item);
+              $stream_row_item['stream_body'] = htmlspecialchars_decode($stream_item->stream_body);
+              $link_item = $this->getStreamItemLink($stream_item);
+              $stream_row_item['path'] = $link_item['path'];
+              $stream_row_item['link_label'] = (!empty($link_item['label'])) ? $link_item['label'] : false;
               $stream_row_item['created'] = date('H:m',$stream_item->created);
               $stream_row_item['user_picture_url'] = $this->members->getUserPictureUrl($stream_item->user_id);
               $stream_row_item['user_name'] = $stream_item->name;
@@ -356,39 +355,35 @@ class OlStream{
    *
    * @return array
    */
-  private function getStreamItemLink($stream_item){
+  private function  getStreamItemLink($stream_item){
 
     // Check if an external modules must be involved to generate link.
-    $path = \Drupal::moduleHandler()->invokeAll('stream_item_links', [$stream_item]);
+    $link_item = \Drupal::moduleHandler()->invokeAll('stream_item_links', [$stream_item]);
 
-    // Return if there is a $path.
-    if(!empty($path['path'])) {
-      return $path['path'];
+    // Return if there is a match in hooked modules.
+    if(!empty($link_item)) {
+      return $link_item;
     }
-
+    // Init.
+    $label = '';
     // If $path still empty, than it's a core item, find it here.
     switch ($stream_item->entity_type) {
       // Content.
       case 'notebooks':
-        $path = Url::fromRoute('ol_text_docs.text_doc',
-          ['gid' => $stream_item->group_id, 'id' => $stream_item->entity_id])->toString();
+        $path = Url::fromRoute('ol_text_docs.text_doc', ['gid' => $stream_item->group_id, 'id' => $stream_item->entity_id])->toString();
       break;
       case 'messages':
-        $path = Url::fromRoute('lus_message.message',
-          ['gid' => $stream_item->group_id, 'id' => $stream_item->entity_id])->toString();
+        $path = Url::fromRoute('lus_message.message', ['gid' => $stream_item->group_id, 'id' => $stream_item->entity_id])->toString();
       break;
       case 'posts':
-        $path = Url::fromRoute('lus_post.posts',
-          ['gid' => $stream_item->group_id])->toString();
+        $path = Url::fromRoute('lus_post.posts', ['gid' => $stream_item->group_id])->toString();
       break;
       case 'folder':
-        $path = Url::fromRoute('ol_files.group_files',
-          ['gid' => $stream_item->group_id, 'folder' => $stream_item->entity_id])->toString();
+        $path = Url::fromRoute('ol_files.group_files', ['gid' => $stream_item->group_id, 'folder' => $stream_item->entity_id])->toString();
       break;
       // Files.
       case 'files':
-        $files = \Drupal::service('olmain.files');
-        $file_uri = $files->getFileUri($stream_item->entity_id);
+        $file_uri = $this->files->getFileUri($stream_item->entity_id);
         if ($file_uri) {
           $path = Url::fromUri(file_create_url($file_uri));
         }
@@ -397,33 +392,35 @@ class OlStream{
       case 'comment':
         // Get comment data.
         $comments = \Drupal::service('olmain.comments');
-        $comments = $this->getCommentData($stream_item->entity_id);
+        $comment_data = $comments->getCommentData($stream_item->entity_id);
         // Edge cases fallback.
         if(empty($comment_data->entity_type)){
           break;
         }
         // Check if an external modules must be involved to generate link for this comment.
-        $path = \Drupal::moduleHandler()->invokeAll('add_comment_links', [$comment_data, $stream_item->group_id]);
+        $link_item = \Drupal::moduleHandler()->invokeAll('add_comment_links', [$comment_data, $stream_item->group_id]);
         // Return if there is a $path for this comment found via above hook.
-        if(!empty($path['path'])) {
-          return $path['path'];
+        if(!empty($link_item)) {
+          return $link_item;
         }
         // Core comments.
         if($comment_data->entity_type == 'post') {
-          $path = Url::fromRoute('lus_post.posts',
-            ['gid' => $stream_item->group_id])->toString();
+          $path = Url::fromRoute('lus_post.posts', ['gid' => $stream_item->group_id])->toString();
         }
         if($comment_data->entity_type == 'message') {
-          $path = Url::fromRoute('lus_message.message',
-            ['gid' => $stream_item->group_id, 'id' => $comment_data->entity_id])->toString();
+          $path = Url::fromRoute('lus_message.message',['gid' => $stream_item->group_id, 'id' => $comment_data->entity_id])->toString();
         }
         if($comment_data->entity_type == 'text_doc') {
-          $path = Url::fromRoute('ol_text_docs.text_doc',
-            ['gid' => $stream_item->group_id, 'id' => $comment_data->entity_id])->toString();
+          $path = Url::fromRoute('ol_text_docs.text_doc', ['gid' => $stream_item->group_id, 'id' => $comment_data->entity_id])->toString();
         }
       break; // End "case 'comment'":
     }
-    return $path;
+    if(!empty($path)) {
+      return [
+        'path' => $path,
+        'label' => $label,
+      ];
+    }
   }
 
   /**

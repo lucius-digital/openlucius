@@ -48,12 +48,21 @@ class OlPosts{
   protected $files;
 
   /**
+   * @var $notifications
+   */
+  protected $notifications;
+
+  /**
    * @param $route
    * @param $members
    * @param $stream
    * @param $mail
+   * @param $groups
+   * @param $comments
+   * @param $files
+   * @param $notifications
    */
-  public function __construct($route, $members, $stream, $mail, $groups, $comments, $files) {
+  public function __construct($route, $members, $stream, $mail, $groups, $comments, $files, $notifications) {
     $this->route = $route;
     $this->members = $members;
     $this->stream = $stream;
@@ -61,6 +70,7 @@ class OlPosts{
     $this->groups = $groups;
     $this->comments = $comments;
     $this->files = $files;
+    $this->notifications = $notifications;
   }
   /**
    * @param $post_list_data
@@ -80,7 +90,6 @@ class OlPosts{
       // Convert to clickable link.
       $body = detectAndCreateLink($post_data->body);
       $posts_row_data['body'] = nl2br($body);
-//      $posts_row_data['body'] = $body;
       $posts_row_data['name'] = $post_data->name;
       $posts_row_data['created'] = $post_data->created;
       $posts_row_data['username'] = $post_data->username;
@@ -97,11 +106,14 @@ class OlPosts{
       $posts_row_data['comment_count'] = $this->comments->getCommentCount($post_data->id, 'post', $post_data->group_id);
       $posts_row_data['comment_items'] = $this->comments->getComments($post_data->id, 'post', 'asc', true, false);
       $posts_row_data['post_comment_form'] = \Drupal::formBuilder()->getForm(\Drupal\ol_posts\Form\PostCommentForm::class, $post_data->id);
-      $posts_row_data['files'] = $this->files->getAttachedFiles('post', $post_data->id, 'post_image');
+      $posts_row_data['files'] = $this->files->getAttachedFiles('post', $post_data->id, 'post_image',null,$post_data->group_id);
       $posts_row_data['like_button'] = \Drupal::formBuilder()->getForm(\Drupal\ol_like\Form\LikeForm::class, 'post', $post_data->id);
       // Different template based on list or detail page.
-      $template = ($view == 'list') ? 'post_card_list' : 'post_card';
-      $render = ['#theme' => $template, '#vars' => $posts_row_data];
+      //$template = ($view == 'list') ? 'post_card_list' : 'post_card';
+      $render = [
+        '#theme' => 'post_card_list',
+        '#vars' => $posts_row_data
+      ];
       $posts_html .= \Drupal::service('renderer')->render($render);
     }
     return $posts_html;
@@ -116,9 +128,9 @@ class OlPosts{
    *
    * @return mixed
    */
-  public function getPostsList($post_id = null, $num_per_page = null, $offset = null , $get_total = false){
-    // Get current group id.
-    $gid = $this->groups->getCurrentGroupId();
+  public function getPostsList($post_id = null, $num_per_page = null, $offset = null , $get_total = false, $gid = null){
+    // Handle group_id.
+    $gid = (empty($gid)) ? $this->groups->getCurrentGroupId() : $gid;
     // Get post data.
     $query = \Drupal::database()->select('ol_post', 'pst');
     $query->addField('pst', 'id');
@@ -178,13 +190,17 @@ class OlPosts{
    * @param $body
    * @param bool $send_mail
    *
+   * @param null $gid
+   * @param bool $add_stream
+   *
+   * @param bool $global_post
+   *
    * @return int|string|null
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function savePost($name, $body, $send_mail = false){
+  public function savePost($name, $body, $send_mail = false, $gid = null, $add_stream = true, $global_post = false){
     // Get group id.
-    $gid = $this->route->getParameter('gid');
-
+    $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
     // Save new post.
     $post = OlPost::create([
       'name' => $name,
@@ -193,14 +209,20 @@ class OlPosts{
     ]);
     $post->save();
     $id = $post->id();
+    // Send Notifications to @-mentioned users.
+    $this->notifications->sendMentions($body);
     // Add stream item.
-    $stream_body = $name; // Create new stream item.
-    $this->stream->addStreamItem($gid, 'post_added', $stream_body, 'posts', $id); // Create stream item.
+    if($add_stream) {
+      $stream_body = strip_tags($name); // Create new stream item.
+      $this->stream->addStreamItem($gid, 'post_added', $stream_body, 'posts', $id); // Create stream item.
+    }
     // Mail if true
-    if($send_mail == true){
+    if ($send_mail == true){
       // Generate url and send mails.
-      $url = Url::fromRoute('lus_post.post', ['gid' => $gid, 'id' => $id])->toString();
-      $this->mail->sendMail($name, $url);
+      // Switch url based on global homepage post, or group post.
+      $url = $this->getGlobalOrGroupUrl($global_post, $gid);
+      $intro = t('A new post was added on the front page:');
+      $this->mail->sendMail($name, $url, $intro, null, null, $gid, null, null, strip_tags($body));
     }
     // Post.
     \Drupal::messenger()->addStatus(t('Your post was added successfully.'));
@@ -213,25 +235,49 @@ class OlPosts{
    * @param $name
    * @param $body
    *
+   * @param bool $send_mail
+   * @param bool $global_post
+   *
+   * @param null $gid
+   *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function updatePost($id, $name, $body, $send_mail = false){
+  public function updatePost($id, $name, $body, $send_mail = false, $global_post = false, $gid = null){
+    // Get group id.
+    $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
     // Update post  with spoofing protection.
     if($this->isPostOwner($id)) {
       $entity = OlPost::load($id);
       $entity->set("name", $name);
       $entity->set("body", $body);
       $entity->save();
+      // Send Notifications to @-mentioned users.
+      $this->notifications->sendMentions($body);
       // Mail if checked by user.
       if($send_mail == true){
         // Generate url and send mails.
-        $gid = $this->route->getParameter('gid');
-        $url = Url::fromRoute('lus_post.post', ['gid' => $gid, 'id' => $id])->toString();
+        $url = $this->getGlobalOrGroupUrl($global_post, $gid);
         $this->mail->sendMail($name, $url);
       }
-      // Add post.
       \Drupal::messenger()->addStatus(t('Your post was updated successfully.'));
     }
+  }
+
+  /**
+   * @param $global_post
+   * @param $gid
+   *
+   * @return \Drupal\Core\GeneratedUrl|string
+   */
+  private function getGlobalOrGroupUrl($global_post, $gid){
+    // Generate url and send mails.
+    // Switch url based on global homepage post, or group post.
+    if ($global_post) {
+      $url = Url::fromRoute('ol_main.home')->toString();
+    } else {
+      $url = Url::fromRoute('lus_post.posts', ['gid' => $gid])->toString();
+    }
+    return $url;
   }
 
 

@@ -76,6 +76,8 @@ class AddOlFileForm extends FormBase {
       '#upload_validators' => array(
         'file_validate_extensions' => $this->files->getAllowedFileExtentions(),
       ),
+      '#progress_indicator' => 'bar',
+      '#progress_message' => t('Please wait...'),
       '#weight' => '10',
     );
     $form['markup_2'] = [

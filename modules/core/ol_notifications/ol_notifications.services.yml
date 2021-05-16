@@ -1,4 +1,4 @@
 services:
   olnotifications.notifications:
     class: Drupal\ol_notifications\Services\OlNotifications
-    arguments: ['@olmain.mail']
+    arguments: ['@olmain.mail','@current_route_match','@olmembers.members']

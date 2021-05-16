@@ -3,6 +3,9 @@ status: true
 dependencies: {  }
 id: standard_user
 label: 'Standard User'
-weight: 2
+weight: -6
 is_admin: null
-permissions: {  }
+permissions:
+  - 'access all openlucius content'
+  - 'access all users'
+  - 'sort book pages'

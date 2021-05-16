@@ -1,0 +1,9 @@
+<div class="container stream-block-wrapper p-0">
+    {% if vars.stream_html is empty %}
+      <div class="my-3 p-3 bg-white rounded shadow-sm text-muted">
+        <i class="lni lni-bulb"></i> <i> {{ 'No activity yet.'|t }}</i><br />
+      </div>
+    {% else %}
+      {{ vars.stream_html|raw }}
+    {% endif %}
+</div>

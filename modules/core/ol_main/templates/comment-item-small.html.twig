@@ -1,7 +1,7 @@
 <!--- Comment-->
-<div class="media text-muted pt-1">
+<div class="media text-muted pt-1 ">
   <img class="rounded-circle mr-2 mt-1" src="{{ vars.user_picture }}" alt="User picture" height="25">
-  <p class="media-body pb-1 mb-0 small lh-125">
+  <div class="media-body pb-1 mb-0 small lh-125">
     <strong class="d-block text-gray-dark">
       <a href="/user/{{ vars.user_id }}/profile" class="username text-muted">{{ vars.username }}</a>
       <span class="badge badge-pill badge-light text-muted">{{ vars.created }}</span>
@@ -20,12 +20,8 @@
         </span>
       {% endif %}
     </strong>
-    {% if vars.is_task_comment %}
-      <span class="body-text" id="body-text-id_{{ vars.comment_id }}">{{ vars.body|raw }}</span>
-    {% else %}
-      <span class="body-text" id="body-text-id_{{ vars.comment_id }}">{{ vars.body|striptags('<a><br>')|raw }}</span>
-    {% endif %}
-  </p>
+    <div class="body-text img-fluid" id="body-text-id_{{ vars.comment_id }}">{{ vars.body|raw }}</div>
+  </div>
 
 </div>
 
@@ -33,10 +29,12 @@
   {% if vars.is_task_comment == true %}
   <form class="comment-static-form hidden ml-4" id="edit-comment-limbo-form-id_{{ vars.comment_id }}">
     <div class="form-row">
-      <div class="col-8 small">
-        <textarea class="form-control text-muted small" id="textarea-comment-id_{{ vars.comment_id }}">{{ vars.body|striptags('<br>')|raw }}</textarea>
+      <div class="col-12 small">
+        <textarea class="summernote text-muted small" id="textarea-comment-id_{{ vars.comment_id }}">{{ vars.body|raw }}</textarea>
       </div>
-      <div class="col-2">
+    </div>
+    <div class="form-row mt-1 mb-2">
+      <div class="col-3">
         <button id="save-comment-{{ vars.comment_id }}" class="btn btn-success btn-sm save-comment-limbo form-control" data-comment_id="{{ vars.comment_id }}">{{ 'Save'|t }}</button>
       </div>
       <div class="col-2">

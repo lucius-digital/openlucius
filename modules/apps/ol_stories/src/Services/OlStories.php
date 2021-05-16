@@ -73,7 +73,7 @@ class OlStories{
     $query->addField('story', 'body');
     $query->condition('story.status', 1);
     // Show stories one day.
-    // $query->condition('story.created', time()-86400, '>' );
+    $query->condition('story.created', time()-86400, '>' );
     $query->orderBy('story.created', 'desc');
     $query->join('users_field_data', 'ufd', 'ufd.uid = story.user_id');
     $query->addTag('ol_user_list');

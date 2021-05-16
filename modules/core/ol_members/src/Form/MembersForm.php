@@ -100,7 +100,7 @@ class MembersForm extends FormBase {
     $group_id = $this->current_route->getParameter('gid');
     // Handle new members permission.
     $disabled = true;
-    $placeholder = t('(Disabled: only user managers can add new members)');
+    $placeholder = t('(Disabled: only Managers can add new members)');
     if($this->account->hasPermission('administer ol users')) {
       $disabled = false;
       $placeholder = t('Email address of new user...');
@@ -123,7 +123,7 @@ class MembersForm extends FormBase {
       '#suffix' => '</div>'
     ];
     $form['new_member_email'] = [
-      '#prefix' => '<div class="form-group">',
+      '#prefix' => '<div class="form-row"><div class="col-6">',
       '#type' => 'email',
       '#title' => t('Or, add a new user:'),
       '#weight' => '0',
@@ -131,6 +131,17 @@ class MembersForm extends FormBase {
       '#disabled' => $disabled,
       '#attributes' => array('placeholder' => $placeholder, 'class' => array('form-control')),
       '#suffix' => '</div>'
+    ];
+    $form['role'] = [
+      '#prefix' => '<div class="col-6">',
+      '#type' => 'select',
+      '#weight' => '0',
+      '#title' => t('Choose role for new user:'),
+      '#default_value' => '0',
+      '#options' => $this->getRoleOptions(),
+      '#disabled' => $disabled,
+      '#attributes' => array('class' => array('form-control')),
+      '#suffix' => '</div></div>'
     ];
     $form['submit'] = [
       '#prefix' => '</div><div class="modal-footer">',
@@ -152,15 +163,16 @@ class MembersForm extends FormBase {
     $uid = $form_state->getValue('uid');
     $group_id = $form_state->getValue('group_id');
     $email = $form_state->getValue('new_member_email');
+    $role = $form_state->getValue('role');
     // Check if 'new' email already exists.
     $email_exists = $this->checkEmailExistence($email);
     // Get current language code.
     $language = $this->language_manager->getCurrentLanguage()->getId();
 
     // Create new user, if it doesn't exist already.
-    if(!empty($email) && $email_exists == FALSE && $this->account->hasPermission('administer ol users')) {
+    if(!empty($email) && $role && $email_exists == FALSE && $this->account->hasPermission('administer ol users')) {
       // Create new user.
-      $account = $this->members->addNewUser($email, $language);
+      $account = $this->members->addNewUser($email, $language, $role);
       $account_id = $account->id();
       // Get group type.
       $group_type = $this->groups->getGroupType();
@@ -171,12 +183,14 @@ class MembersForm extends FormBase {
       } else {
         $this->members->addUserToGroup($account_id, $group_id);
       }
+      // Add new user to global group.
+      if($role == 'manager' or $role == 'standard_user') {
+        $this->groups->addUserToGlobalGroup($account_id);
+      }
       // Send login email to new user.
       _user_mail_notify('register_no_approval_required', $account);
       // Create new stream item.
-      $stream_body = t('Added a member: @user', array('@user' => $email));
-      // Create stream item.
-      $this->stream->addStreamItem($group_id, 'user_added', $stream_body,'user', $account_id);
+      $this->stream->addStreamItem($group_id, 'user_added', $email,'user', $account_id);
       // Add message.
       $this->messenger->addStatus(t('@mail added as a member. A login link was sent by e-mail.', array('@mail' => $email)));
     }
@@ -227,6 +241,20 @@ class MembersForm extends FormBase {
     }
     return $user_list;
   }
+
+  /**
+   * Helper function, for populating user drop down .
+   */
+  function getRoleOptions() {
+    // Get all roles and return options.
+    $roles = $this->members->getRoles();
+    $roles_options = [];
+    foreach ($roles as $key => $role){
+      $roles_options[$key] = $role;
+    }
+    return $roles_options;
+  }
+
 
 
 }

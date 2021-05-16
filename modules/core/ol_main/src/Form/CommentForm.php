@@ -2,11 +2,14 @@
 
 namespace Drupal\ol_main\Form;
 
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\ol_main\Services\OlComments;
 use Drupal\ol_main\Services\OlFiles;
+use Drupal\ol_main\Services\OlGroups;
+use Drupal\ol_members\Services\OlMembers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
@@ -26,11 +29,25 @@ class CommentForm extends FormBase {
   protected $files;
 
   /**
-   * @param \Drupal\ol_main\Services\OlComments $comments
+   * @var $members
    */
-  public function __construct(OlComments $comments, OlFiles $files) {
+  protected $members;
+
+  /**
+   * @var $groups
+   */
+  protected $groups;
+
+  /**
+   * @param \Drupal\ol_main\Services\OlComments $comments
+   * @param \Drupal\ol_main\Services\OlFiles $files
+   * @param \Drupal\ol_members\Services\OlMembers $members
+   */
+  public function __construct(OlComments $comments, OlFiles $files, OlMembers $members, OlGroups $groups) {
     $this->comments = $comments;
     $this->files = $files;
+    $this->members = $members;
+    $this->groups = $groups;
   }
   /**
    * {@inheritdoc}
@@ -38,7 +55,9 @@ class CommentForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('olmain.comments'),
-      $container->get('olmain.files')
+      $container->get('olmain.files'),
+      $container->get('olmembers.members'),
+      $container->get('olmain.groups')
     );
   }
   /**
@@ -86,12 +105,18 @@ class CommentForm extends FormBase {
     ];
     $form['body'] = [
       '#prefix' => '<div class="form-group comment-body">',
-      '#type' => 'text_format',
-      '#format' => 'ol_rich_text',
+      '#type' => 'textarea',
       '#default_value' => $body,
+      '#attributes' => array('class' => array('summernote small')),
       '#required' => true,
       '#weight' => '10',
       '#suffix' => '</div>',
+    ];
+    $form['body_old'] = [
+      '#type' => 'textarea',
+      '#default_value' => $body,
+      '#attributes' => array('class' => array('hidden')),
+      '#weight' => '11',
     ];
     // Privacy option only for culture questions for now.
     if($entity_type == 'culture_question') {
@@ -105,27 +130,46 @@ class CommentForm extends FormBase {
         '#suffix' => '</div>'
       ];
     }
+    $form['markup'] = [
+      '#type' => 'markup',
+      '#markup' => '<div class="col-12 col-md-6 small">',
+      '#allowed_tags' => ['div'],
+      '#weight' => '30',
+    ];
     $form['files'] = array(
-      '#prefix' => '<div class="form-group">',
-      '#title' => t('Attach files'),
       '#type' => 'managed_file',
       '#required' => FALSE,
       '#upload_location' => 'private://'.$hdd_file_location,
       '#multiple' => TRUE,
+      '#progress_indicator' => 'bar',
+      '#progress_message' => t('Please wait...'),
       '#upload_validators' => array(
         'file_validate_extensions' => $this->files->getAllowedFileExtentions(),
       ),
-      '#suffix' => '</div>',
       '#weight' => '40',
     );
+    $form['markup_2'] = [
+      '#type' => 'markup',
+      '#markup' => '</div>',
+      '#allowed_tags' => ['div'],
+      '#weight' => '45',
+    ];
     $form['submit'] = [
-      '#prefix' => '<div class="form-group text-right">',
+      '#prefix' => '<div class="col text-right">',
       '#type' => 'submit',
       '#weight' => '50',
       '#attributes' => array('class' => array('btn btn-success')),
       '#value' => $submit_text,
       '#suffix' => '</div>'
     ];
+    // For @-mentions.
+    $group_users = $this->members->getUsersNamesInGroupFlatArray();
+    $form['#attached']['library'][] = 'ol_main/summernote_inc_init';
+    $form['#attached']['drupalSettings']['group_users'] = $group_users;
+    // For uploading inline files.
+    $group_uuid = $this->groups->getGroupUuidById();
+    $form['#attached']['drupalSettings']['group_uuid'] = $group_uuid;
+    // Return form.
     return $form;
   }
 
@@ -137,13 +181,16 @@ class CommentForm extends FormBase {
     $comment_id = Html::escape($form_state->getValue('comment_id'));
     $reference_type = Html::escape($form_state->getValue('entity_type'));
     $entity_id = Html::escape($form_state->getValue('entity_id'));
-    $body = $form_state->getValue('body')['value'];
-    $body = check_markup($body,'ol_rich_text');
+    $body = Xss::filter($form_state->getValue('body'), getAllowedHTMLTags() );
+    $body = sanatizeSummernoteInput($body);
     $files = $form_state->getValue('files');
     $privacy = $form_state->getValue('privacy')[1];
     // Existing, update comment.
     if(is_numeric($comment_id)){
       $this->comments->updateComment($comment_id, $body, $privacy);
+      // Remove inline files that are deleted.
+      $body_old = Xss::filter($form_state->getValue('body_old'), getAllowedHTMLTags());
+      $this->files->deleteInlineFile($body_old, $body);
     }
     // New, save comment.
     elseif(empty($comment_id)){

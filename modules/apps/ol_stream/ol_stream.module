@@ -16,6 +16,12 @@ function ol_stream_theme() {
       ],
       'template' => 'stream-uber-wrapper',
     ],
+    'stream_block_wrapper' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'stream-block-wrapper',
+    ],
 
     'stream_wrapper' => [
       'variables' => [
@@ -61,4 +67,78 @@ function ol_stream_library_info_build() {
     ],
   ];
   return $libraries;
+}
+
+/**
+ * Implements hook_add_home_tab()
+ * Adds tab to homepage
+ *
+ * @param &$tabs
+ *
+ */
+function ol_stream_add_home_tab(&$tabs) {
+  $tabs['stream'] = [
+    'label' => 'Group activity',
+    'weight' => 20,
+    'query_link' => 'activity',
+    'new_badge' => null,
+    'icon' => 'lni lni-users',
+  ];
+}
+
+/**
+ * Implements hook_provide_home_tab_content()
+ * Provide content for home tab.
+ *
+ * @param $active_tab
+ *
+ * @return mixed
+ */
+function ol_stream_provide_home_tab_content($active_tab) {
+  // Check if current item concerns this module.
+  if ($active_tab == 'activity') {
+    return getTabContentStream();
+  }
+}
+
+/**
+ * Returns html for group activity stream in home tab.
+ * @return mixed
+ */
+function getTabContentStream(){
+
+  // Provide static services, because .module file can't inject dependencies.
+  $pager_service = \Drupal::service('pager.manager');
+  $pager_params = \Drupal::service('pager.parameters');
+  $stream = \Drupal::service('olstream.stream');
+
+  // Pager init.
+  $page = $pager_params->findPage();
+  $num_per_page = 25;
+  $offset = $num_per_page * $page;
+
+  $group_ids = $stream->getUserGroups(null, true);
+
+  // Get -and render data.
+  $stream_data = $stream->getUserStreamList(null, $num_per_page, $offset, null);
+  $stream_html = $stream->renderStreamListMulti($stream_data, $group_ids);
+
+  // Pager, now that we have the total number of results.
+  $total_result = $stream->getUserStreamList(null, null, null, true);
+  $pager = $pager_service->createPager($total_result, $num_per_page);
+  $pager->getCurrentPage();
+
+  // Build.
+  $theme_vars = [
+    'stream_html' => $stream_html,
+  ];
+  // Build render array.
+  $render = [];
+  $render[] = [
+    '#theme' => 'stream_block_wrapper',
+    '#vars' => $theme_vars,
+  ];
+  // Add pager and return html.
+  $render[] = ['#type' => 'pager'];
+  return \Drupal::service('renderer')->render($render);
 }

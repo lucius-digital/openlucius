@@ -106,6 +106,8 @@ class PostsController extends ControllerBase {
     $total_result = $this->posts->getPostsList(null, null, null, true);
     $pager = $this->pager->createPager($total_result, $num_per_page);
     $pager->getCurrentPage();
+    // Used for mentions.
+    $group_users = $this->members->getUsersInGroup();
 
     // Build theme vars.
     $theme_vars = [
@@ -122,14 +124,21 @@ class PostsController extends ControllerBase {
       '#theme' => 'posts_list',
       '#vars' => $theme_vars,
       '#type' => 'remote',
-      '#attached' => [
-        'library' => [
-          'ol_posts/ol_posts'
-        ],
-      ],
     ];
     // Add pager and return.
-    $render[] = ['#type' => 'pager'];
+    $render[] = [
+      '#type' => 'pager',
+      '#attached' => [
+        'library' => [
+          'ol_posts/ol_posts',
+          'ol_chat/mentions',
+        ],
+        'drupalSettings' => [
+          'users_in_group' => $group_users
+        ],
+      ],
+
+    ];
     return $render;
   }
 
@@ -139,7 +148,7 @@ class PostsController extends ControllerBase {
    * @return array
    * @throws \Exception
    */
-  public function getPost($id){
+/*  public function getPost($id){
     // Get data.
     $post_data = $this->posts->getPostsList($id);
     $post_title = $this->posts->getPostTitle($post_data);
@@ -167,6 +176,6 @@ class PostsController extends ControllerBase {
       ],
     ];
     return $build;
-  }
+  }*/
 
 }

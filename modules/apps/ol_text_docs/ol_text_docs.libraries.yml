@@ -5,3 +5,4 @@ ol_text_docs:
       css/ol_text_docs.css: {}
   js:
     js/ol_text_docs.js: {}
+    js/text_docs_sortable.js: {}

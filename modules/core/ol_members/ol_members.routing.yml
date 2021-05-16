@@ -4,7 +4,7 @@ ol_members.all_members:
     _controller: '\Drupal\ol_members\Controller\MembersController::getMembersAll'
     _title: 'People'
   requirements:
-    _permission: 'access ol content'
+    _permission: 'access all users'
   options:
     no_cache: 'TRUE'
 ol_members.all_members_blocked:

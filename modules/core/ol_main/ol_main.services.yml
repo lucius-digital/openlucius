@@ -29,7 +29,10 @@ services:
     arguments: ['@current_route_match','@olmembers.members','@current_user']
   olmain.comments:
     class: Drupal\ol_main\Services\OlComments
-    arguments: ['@current_route_match','@olmembers.members','@olmain.files']
+    arguments: ['@current_route_match','@olmembers.members','@olmain.files', '@olnotifications.notifications']
   olmain.mail:
     class: Drupal\ol_main\Services\OlMail
     arguments: ['@plugin.manager.mail','@current_user','@olmembers.members']
+  olmain.global_config:
+    class: Drupal\ol_main\Services\OlGlobalConfig
+    arguments: ['@current_user','@olmain.groups','@olmembers.members']

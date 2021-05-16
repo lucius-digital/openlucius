@@ -1,0 +1,49 @@
+<div>
+  <!-- Posts-->
+  <div class="posts-list-wrapper">
+    <div class="card mb-2 py-2 px-3">
+      <div class="row">
+        <div class="col-sm-9 pl-md-4 text-center text-md-left pb-2 pb-md-0">
+          <span class="text-muted font-weight-light small"><i class="lni lni-invention"></i> <i>
+            {%  set username = user.displayname|length > 30 ? user.displayname|slice(0, 30) ~ '...' : user.displayname  %}
+              {% trans %}
+                Hi {{ username }}, what's happening?
+              {% endtrans %}
+            </i></span>
+        </div>
+        <div class="col-sm-3 pb-1 pb-md-0 text-center text-md-right">
+          <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addPostModal">
+            <i class="lni lni-plus"></i> {{ 'Add Post'|t }}
+          </button>
+        </div>
+      </div>
+    </div>
+    {% if vars.posts is not empty %}
+      {{ vars.posts|raw }}
+    {% else %}
+      <div class="card ol-card">
+        <div class="card-header">
+          <p class="text-muted small m-3">
+            <i class="lni lni-invention"></i> <i> {{ 'Be the first to add a post.'|t }}</i><br />
+          </p>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Modal add post -->
+<div class="modal fade bd-example-modal-lg" id="addPostModal" role="dialog" aria-labelledby="addPostModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ 'Post'|t }} </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {{ vars.post_form }}
+    </div>
+  </div>
+</div>
+<!-- / Modal add post  -->

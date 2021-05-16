@@ -24,10 +24,16 @@ class OlChat{
    * @var $renderer
    */
   protected $renderer;
+
   /**
    * @var $files
    */
   protected $files;
+
+  /**
+   * @var $notifications
+   */
+  protected $notifications;
 
   /**
    * OlMembers constructor.
@@ -36,12 +42,14 @@ class OlChat{
    * @param $members
    * @param $renderer
    * @param $files
+   * @param $notifications
    */
-  public function __construct($groups, $members, $renderer, $files) {
+  public function __construct($groups, $members, $renderer, $files, $notifications) {
     $this->groups = $groups;
     $this->members = $members;
     $this->renderer = $renderer;
     $this->files = $files;
+    $this->notifications = $notifications;
   }
 
   /**
@@ -247,6 +255,8 @@ class OlChat{
     ]);
     $ol_chat_item->save();
     $id = $ol_chat_item->id();
+    // Send Notifications to @-mentioned users.
+    $this->notifications->sendMentions($body);
     // Update the record with own id for chat items, to it keep all consistent.
     if($entity_type == 'chat') {
       \Drupal::database()->update('ol_chat_item')

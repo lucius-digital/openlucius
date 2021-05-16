@@ -163,11 +163,13 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
    */
   private function getSectionCount($key){
 
+    // Init count.
+    $count = null;
     // Check if an external modules must be involved to generate link.
     $count = \Drupal::moduleHandler()->invokeAll('sections_badges_count', [$key]);
 
     // Return if there is a $count invoked by hook.
-    if(!empty($count['count'])) {
+    if(isset($count['count'])) {
       return $count['count'];
     }
 

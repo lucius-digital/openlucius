@@ -11,7 +11,7 @@ use Drupal\Core\Render\Markup;
 class OlMail{
 
   /**
-   * @var $route
+   * @var $mailer
    */
   protected $mailer;
 

@@ -46,12 +46,21 @@ class OlMessages{
   protected $files;
 
   /**
+   * @var $notifications
+   */
+  protected $notifications;
+
+  /**
    * @param $route
    * @param $members
    * @param $stream
    * @param $mail
+   * @param $groups
+   * @param $comments
+   * @param $files
+   * @param $notifications
    */
-  public function __construct($route, $members, $stream, $mail, $groups, $comments, $files) {
+  public function __construct($route, $members, $stream, $mail, $groups, $comments, $files, $notifications) {
     $this->route = $route;
     $this->members = $members;
     $this->stream = $stream;
@@ -59,7 +68,9 @@ class OlMessages{
     $this->groups = $groups;
     $this->comments = $comments;
     $this->files = $files;
+    $this->notifications = $notifications;
   }
+
   /**
    * @param $message_list_data
    * @param string $view
@@ -74,7 +85,7 @@ class OlMessages{
     // Loop through array and render HTML rows via twig file.
     foreach ($message_list_data as $message){
       $message_data = $this->getMessageData($message->id);
-      $messages_row_data['body'] = $message_data->body;
+      $messages_row_data['body'] = htmlspecialchars_decode($message_data->body);
       $messages_row_data['name'] = $message_data->name;
       $messages_row_data['created'] = ($view == 'list') ? time_elapsed_string('@'.$message_data->created): $message_data->created;
       $messages_row_data['username'] = $message_data->username;
@@ -170,6 +181,9 @@ class OlMessages{
    * @param $name
    * @param $body
    *
+   * @param bool $send_mail
+   *
+   * @return int|string|null
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function saveMessage($name, $body, $send_mail = false){
@@ -183,12 +197,15 @@ class OlMessages{
     ]);
     $message->save();
     $id = $message->id();
+    // Url for mails.
+    $url = Url::fromRoute('lus_message.message', ['gid' => $gid, 'id' => $id])->toString();
+    // Send @-mentions
+    $this->notifications->sendMentions($body, $url);
     // Add stream item.
     $this->stream->addStreamItem($gid, 'message_added', $name, 'messages', $id); // Create stream item.
     // Mail if true
     if($send_mail == true){
-      // Generate url and send mails.
-      $url = Url::fromRoute('lus_message.message', ['gid' => $gid, 'id' => $id])->toString();
+      // Send mails.
       $intro_text = t('A new message was posted:');
       $this->mail->sendMail($name, $url, $intro_text, null, null, null, t('Find out more'), null, strip_tags(shortenString($body,100)));
     }
@@ -203,6 +220,8 @@ class OlMessages{
    * @param $name
    * @param $body
    *
+   * @param bool $send_mail
+   *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function updateMessage($id, $name, $body, $send_mail = false){
@@ -212,11 +231,13 @@ class OlMessages{
       $entity->set("name", $name);
       $entity->set("body", $body);
       $entity->save();
+      // Url for mailing.
+      $gid = $this->route->getParameter('gid');
+      $url = Url::fromRoute('lus_message.message', ['gid' => $gid, 'id' => $id])->toString();
+      // Send @-mentions
+      $this->notifications->sendMentions($body);
       // Mail if checked by user.
       if($send_mail == true){
-        // Generate url and send mails.
-        $gid = $this->route->getParameter('gid');
-        $url = Url::fromRoute('lus_message.message', ['gid' => $gid, 'id' => $id])->toString();
         $this->mail->sendMail($name, $url);
       }
       // Add message.
