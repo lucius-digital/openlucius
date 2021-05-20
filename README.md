@@ -3,8 +3,8 @@ OpenLucius is a lean and fast social productivity platform, based on Drupal; imp
 
 Goal is also to create an optimal developer -and site builder experience for building add-on modules and easy management / updates.
 
-## End-user guide
-For all end-user functions check out the [Product pages](https://www.getlucius.com/en/product/groups-channels).
+## Product and project information
+Please check out [the project page on Drupal.org](https://www.drupal.org/project/openlucius).
 
 ## Try it instantly
 If you'd like to try it, please visit [the product website](https://www.getlucius.com) and hit the 'Try now' button.
