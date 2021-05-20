@@ -18,7 +18,7 @@ The project also contains these optional packages:
 This package only contains the Drupal profile, to install OpenLucius you'll have to use the [Composer-based project template](https://github.com/lucius-digital/openlucius):
 
 ```
-composer create-project lucius-digital/openlucius-project:2.0.0-alpha6 MY_PROJECT
+composer create-project lucius-digital/openlucius-project:2.0.0-alpha7 MY_PROJECT
 ```
 
 ## Install manual
