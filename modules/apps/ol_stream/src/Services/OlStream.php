@@ -235,7 +235,9 @@ class OlStream{
               $stream_row_item['body_text_label'] = $body_text_labels[$stream_item->stream_item_name];
               $stream_row_item['stream_body'] = htmlspecialchars_decode($stream_item->stream_body);
               $link_item = $this->getStreamItemLink($stream_item);
-              $stream_row_item['path'] = $link_item['path'];
+              if (!empty($link_item['path'])) {
+                $stream_row_item['path'] = $link_item['path'];
+              }
               $stream_row_item['link_label'] = (!empty($link_item['label'])) ? $link_item['label'] : false;
               $stream_row_item['created'] = date('H:m',$stream_item->created);
               $stream_row_item['user_picture_url'] = $this->members->getUserPictureUrl($stream_item->user_id);
@@ -381,13 +383,15 @@ class OlStream{
       case 'folder':
         $path = Url::fromRoute('ol_files.group_files', ['gid' => $stream_item->group_id, 'folder' => $stream_item->entity_id])->toString();
         break;
-      // Files.
-      case 'files':
-        $file_uri = $this->files->getFileUri($stream_item->entity_id);
-        if ($file_uri) {
-          $path = Url::fromUri(file_create_url($file_uri));
-        }
-        break;
+      // Files, TODO
+//      case 'files':
+//        if ($stream_item->entity_id){
+//          $file_uri = $this->files->getFileUri($stream_item->entity_id);
+//        }
+//        if ($file_uri) {
+//          $path = Url::fromUri(file_create_url($file_uri));
+//        }
+//        break;
       // Comments.
       case 'comment':
         // Get comment data.
