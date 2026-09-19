@@ -4,13 +4,13 @@ OpenLucius is a lean and fast social productivity platform, based on Drupal; imp
 Goal is also to create an optimal developer -and site builder experience for building add-on modules and easy management / updates.
 
 ## Try it instantly
-If you'd like to try it, please visit [the product website](https://www.openlucius.com) .
+If you'd like to try it, please visit [the product website](https://www.openlucius.com).
 
 ## Installing OpenLucius
 Install it using Composer:
 
 ```
-composer create-project lucius-digital/openlucius-project:2.0.0-beta1 MY_PROJECT_FOLDER
+composer create-project lucius-digital/openlucius-project:3.0.0-beta1 MY_PROJECT_FOLDER
 ```
 
 ## Support requests, feature requests and bugs
