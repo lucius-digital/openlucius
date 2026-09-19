@@ -27,9 +27,9 @@ class AddWeblinkForm extends FormBase {
   protected $files;
 
   /**
-   * @var $tasks
+   * @var $weblinks
    */
-  protected $tasks;
+  protected $weblinks;
 
   /**
    * @var $route
@@ -40,9 +40,9 @@ class AddWeblinkForm extends FormBase {
    * Class constructor.
    * @param \Drupal\ol_main\Services\OlFiles $files
    */
-  public function __construct(OlFiles $files, OlTasks $tasks, CurrentRouteMatch $route) {
+  public function __construct(OlFiles $files, OlWeblinks $weblinks, CurrentRouteMatch $route) {
     $this->files = $files;
-    $this->tasks = $tasks;
+    $this->weblinks = $weblinks;
     $this->route = $route;
   }
 
