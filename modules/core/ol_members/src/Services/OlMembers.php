@@ -220,7 +220,7 @@ class OlMembers{
    */
   public function deleteUserGroupRelation($uid){
     // Get current group id.
-    $gid = ($gid) ? $gid : $this->route->getParameter('gid');
+    $gid = $this->route->getParameter('gid');
     // Check if uid is group admin, that can't be removed.
     $group_admin_uid = $this->isGroupAdmin($uid);
     // Only remove if it's not group admin.

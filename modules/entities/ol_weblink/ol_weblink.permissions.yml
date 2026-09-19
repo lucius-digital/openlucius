@@ -1,0 +1,20 @@
+add ol weblink entities:
+  title: 'Create new OL Weblink entities'
+
+administer ol weblink entities:
+  title: 'Administer OL Weblink entities'
+  description: 'Allow to access the administration form to configure OL Weblink entities.'
+  restrict access: true
+
+delete ol weblink entities:
+  title: 'Delete OL Weblink entities'
+
+edit ol weblink entities:
+  title: 'Edit OL Weblink entities'
+
+view published ol weblink entities:
+  title: 'View published OL Weblink entities'
+
+view unpublished ol weblink entities:
+  title: 'View unpublished OL Weblink entities'
+

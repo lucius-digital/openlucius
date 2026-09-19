@@ -1,17 +1,21 @@
 theme: ol_base
 defaults:
-  sender: php_mail
-  formatter: swiftmailer
+  sender: symfony_mailer_lite
+  formatter: symfony_mailer_lite
 modules:
   swiftmailer:
     none:
-      formatter: swiftmailer
       sender: swiftmailer
+      formatter: swiftmailer
   system:
     none:
-      formatter: php_mail
-      sender: php_mail
+      sender: symfony_mailer_lite
+      formatter: symfony_mailer_lite
   user:
     none:
-      formatter: php_mail
       sender: php_mail
+      formatter: php_mail
+  symfony_mailer_lite:
+    none:
+      sender: symfony_mailer_lite
+      formatter: symfony_mailer_lite

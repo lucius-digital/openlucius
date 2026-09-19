@@ -60,6 +60,7 @@ class OlGlobalConfig{
     $query->addField('olf', 'file_id');
     $query->condition('olf.group_id', $gid);
     $query->condition('olf.entity_type', 'home_header');
+    $query->condition('olf.status', 1);
     return $query->execute()->fetchField();
   }
 
@@ -148,7 +149,8 @@ class OlGlobalConfig{
     $query->addField('ogs', 'colors');
     $query->join('users_field_data', 'ufd', 'ufd.uid = ogs.user_id');
     $query->addTag('ol_user_list');
-    $color_config = json_decode($query->execute()->fetchField());
+    $result = $query->execute()->fetchField();
+    $color_config = ($result) ? json_decode($result): null;
     if(empty($color_config)){
       $color_config = $this->getDefaultColors();
     }

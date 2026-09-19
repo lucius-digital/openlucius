@@ -22,7 +22,7 @@
       '      <img class="rounded-circle mr-2" src="' +
       userpicture +
       '             " alt="" height="25">\n' +
-      '    <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">\n' +
+      '    <p class="media-body pb-3 mb-0 lh-125 border-bottom border-gray">\n' +
       '      <strong class="d-block text-gray-dark">\n' +
       name +
       '        <span class="badge badge-pill badge-light text-muted">\n' +

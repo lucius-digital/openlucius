@@ -1,0 +1,133 @@
+<?php
+
+/**
+ * @file
+ * Contains ol_shoutouts.module.
+ */
+
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_theme().
+ */
+function ol_shoutouts_theme() {
+  return [
+    'shoutouts_list' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'shoutouts-list',
+    ],
+    'shoutouts_card' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'shoutouts-card',
+    ],
+    'shoutouts_landing' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'shoutouts-landing',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_add_ol_section()
+ * @param $sections
+ */
+function ol_shoutouts_add_ol_section(&$sections){
+  $sections['shoutouts'] = array(
+    'label' => t('Shout-outs'),
+    'path' => t('shoutouts'),
+    'weight' => 70,
+    'icon_class' => 'lni lni-emoji-happy',
+  );
+}
+
+/**
+ * Implements hook_stream_item_body_labels()
+ * Add labels to use in activity stream.
+ *
+ * @return array
+ */
+function ol_shoutouts_stream_item_body_labels(){
+  return [
+    'shoutouts_added' => t('added a shout-out'),
+  ];
+}
+
+/**
+ * Implements hook_stream_item_links()
+ * Add labels to use in activity stream.
+ *
+ * @param $stream_item
+ *
+ * @return array[]
+ */
+function ol_shoutouts_stream_item_links($stream_item){
+  // Check if current item concerns this module.
+  switch ($stream_item->entity_type) {
+    case 'shoutouts':
+      $path = Url::fromRoute('ol_shoutouts.list_page',
+        ['gid' => $stream_item->group_id])->toString();
+    break;
+  }
+  // Return array with path.
+  if(!empty($path)) {
+    return ['path' => $path];
+  }
+  // TODO, proper error handling.
+  return [];
+}
+
+/**
+ * Implements hook_sections_badges_count()
+ * Add links at comments to use in activity stream.
+ *
+ * @param $key
+ *
+ * @return array[]
+ */
+function ol_shoutouts_sections_badges_count($key){
+  // Check if current item concerns this module.
+  switch ($key) {
+    case 'shoutouts':
+      $gid = \Drupal::service('current_route_match')->getParameter('gid');
+      $query = \Drupal::database()->select('ol_shout_out', 'olf');
+      $query->addField('olf', 'id');
+      $query->condition('olf.group_id', $gid);
+      $query->condition('olf.status', 1);
+      $count = $query->countQuery()->execute()->fetchField();
+      break;
+  }
+  // Return array with count.
+  if(isset($count)) {
+    return ['count' => $count];
+  }
+  // TODO, proper error handling.
+  return [];
+}
+
+/**
+ * Implements hook_add_search_render_data()
+ * @param $entity_type
+ * @param $group_id
+ * @param $id
+ *
+ * @return array
+ */
+function ol_shoutouts_add_search_render_data($entity_type, $group_id, $id){
+  // Check if current item concerns this module.
+  $item = [];
+  switch ($entity_type) {
+    case 'ol_shout_out':
+      $item['link'] = Url::fromRoute('ol_shoutouts.list_page', ['gid' => $group_id])->toString();
+      $item['type'] = t('Shout-Out');
+      break;
+  }
+  // Return array.
+  // TODO, proper error handling.
+  return $item;
+}

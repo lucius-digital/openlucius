@@ -1,0 +1,20 @@
+<li id="weblink-li-id_{{ vars.id }}">
+  <a href="{{ vars.weblink }}" target="_blank">{{ vars.name }} </a>
+  <span class="badge bg-light text-dark">
+    {{ vars.username }}
+  </span>
+  <span class="badge bg-light text-dark">
+    {{ vars.created }}
+  </span>
+
+  {% if vars.is_owner %}
+    <span class="btn btn-link p-0 m-0 smaller" id="drop-down-weblink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <i class="lni lni-line-dotted m-0 p-0"></i>
+    </span>
+    <button class="dropdown-menu dropdown-menu-left small" aria-labelledby="drop-down-weblink">
+      <a class="dropdown-item delete-weblink-btn text-danger" data-ol_weblink_id="{{ vars.id }}">
+        <i class="lni lni-warning text-danger"></i> {{ 'Remove Link Now'|t }}
+      </a>
+    </button>
+  {% endif %}
+</li>

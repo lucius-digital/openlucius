@@ -1,5 +1,5 @@
 name: 'OL Story'
 type: module
 description: 'OL Story Entity'
-core_version_requirement: ^9
+core_version_requirement: ^9 || ^10 || ^11
 package: 'OL app'

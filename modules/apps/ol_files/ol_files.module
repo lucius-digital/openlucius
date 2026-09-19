@@ -101,6 +101,8 @@ function ol_files_sections_badges_count($key){
   if(isset($count)) {
     return ['count' => $count];
   }
+  // TODO, proper error handling
+  return [] ;
 }
 
 /**

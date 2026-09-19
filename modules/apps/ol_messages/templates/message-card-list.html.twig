@@ -1,15 +1,16 @@
 <a href="{{ vars.link }}" class="text-muted">
-<div class="mb-3 px-3 py-2 bg-white rounded shadow-sm">
-  <div class="media text-muted pt-3">
-    <img class="rounded-circle mr-2" src="{{ vars.user_picture }}" alt="user thumbnail" height="35">
-    <div class="media-body pb-3 mb-0 small lh-125">
-      <span class="d-block h6">{{ vars.name }} <span class="badge badge-pill badge-light float-right text-muted">{{ vars.created }}</span></span>
-      <strong class="text-gray-dark">{{ vars.username }}</strong>
-      - {{ vars.body|striptags|length > 200 ? vars.body|striptags|slice(0, 200) ~ '..'|t : vars.body|striptags  }}
-      {% if vars.comment_count > 0 %}
-         <span class="badge badge-primary"> <i class="lni lni-comments"></i> {{ vars.comment_count }} </span>
-      {% endif %}
+  <div class="mb-3 px-3 py-2 bg-white rounded shadow-sm">
+    <div class="media text-muted pt-3">
+      <img class="rounded-circle mr-2" src="{{ vars.user_picture }}" alt="user thumbnail" height="35">
+      <div class="media-body pb-3 mb-0 lh-125">
+        <span class="d-block h6">{{ vars.name }}
+          {% if vars.comment_count > 0 %}
+            <span class="badge badge-light float-right"> <i class="lni lni-comments"></i> {{ vars.comment_count }} </span>
+          {% endif %}
+        </span>
+        <strong class="text-gray-dark">{{ vars.username }} - {{ vars.created }}</strong>
+        - {{ vars.body|striptags|length > 200 ? vars.body|striptags|slice(0, 200) ~ '..'|t : vars.body|striptags  }}
+      </div>
     </div>
   </div>
-</div>
 </a>

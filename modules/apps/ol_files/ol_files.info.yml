@@ -1,7 +1,7 @@
-name: 'Ol Files'
+name: 'OL Files'
 type: module
-description: 'Ol Files'
-core_version_requirement: ^9
+description: 'OL Files module'
+core_version_requirement: ^11
 package: 'OL app'
 dependencies:
   - ol_members

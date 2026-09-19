@@ -1,0 +1,79 @@
+<div class="col-md-9 col-xl-8 pl-md-5 bd-content mb-5 offset-lg-1">
+
+  <!-- Title and action buttons-->
+  <div class="row py-2 pl-3">
+    <div class="col">
+      <h1 class="h4">{{ vars.page_title }}</h1>
+    </div>
+    <div class="col text-right">
+      {% if vars.is_group_admin == true %}
+        <button class="btn btn-sm" data-toggle="modal" data-target="#shoutoutSettings">
+          <i class="lni lni-cog"></i> {{ 'Configure Shoutouts'|t }}
+        </button>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4 p-1 px-4 pb-2 bg-transparent">
+    <div class="row">
+      <div class="col-md-7">
+        <p class="text-muted m-3">
+          <i class="lni lni-bulb"></i> <i> {{ 'Give your teammates the appreciation they deserve!'|t }}</i>
+        </p>
+      </div>
+      <div class="col-md-5 text-right mt-2">
+      <button class="btn btn-success btn-sm text-right" data-toggle="modal" data-target="#addShoutoutModal">
+        <i class="lni lni-plus"></i> {{ 'Post a Shout-Out'|t }}
+      </button>
+      </div>
+    </div>
+  </div>
+
+  {% if vars.shoutouts is not empty %}
+    {{ vars.shoutouts|raw }}
+  {% else %}
+    <div class="card shadow-sm mb-4 p-1 px-4 bg-transparent">
+      <div class="row">
+        <p class="text-muted small m-3">
+          <i class="lni lni-bulb"></i> <i> {{ 'Be the first one to give a shout-out!'|t }}</i>
+        </p>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if vars.shoutout_filled == FALSE %}
+  <!-- Modal add shoutout-->
+  <div class="modal fade bd-example-modal-lg" id="addShoutoutModal" role="dialog" aria-labelledby="addMessageModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-bullhorn"></i> {{ 'Post a Shout-out'|t }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {{ vars.shoutout_form }}
+      </div>
+    </div>
+  </div>
+  <!-- Modal //// -->
+  {% endif %}
+
+  {% if vars.is_group_admin == true %}
+  <!-- Modal config shoutout -->
+  <div class="modal fade" id="shoutoutSettings" tabindex="-1" role="dialog" aria-labelledby="shoutoutSettings" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-cog"></i> {{ 'Shout-out settings'|t }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {{ vars.shoutout_settings_form }}
+      </div>
+    </div>
+  </div>
+  <!-- Modal //// -->
+  {% endif %}
+</div>

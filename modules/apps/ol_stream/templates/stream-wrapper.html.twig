@@ -8,9 +8,10 @@
     {% if not vars.in_group %}
       <a href="/group/{{ vars.group_id }}/stream" class="text-muted">
         {% if vars.group_thumbnail_url %}
-          <img style="height: 40px;" class="img-thumbnail small" src="{{ vars.group_thumbnail_url }}" alt="group image" />
+          <img style="height: 54px;" class="mr-2 img-thumbnail rounded small" src="{{ vars.group_thumbnail_url }}" alt="group image" />
         {% else %}
-          <i class="lni lni-users text-muted"></i>
+          {# TODO, implement dicebear local, so no external request are needed. #}
+          <img alt="avatar" class="mr-2 img-fluid rounded img-thumbnail" src="https://api.dicebear.com/10.x/landscape/svg?seed={{ vars.group_id }}&size=44" />
         {% endif %}
         {{ vars.group_name }}
       </a>
@@ -25,3 +26,4 @@
     {# Future maybe handy <a href="#"></a>#}
   </small>
 </div>
+

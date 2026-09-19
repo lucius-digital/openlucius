@@ -6,7 +6,7 @@
     if (drupalSettings.placeholder_override){
       placeholder = drupalSettings.placeholder_override
     } else{
-      placeholder = Drupal.t('Write away... (@.. to notify). You can also drag images here.')
+      placeholder = Drupal.t('Write away... (@.. to notify).')
     }
     $('.summernote').summernote({
       placeholder: '<i class="text-muted">'+placeholder+'</i>',

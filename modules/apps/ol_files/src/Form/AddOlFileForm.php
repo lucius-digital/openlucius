@@ -57,7 +57,8 @@ class AddOlFileForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     // Data.
-    $folder_id = Html::escape(\Drupal::request()->query->get('folder'));
+    // TODO, convert query get to parameter get.
+    $folder_id = \Drupal::request()->query->get('folder');
     $default_folder = (is_numeric($folder_id)) ? $folder_id : null;
     $hdd_file_location = $this->files->buildFileLocaton('file');
 
@@ -74,7 +75,7 @@ class AddOlFileForm extends FormBase {
       '#upload_location' => 'private://'.$hdd_file_location,
       '#multiple' => TRUE,
       '#upload_validators' => array(
-        'file_validate_extensions' => $this->files->getAllowedFileExtentions(),
+        'FileExtension' => $this->files->getAllowedFileExtentions(),
       ),
       '#progress_indicator' => 'bar',
       '#progress_message' => t('Please wait...'),

@@ -1,5 +1,5 @@
 name: OpenLucius
-core_version_requirement: ^9
+core_version_requirement: ^11
 type: profile
 description: 'A lean, fast social productivity Drupal distribution.'
 distribution:
@@ -50,6 +50,8 @@ install:
   - ol_stream_item
   - ol_category
   - ol_general_settings
+  - ol_weblink
+  - ol_weblinks
 themes:
-  - seven
   - ol_base
+  - claro

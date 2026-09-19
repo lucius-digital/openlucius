@@ -15,13 +15,13 @@ plugin: main_sections
 settings:
   id: main_sections
   label: 'Main Sections block'
-  provider: ol_main
   label_display: '0'
+  provider: ol_main
 visibility:
   user_role:
     id: user_role
-    roles:
-      authenticated: authenticated
     negate: false
     context_mapping:
       user: '@user.current_user_context:current_user'
+    roles:
+      authenticated: authenticated

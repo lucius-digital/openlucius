@@ -26,3 +26,55 @@ form .file-size {
 .form-managed-file label.option{
   margin-bottom:0 !important;
 }
+
+
+/*
+* Drag and drop
+*/
+  /* Files */
+.file-drag-item {
+  transition: background-color 0.15s ease;
+}
+
+.file-drag-item:hover {
+  background-color: #f5f5f5;
+}
+
+
+/*
+ * Cursor while dragging.
+ */
+body.file-dragging,
+body.file-dragging * {
+  cursor: grabbing !important;
+}
+
+
+/*
+ * Dragged file appearance.
+ */
+.file-drag-item.dragging {
+  opacity: 0.5;
+}
+
+
+/*
+ * Folder being dragged over.
+ *
+ * The <li> is now the folder container,
+ * while .folder-link only contains the
+ * folder icon and name.
+ */
+.folder-left li.drag-over {
+  background-color: #e6f7f1 !important;
+  border-color: #00a573 !important;
+  color: #006f4d !important;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.folder-left li.drag-over .folder-link {
+  color: #006f4d !important;
+}

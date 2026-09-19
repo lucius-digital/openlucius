@@ -1,0 +1,10 @@
+ol_shoutouts.list_page:
+  path: '/group/{gid}/shoutouts'
+  defaults:
+    _controller: '\Drupal\ol_shoutouts\Controller\ShoutoutsController::getShoutoutsList'
+    _title: 'Shoutouts'
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _group_access_check: 'TRUE'
+    gid: '[0-9]+'

@@ -57,7 +57,7 @@
         {% if vars.textdocs is not empty %}
            {{ vars.textdocs|raw }}
         {% else %}
-          <p class="text-muted small m-3">
+          <p class="text-muted m-3">
             <i class="lni lni-bulb"></i> <i> {{ 'Be the first to add a book page.'|t }}</i><br />
           </p>
         {% endif %}
@@ -77,7 +77,9 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        {{ vars.text_doc_form }}
+        <div class="m-3">
+          {{ vars.text_doc_form }}
+        </div>
       </div>
     </div>
   </div>

@@ -5,6 +5,7 @@ namespace Drupal\ol_main\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Site\Settings;
 use Drupal\ol_board\Services\OlTasks;
 use Drupal\ol_main\Services\OlGroups;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -116,7 +117,16 @@ class AddGroupForm extends FormBase {
     // Get form data.
     $name = Html::escape($form_state->getValue('name'));
     $type = Html::escape($form_state->getValue('type'));
-    $enabled_sections = 'stream,board,chat,messages,posts,notebooks,files,members';
+    // Use global settings, if any.
+    $enabled_sections_settings = Settings::get('enabled_sections');
+    if(!empty($enabled_sections_settings)){
+      $enabled_sections = implode(',', $enabled_sections_settings);
+    }
+    // Fallback settings
+    else {
+      $enabled_sections = 'stream,board,chat,messages,posts,notebooks,files,members';
+    }
+
     // Save group.
     $this->groups->addGroup($name, $type, null, true, $enabled_sections);
 

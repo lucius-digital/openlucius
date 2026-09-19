@@ -3,13 +3,11 @@
 namespace Drupal\ol_stream\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Form\FormBuilder;
 use Drupal\Core\Pager\PagerManager;
 use Drupal\Core\Pager\PagerParameters;
 use Drupal\ol_members\Services\OlMembers;
 use Drupal\ol_stream\Services\OlStream;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\ol_main\Services\OlGroups;
 
 /**
  * Class UserStreamController.
@@ -92,12 +90,7 @@ class UserStreamController extends ControllerBase {
     $render = [];
     $render[] = [
       '#theme' => 'stream_uber_wrapper',
-      '#attached' => [
-        'library' => [
-          'ol_stream/stream_user',
-        ],
-      ],
-       '#vars' => $theme_vars,
+      '#vars' => $theme_vars,
     ];
     // Add pager and return.
     $render[] = ['#type' => 'pager'];

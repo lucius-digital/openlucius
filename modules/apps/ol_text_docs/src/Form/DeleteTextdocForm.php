@@ -4,7 +4,7 @@ namespace Drupal\ol_text_docs\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\ol_text_docs\Services\OlTextdocs;
+use Drupal\ol_text_docs\Services\OlTextDocs;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 

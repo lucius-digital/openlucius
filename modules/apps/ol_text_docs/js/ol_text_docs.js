@@ -1,5 +1,57 @@
 (function ($, Drupal, drupalSettings) {
 
+  /*
+   * Weblinks
+   * This should be made generic, since it now also exists on board_modals.js
+   */
+
+  // Delete weblink btn listener.
+  $('#linked-items-wrapper').on('click','.delete-weblink-btn', function(e){
+    e.preventDefault();
+    const button = $(this)
+    const ol_weblink_id = button.data('ol_weblink_id')
+    $( "#ol-weblink-id").val(ol_weblink_id);
+    $( "#edit-delete-weblink-btn" ).trigger( "click" );
+  });
+  // Add weblink btn.
+  $("#show-weblink-form").click(function(e) {
+    e.preventDefault();
+    $( "#weblink-form-wrapper" ).show("fade");
+  });
+  // Hide weblink form (cancel btn)
+  $("#edit-hide-weblink-form").click(function(e) {
+    e.preventDefault();
+    $( "#weblink-form-wrapper").hide("fade");
+  });
+
+  // Edit text doc listener
+  $('.card-body').on('click','#edit-text-doc', function(e){
+    e.preventDefault();
+    // const button = $(this)
+    const body_height = $('#text-doc-body').height()
+    $("#text-doc-edit-form .note-editable").height(body_height);
+    $("#text-doc-edit-form").removeClass( "hidden" );
+    $(".body-wrapper").addClass( "hidden" );
+    // Enable navigation prompt
+    window.onbeforeunload = function() {
+      return true;
+    };
+  });
+  // Cancel Edit text doc listener.
+  $('.modal-footer').on('click','#edit-cancel', function(e){
+    e.preventDefault();
+    // const button = $(this)
+    $("#text-doc-edit-form").addClass( "hidden" );
+    $(".body-wrapper").removeClass( "hidden" );
+    // Remove navigation prompt
+    window.onbeforeunload = null;
+  });
+  // Save Edit text doc listener.
+  $('.modal-footer').on('click','#edit-submit', function(e){
+    // Remove navigation prompt.
+    window.onbeforeunload = null;
+  });
+
   // Source: https://getbootstrap.com/docs/4.1/components/modal/#varying-modal-content
   $('#addEditCategoryModal').on('show.bs.modal', function (event) {
     const button = $(event.relatedTarget); // Button that triggered the modal

@@ -1,0 +1,22 @@
+<?php
+
+
+/**
+ * Implements hook_theme().
+ */
+function ol_weblinks_theme() {
+  return [
+    'weblink_item' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'weblink-item',
+    ],
+    'weblinks_wrapper' => [
+      'variables' => [
+        'vars' => NULL,
+      ],
+      'template' => 'weblinks-wrapper',
+    ],
+  ];
+}

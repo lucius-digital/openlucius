@@ -18,27 +18,30 @@
             <a href="{{ base_path }}group/{{ group.id }}/{{ group.landing }}"
                class="{{ active_class }} list-group-item d-flex justify-content-between align-items-center list-group-item-action">
               {{ group.name }}
-                  {% if group.non_chat_count %}
-                    <span class="badge badge-danger badge-pill"> {{ group.non_chat_count }}</span>
-                  {% endif %}
-                  {% if group.chat_count %}
-                    <span class="badge badge-primary badge-pill"><i class="lni lni-comments"></i> {{ group.chat_count }}</span>
-                  {% endif %}
+              {% if group.non_chat_count %}
+                <span class="badge badge-danger badge-pill"> {{ group.non_chat_count }}</span>
+              {% endif %}
+              {% if group.chat_count %}
+                <span class="badge badge-primary badge-pill"><i class="lni lni-comments"></i> {{ group.chat_count }}</span>
+              {% endif %}
             </a>
           {% endfor %}
         </div>
       </div>
       {% else %}
       <div class="col-lg-3 pl-md-5 bd-content">
-        {#  This is to outline the blocks on their tops #}
-        <div class="pb-2 pt-1	d-none d-sm-none d-lg-block">
+        {#  Outline the blocks on their tops #}
+        <div class="pb-2 pt-1	d-none d-sm-none d-md-block">
           <h2 class="h5 pl-3 pt-3">&nbsp; </h2>
         </div>
-        {% if vars.header_image_url %}
-        <div>
-          <img alt="group image" class="img-fluid rounded img-thumbnail" src="{{ vars.header_image_url }}" />
+        <div class="d-none d-lg-block">
+          {% if vars.header_image_url %}
+            <img alt="group image" class="img-fluid rounded img-thumbnail" src="{{ vars.header_image_url }}" />
+          {% else  %}
+            {# TODO, implement dicebear local, so no external request are needed. #}
+            <img alt="group image" class="img-fluid rounded img-thumbnail" src="https://api.dicebear.com/10.x/landscape/svg?seed={{ vars.group_id }}" />
+          {% endif %}
         </div>
-        {% endif %}
       </div>
     {% endif %}
 
@@ -49,7 +52,7 @@
         {% elseif vars.group_id is empty %}
           <h1 class="h4 pl-3 pt-3"> {{ 'Activity in all your groups'|t }}</h1>
         {% else %}
-          <h1 class="h4 pl-3 pt-3"> {{ 'Activity in this group'|t }}</h1>
+          <h1 class="h4 pl-3 pt-3 pb-2"> {{ 'Activity in this group'|t }}</h1>
         {% endif %}
       </div>
       {% if vars.stream_html is empty %}
@@ -61,5 +64,6 @@
       {% endif %}
     </div>
   </div>
-</div>
+
+  </div>
 </div>

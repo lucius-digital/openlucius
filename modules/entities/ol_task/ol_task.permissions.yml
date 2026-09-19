@@ -1,0 +1,20 @@
+add ol task entities:
+  title: 'Create new Ol task entities'
+
+administer ol task entities:
+  title: 'Administer Ol task entities'
+  description: 'Allow to access the administration form to configure Ol task entities.'
+  restrict access: true
+
+delete ol task entities:
+  title: 'Delete Ol task entities'
+
+edit ol task entities:
+  title: 'Edit Ol task entities'
+
+view published ol task entities:
+  title: 'View published Ol task entities'
+
+view unpublished ol task entities:
+  title: 'View unpublished Ol task entities'
+

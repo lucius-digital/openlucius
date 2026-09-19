@@ -1,12 +1,3 @@
-#ol_stream.home:
-#  path: '/ol_home_2'
-#  defaults:
-#    _controller: '\Drupal\ol_stream\Controller\StreamController::getStream'
-#    _title: 'Home'
-#  requirements:
-#    _permission: 'access ol content'
-#  options:
-#    no_cache: 'TRUE'
 ol_stream.group:
   path: '/group/{gid}/stream'
   defaults:
@@ -27,23 +18,3 @@ ol_stream.user:
   requirements:
     _user_profile_access_check: 'TRUE'
     uid: '[0-9]+'
-# Ajax for getting latest chat items
-ol_stream.get_latest_stream_items:
-  path: '/group/{uuid}/get-latest-stream-items'
-  defaults:
-    _controller: '\Drupal\ol_stream\Controller\StreamAjaxController::getStreamItems'
-  options:
-    no_cache: 'TRUE'
-  requirements:
-    _group_uuid_access_check: 'TRUE'
-#    _csrf_token: 'TRUE'
-# Ajax for getting timestamp of last message
-ol_stream.get_last_message_timestamp:
-  path: '/group/{uuid}/get-last-message-timestamp'
-  defaults:
-    _controller: '\Drupal\ol_stream\Controller\StreamAjaxController::getLastMessageTimestamp'
-  options:
-    no_cache: 'TRUE'
-  requirements:
-    _group_uuid_access_check: 'TRUE'
-#    _csrf_token: 'TRUE'

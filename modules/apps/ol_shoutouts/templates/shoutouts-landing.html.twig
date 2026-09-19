@@ -1,0 +1,48 @@
+<div class="col-md-11 col-xl-10 pl-md-5 bd-content mb-5 offset-lg-1">
+  <!-- Title and action buttons-->
+  <div class="row py-2 pl-3">
+    <div class="col">
+      <h1 class="h4">{{ vars.page_title }}</h1>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-3">
+    {% if vars.is_group_admin == true %}
+      <div class="card-header">
+        <p class="text-muted small m-3">
+          <i class="lni lni-bulb"></i>  {{ 'Shoutouts not activated yet'|t }}
+        </p>
+      </div>
+      <div class="card-body">
+        <button class="btn btn-success" data-toggle="modal" data-target="#shoutoutSettings">
+          <i class="lni lni-cog"></i> {{ 'Configure and Activate Shoutouts'|t }}
+        </button>
+      </div>
+    {% else %}
+      <div class="card-header">
+        <p class="text-muted small m-3">
+          <i class="lni lni-bulb"></i>  {{ 'Shoutouts are not activated yet, please ask group admin to activate them here.'|t }}
+        </p>
+      </div>
+    {% endif %}
+  </div>
+
+  {% if vars.is_group_admin == true %}
+  <!-- Modal shout-out config -->
+  <div class="modal fade" id="shoutoutSettings" tabindex="-1" role="dialog" aria-labelledby="shoutoutSettings" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><i class="lni lni-plus"></i> {{ 'Shoutout settings'|t }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {{ vars.shoutout_settings_form }}
+      </div>
+    </div>
+  </div>
+  <!-- End modal shout-out config  -->
+  {% endif %}
+
+</div>

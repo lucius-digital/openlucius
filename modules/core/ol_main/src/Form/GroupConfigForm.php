@@ -73,7 +73,9 @@ class GroupConfigForm extends FormBase {
     $sections = $this->sections->getSectionsData();
     // Get section override info and decode json to an array.
     $section_overrides_json = $this->sections->getSectionOverridesData($gid);
-    $section_overrides = json_decode($section_overrides_json, true);
+    if (!empty($section_overrides_json)) {
+      $section_overrides = json_decode($section_overrides_json, TRUE);
+    }
     // Build usable array from $sections.
     $options = $this->sections->buildOptionsFromSections($sections);
     // Get enabled sections, for default_value.
@@ -114,7 +116,7 @@ class GroupConfigForm extends FormBase {
       '#progress_indicator' => 'bar',
       '#progress_message' => t('Please wait...'),
       '#upload_validators' => array(
-        'file_validate_extensions' => $this->files->getAllowedImageExtentions(),
+        'FileExtension' => $this->files->getAllowedImageExtentions(),
       ),
       '#theme' => 'image_widget',
       '#preview_image_style' => '50x50',

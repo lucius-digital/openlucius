@@ -1,5 +1,5 @@
 name: 'Ol Like'
 type: module
 description: 'Ol Like Module'
-core_version_requirement: ^9
+core_version_requirement: ^9 || ^10 || ^11
 package: 'OL App'

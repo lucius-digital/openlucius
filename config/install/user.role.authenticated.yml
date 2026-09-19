@@ -1,6 +1,13 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - filter.format.ol_rich_text
+  module:
+    - file
+    - filter
+    - ol_main
+    - system
 id: authenticated
 label: 'Authenticated user'
 weight: -9
@@ -9,4 +16,5 @@ permissions:
   - 'access content'
   - 'access ol content'
   - 'change own username'
+  - 'delete own files'
   - 'use text format ol_rich_text'

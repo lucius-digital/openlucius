@@ -16,76 +16,42 @@
     },
     "require": {
         "composer/installers": "^1.2",
-        "drupal/admin_toolbar": "^2.2",
-        "drupal/core-composer-scaffold": "^9",
-        "drupal/core-project-message": "^9",
-        "drupal/core-recommended": "^9"
-    },
-    "require-dev": {
-        "drush/drush": "^10.2"
-    },
-    "conflict": {
-        "drupal/drupal": "*"
+        "drupal/core-composer-scaffold": "^11.4",
+        "drupal/core-recommended": "^11.4",
+        "drupal/exif_orientation": "^1.1",
+        "drupal/mailsystem": "^4.5",
+        "drupal/symfony_mailer_lite": "^2.0"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "drupal/core-composer-scaffold": true,
+            "drupal/core-project-message": true,
+            "symfony/runtime": true
+        },
+        "audit": {
+            "block-insecure": false
+        }
     },
     "extra": {
+        "enable-patching": true,
         "drupal-scaffold": {
             "locations": {
                 "web-root": "web/"
             }
         },
         "installer-paths": {
-            "web/core": [
-                "type:drupal-core"
-            ],
-            "web/libraries/{$name}": [
-                "type:drupal-library"
-            ],
-            "web/modules/contrib/{$name}": [
-                "type:drupal-module"
-            ],
-            "web/profiles/contrib/{$name}": [
-                "type:drupal-profile"
-            ],
-            "web/themes/contrib/{$name}": [
-                "type:drupal-theme"
-            ],
-            "drush/Commands/contrib/{$name}": [
-                "type:drupal-drush"
-            ],
-            "web/modules/custom/{$name}": [
-                "type:drupal-custom-module"
-            ],
-            "web/themes/custom/{$name}": [
-                "type:drupal-custom-theme"
-            ]
-        },
-        "drupal-core-project-message": {
-            "include-keys": [
-                "homepage",
-                "support"
-            ],
-            "post-create-project-cmd-message": [
-                "",
-                "<bg=blue;fg=white>                                                              </>",
-                "<bg=blue;fg=white>  Congratulations, you’ve installed the OpenLucius codebase!  </>",
-                "<bg=blue;fg=white>                                                              </>",
-                "",
-                "<bg=yellow;fg=black>                </>",
-                "<bg=yellow;fg=black>   Next steps   </>",
-                "<bg=yellow;fg=black>                </>",
-                "  * Install guide: https://www.getlucius.com/en/product/open-source-install-guide",
-                "  * Get support: https://www.drupal.org/project/issues/openlucius",
-                "  * Post feature requests: https://www.drupal.org/project/issues/openlucius",
-                "  * Commercial support via: https://www.getlucius.com",
-                "  * Remove the plugin that prints this message:",
-                "      composer remove drupal/core-project-message",
-                ""
-            ]
+            "web/core": ["type:drupal-core"],
+            "web/libraries/{$name}": ["type:drupal-library"],
+            "web/modules/contrib/{$name}": ["type:drupal-module"],
+            "web/profiles/contrib/{$name}": ["type:drupal-profile"],
+            "web/themes/contrib/{$name}": ["type:drupal-theme"],
+            "drush/Commands/contrib/{$name}": ["type:drupal-drush"],
+            "web/modules/custom/{$name}": ["type:drupal-custom-module"],
+            "web/themes/custom/{$name}": ["type:drupal-custom-theme"]
         }
     }
 }

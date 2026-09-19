@@ -29,13 +29,14 @@
                   data-file_id="{{ vars.id }}"
           ><i class="lni lni-folder"></i> {{ 'Put in Folder'|t }}</button>
         {% endif %}
-        {% if vars.id_folder %}
-          <button class="dropdown-item" data-toggle="modal" data-target="#removeFileFromFolder"
-                  data-file_id="{{ vars.id }}"
-                  data-file_name="{{ vars.filename }}"
-                  data-folder_name="{{ vars.foldername }}"
-          ><i class="lni lni-circle-minus"></i> {{  'Remove From'|t }} '{{ vars.foldername }}'</button>
-        {% endif %}
+{#        TODO: make this stub working #}
+{#        {% if vars.id_folder %}#}
+{#          <button class="dropdown-item" data-toggle="modal" data-target="#removeFileFromFolder"#}
+{#                  data-file_id="{{ vars.id }}"#}
+{#                  data-file_name="{{ vars.filename }}"#}
+{#                  data-folder_name="{{ vars.foldername }}"#}
+{#          ><i class="lni lni-circle-minus"></i> {{ 'Remove From'|t }} '{{ vars.foldername }}'</button>#}
+{#        {% endif %}#}
         <button class="dropdown-item" data-toggle="modal" data-target="#removeFile"
                 data-name="{{ vars.filename }}"
                 data-ol_fid="{{ vars.ol_fid }}"

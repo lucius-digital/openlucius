@@ -98,10 +98,13 @@ class MainNavigationBlock extends BlockBase  implements ContainerFactoryPluginIn
       $search_form = \Drupal::formBuilder()->getForm(\Drupal\ol_search\Form\OlSearchNavForm::class);
     }
     // Get hooked menu items.
+    $items = [];
     \Drupal::moduleHandler()->invokeAll('add_menu_top_right_links', [&$items]);
     // Get hooked user menu items.
+    $user_menu_items = [];
     \Drupal::moduleHandler()->invokeAll('add_user_menu_links', [&$user_menu_items]);
     // Get hooked user menu items bottom.
+    $user_menu_items_bottom = [];
     \Drupal::moduleHandler()->invokeAll('add_user_menu_links_bottom', [&$user_menu_items_bottom]);
     // Get color settings.
     $color_settings = $this->config->getColorSettings();
@@ -144,7 +147,9 @@ class MainNavigationBlock extends BlockBase  implements ContainerFactoryPluginIn
       $default_fid = $this->config->getHomeHeaderImage();
       if($default_fid) {
         $file = File::load($default_fid);
-        $image_url = ImageStyle::load('home_header_image')->buildUrl($file->getFileUri());
+        if($file){
+          $image_url = ImageStyle::load('home_header_image')->buildUrl($file->getFileUri());
+        }
       }
     }
     return $image_url;

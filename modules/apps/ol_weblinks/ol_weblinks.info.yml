@@ -1,0 +1,5 @@
+name: 'ol_weblinks'
+type: module
+description: 'OL Weblinks'
+core_version_requirement: ^11
+package: 'OL app'

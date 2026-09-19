@@ -71,7 +71,7 @@ class HomeImageSettingsForm extends FormBase {
     $global_group_id = $this->groups->getGlobalGroupId();
     $default_fid = $this->config->getHomeHeaderImage();
     $default_fid = ($default_fid) ? $default_fid : '';
-    $hdd_file_location = $this->files->buildFileLocaton('home_image', $global_group_id);
+    $hdd_file_location = $this->files->buildFileLocaton('home_header', $global_group_id);
 
     $form['file'] = array(
       '#prefix' => '<div class="form-group p-5">',
@@ -85,7 +85,7 @@ class HomeImageSettingsForm extends FormBase {
       '#progress_message' => t('Please wait...'),
       '#multiple' => FALSE,
       '#upload_validators' => array(
-        'file_validate_extensions' => $this->files->getAllowedImageExtentions(),
+        'FileExtension' => $this->files->getAllowedImageExtentions(),
       ),
       '#theme' => 'image_widget',
       '#preview_image_style' => '50x50',

@@ -9,3 +9,12 @@ ol_files.group_files:
     _group_access_check: 'TRUE'
     _permission: 'access ol content'
     gid: '[0-9]+'
+ol_files.move_file:
+  path: '/group/{gid}/files/move-file'
+  defaults:
+    _controller: '\Drupal\ol_files\Controller\FileDragDropAjaxController::moveFile'
+  requirements:
+    _group_access_check: 'TRUE'
+    _permission: 'access ol content'
+    gid: '[0-9]+'
+  methods: [POST]

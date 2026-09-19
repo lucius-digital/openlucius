@@ -6,8 +6,15 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Drupal\Core\Session\AccountInterface;
 
 class OLMainSubscriber implements EventSubscriberInterface {
+
+
+  /**
+   * Declare the property here to fix the error.
+   */
+  protected AccountInterface $account;
 
   /**
    * OLMainSubscriber constructor.
@@ -26,15 +33,16 @@ class OLMainSubscriber implements EventSubscriberInterface {
     $request = $event->getRequest();
     // Get current path.
     $current_path = $request->getPathInfo();
-    // Check if this is /user/rest path.
-    $user_reset = fnmatch('*/user/reset/*', $current_path);
-
-    if($this->account->isAnonymous()
+    // Check if this is /user/reset path.
+    $user_reset = str_contains($current_path, '/user/reset/');
+    // Check if this is a JS file in sites/default/files/js.
+    $js_file = str_starts_with($current_path, '/sites/default/files/js/');
+    if ($this->account->isAnonymous()
       && $current_path != '/user/login'
       && $current_path != '/user/password'
       && $current_path != '/register'
-      && $current_path != '/register_culture'
       && $user_reset != true
+      && $js_file != true
     ){
       $event->setResponse(new RedirectResponse('/user/login', 301));
     }
@@ -50,7 +58,7 @@ class OLMainSubscriber implements EventSubscriberInterface {
     // Get current path.
     $current_path = $request->getPathInfo();
     // Check if we are on a group page.
-    $is_group_page = fnmatch('/group/*', $current_path);
+    $is_group_page = str_starts_with($current_path, '/group/');
 
     if($is_group_page) {
       // Get current user id.

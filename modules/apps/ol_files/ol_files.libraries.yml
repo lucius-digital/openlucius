@@ -6,3 +6,4 @@ ol_files:
       css/bootstrap-icons/bootstrap-icons.css: {}
   js:
     js/ol_files.js: {}
+    js/ol_files_drag_drop.js: {}

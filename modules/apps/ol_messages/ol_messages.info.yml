@@ -1,7 +1,7 @@
-name: 'lus_message'
+name: 'OL messages'
 type: module
-description: 'Lus Messages'
-core_version_requirement: ^9
+description: 'OpenLucius Messages'
+core_version_requirement: ^11
 package: 'OL app'
 dependencies:
   - ol_members

@@ -11,20 +11,23 @@
 function openlucius_install_tasks() {
   $tasks = [];
 
+  $tasks['openlucius_create_private_directory'] = [];
+  $tasks['openlucius_set_default_file_scheme'] = [];
   $tasks['openlucius_set_front_page'] = [];
   $tasks['openlucius_add_first_group'] = [];
   $tasks['openlucius_set_default_theme'] = [];
 
   return $tasks;
 }
+
 /**
  * Sets the front page path to /ol_home (a redirect to first group).
  */
 function openlucius_set_front_page() {
   Drupal::configFactory()
-    ->getEditable('system.site')
-    ->set('page.front', '/ol_home')
-    ->save(TRUE);
+      ->getEditable('system.site')
+      ->set('page.front', '/ol_home')
+      ->save(TRUE);
 }
 
 /**
@@ -41,8 +44,63 @@ function openlucius_add_first_group() {
  */
 function openlucius_set_default_theme() {
   Drupal::configFactory()
-    ->getEditable('system.theme')
-    ->set('default', 'ol_base')
-    ->set('admin', 'seven')
-    ->save(TRUE);
+      ->getEditable('system.theme')
+      ->set('default', 'ol_base')
+      ->set('admin', 'claro')
+      ->save(TRUE);
+}
+
+/**
+ * Creates the root-level private directory.
+ */
+function openlucius_create_private_directory() {
+
+  $private_path = dirname(DRUPAL_ROOT) . '/private';
+
+  if (!is_dir($private_path)) {
+    if (!mkdir($private_path, 0770, TRUE)) {
+      throw new \RuntimeException(
+          sprintf('Unable to create private files directory: %s', $private_path)
+      );
+    }
+  }
+
+  \Drupal::messenger()->addStatus(
+      t('Private files directory created at: @path', [
+          '@path' => $private_path,
+      ])
+  );
+
+  // Configure Drupal to use it.
+  $settings_path = DRUPAL_ROOT . '/sites/default/settings.php';
+
+  $contents = file_get_contents($settings_path);
+
+  $contents = str_replace(
+      "# \$settings['file_private_path'] = '';",
+      "\$settings['file_private_path'] = '../private';",
+      $contents
+  );
+
+  file_put_contents($settings_path, $contents);
+
+}
+
+/**
+ * Sets the default file storage scheme to private.
+ *
+ * Needed, because if we set 'default_scheme: private' in system.file.yml,
+ * than installation creates a wrong 'private:' folder in web root during profile install.
+ */
+function openlucius_set_default_file_scheme() {
+  \Drupal::configFactory()
+      ->getEditable('system.file')
+      ->set('default_scheme', 'private')
+      ->save();
+
+  \Drupal::messenger()->addStatus(
+      t('If you want private files to work, just clear all caches in /admin/config/development/performance.')
+  );
+
+  drupal_flush_all_caches();
 }

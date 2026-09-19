@@ -15,10 +15,10 @@ plugin: ol_stories
 settings:
   id: ol_stories
   label: 'Stories block'
-  provider: ol_stories
   label_display: '0'
+  provider: ol_stories
 visibility:
   request_path:
     id: request_path
-    pages: '<front>'
     negate: false
+    pages: '<front>'

@@ -1,5 +1,5 @@
 name: 'OL File'
 type: module
 description: 'OL File Module'
-core_version_requirement: ^9
+core_version_requirement: ^9 || ^10 || ^11
 package: 'OL core'

@@ -99,7 +99,8 @@ class TextDocForm extends FormBase {
      '#weight' => '0',
     ];
     $form['name'] = [
-      '#prefix' => '<div class="modal-body"><div class="form-group">',
+//      '#prefix' => '<div class="modal-body"><div class="form-group">',
+      '#prefix' => '<div class=""><div class="form-group">',
       '#type' => 'textfield',
       '#weight' => '10',
       '#default_value' => $name,
@@ -153,7 +154,7 @@ class TextDocForm extends FormBase {
       '#progress_indicator' => 'bar',
       '#progress_message' => t('Please wait...'),
       '#upload_validators' => array(
-        'file_validate_extensions' => $this->files->getAllowedFileExtentions(),
+        'FileExtension' => $this->files->getAllowedFileExtentions(),
       ),
       '#weight' => '35',
     );
@@ -164,8 +165,20 @@ class TextDocForm extends FormBase {
       '#weight' => '40',
     ];
 
-    $form['submit'] = [
+    $form['cancel'] = [
       '#prefix' => '</div><div class="modal-footer">',
+      '#type' => 'button',
+      '#weight' => '90',
+      '#attributes' => [
+        'data-disable-refocus' => 'true',
+        'class' => array('btn btn-light'),
+        'onsubmit' => 'return false',
+      ],
+      '#value' => t('Cancel'),
+      '#suffix' => ''
+    ];
+    $form['submit'] = [
+      '#prefix' => '',
       '#type' => 'submit',
       '#weight' => '100',
       '#attributes' => array('class' => array('btn btn-success')),

@@ -15,10 +15,10 @@ plugin: main_title_block
 settings:
   id: main_title_block
   label: 'Main title block'
-  provider: ol_main
   label_display: '0'
+  provider: ol_main
 visibility:
   request_path:
     id: request_path
-    pages: '<front>'
     negate: true
+    pages: '<front>'

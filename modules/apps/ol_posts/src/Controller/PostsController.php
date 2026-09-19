@@ -131,7 +131,6 @@ class PostsController extends ControllerBase {
       '#attached' => [
         'library' => [
           'ol_posts/ol_posts',
-          'ol_chat/mentions',
         ],
         'drupalSettings' => [
           'users_in_group' => $group_users
@@ -141,41 +140,4 @@ class PostsController extends ControllerBase {
     ];
     return $render;
   }
-
-  /**
-   * @param $id
-   *
-   * @return array
-   * @throws \Exception
-   */
-/*  public function getPost($id){
-    // Get data.
-    $post_data = $this->posts->getPostsList($id);
-    $post_title = $this->posts->getPostTitle($post_data);
-    $post = $this->posts->renderPostsList($post_data, 'page');
-    $comment_form = \Drupal::formBuilder()->getForm(\Drupal\ol_main\Form\CommentForm::class, null, null, 'post', $id);
-    $comment_items = $this->comments->getComments($id, 'post', 'asc');
-    $current_user_picture = $this->members->getUserPictureUrl(); // Should move to CommentForm
-
-    // Build it.
-    $theme_vars = [
-      'post' => $post,
-      'title' => $post_title,
-      'comment_form' => $comment_form,
-      'comment_items' => $comment_items,
-      'current_user_picture' => $current_user_picture,
-    ];
-    $build = [
-      '#theme' => 'post_page',
-      '#vars' => $theme_vars,
-      '#attached' => [
-        'library' => [
-          'ol_posts/ol_posts',
-          'ol_main/ol_comments'
-        ],
-      ],
-    ];
-    return $build;
-  }*/
-
 }

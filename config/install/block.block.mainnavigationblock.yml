@@ -14,6 +14,6 @@ plugin: main_navigation_block
 settings:
   id: main_navigation_block
   label: 'Main navigation block'
-  provider: ol_main
   label_display: '0'
+  provider: ol_main
 visibility: {  }

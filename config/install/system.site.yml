@@ -1,5 +1,6 @@
-name: OpenLucius
-mail: mail@yourdomein.com
+langcode: en
+name: Lucius
+mail: info@yourdomain.com
 slogan: ''
 page:
   403: ''
@@ -7,6 +8,5 @@ page:
   front: /ol_home
 admin_compact_mode: false
 weight_select_max: 100
-langcode: en
 default_langcode: en
 mail_notification: ''

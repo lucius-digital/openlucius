@@ -8,7 +8,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\ol_main\Services\OlFiles;
 use Drupal\ol_members\Services\OlMembers;
-use Drupal\ol_posts\Services\OlCultureQuestions;
 use Drupal\ol_posts\Services\OlPosts;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -72,7 +71,7 @@ class PostForm extends FormBase {
     // Defaults.
     $body = '';
     $button_text = t('Submit');
-    $hdd_file_location = $this->files->buildFileLocaton('post');
+    $hdd_file_location = $this->files->buildFileLocaton('post', $gid);
     $mail_send_default = array('1');
     $num_users = $this->members->countMembers($gid, true);
     $send_mail_title = array( '1' => t('Notify all members') .' ('.$num_users .')',);
@@ -146,7 +145,7 @@ class PostForm extends FormBase {
       '#upload_location' => 'private://'.$hdd_file_location,
       '#multiple' => TRUE,
       '#upload_validators' => array(
-        'file_validate_extensions' => $this->files->getAllowedImageExtentions(),
+        'FileExtension' => $this->files->getAllowedImageExtentions(),
       ),
       '#attributes' => array(
         'class' => ['small text-muted pl-md-3'],
@@ -184,7 +183,7 @@ class PostForm extends FormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
 
-    if (strlen($form_state->getValue('name')) > 128) {
+    if (!is_null($form_state->getValue('name')) && strlen($form_state->getValue('name')) > 128) {
       // Set an error for the form element with a key of "title".
       $form_state->setErrorByName('name', $this->t('Post not saved yet: title can\'t be more than 128 characters.'));
     }
@@ -195,13 +194,17 @@ class PostForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
     // Get data.
-    $id = Html::escape($form_state->getValue('post_id'));
-    $gid = Html::escape($form_state->getValue('group_id'));
+    // TODO, is this properly secure? Check if a user can spoof this.
+    $post_id = $form_state->getValue('post_id');
+    $id = (is_numeric($post_id)) ? $post_id : null;
+    $group_id = $form_state->getValue('group_id');
+    $gid = (is_numeric($form_state->getValue('group_id'))) ? $group_id : null;
     $body = Xss::filter($form_state->getValue('body'), getAllowedHTMLTags() );
     $body = sanatizeSummernoteInput($body);
-    $name = $name_shortened = shortenString($body);
+    $name = shortenString($body);
     $files = $form_state->getValue('files');
-    $send_mail = $form_state->getValue('send_mail')[1];
+    $send_mail = (isset($form_state->getValue('send_mail')[1])) ? $form_state->getValue('send_mail')[1] : false;
+    // TODO, this seems not correct anymore
     // Only global posts have a group id here.
     // This is needed for sending correct url mail.
     $global_post = ($gid) ? true : false;
@@ -210,10 +213,10 @@ class PostForm extends FormBase {
       $this->posts->updatePost($id, $name, $body, $send_mail, $global_post, $gid);
     }
     // New, save post.
-    elseif(empty($id)){
+    elseif (empty($id)){
       $id = $this->posts->savePost($name, $body, $send_mail, $gid, false, $global_post);
     }
-    if(!empty($files)) {
+    if( !empty($files)) {
       $this->files->saveFiles($files, 'post', $id, null, null, $gid);
     }
   }

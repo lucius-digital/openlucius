@@ -73,8 +73,7 @@ class MainAjaxController extends ControllerBase {
    */
   public function uploadInlineImage(Request $request, $uuid) {
 
-
-      /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile */
+    /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile */
     $uploadedFile = $request->files->get('file');
     if (!$uploadedFile->isValid()) {
       return $this->makeUploadErrorResponse('Invalid file upload.');
@@ -97,12 +96,11 @@ class MainAjaxController extends ControllerBase {
     // Read the file's contents.
     $fileData = file_get_contents($uploadedFilePath);
     // Save in right dir, creating a file entity instance.
-    $savedFile = file_save_data($fileData,$directory . '/' . $uploadedFileName,FileSystemInterface::EXISTS_RENAME);
+    $savedFile = \Drupal::service('file.repository')->writeData()($fileData,$directory . '/' . $uploadedFileName);
     $this->createOlFile($savedFile, $gid);
     $uri = $savedFile->getFileUri();
     $fid = $savedFile->id();
-    $url = Url::fromUri(file_create_url($uri))->toString();
-    //\Drupal::logger('some_channel_name')->warning('<pre><code>' . print_r($url, TRUE) . '</code></pre>');
+    $url = Url::fromUri(\Drupal::service('file_url_generator')->generateAbsoluteString($uri));
 
     if (!$savedFile) {
       return $this->makeUploadErrorResponse('Error saving file.');

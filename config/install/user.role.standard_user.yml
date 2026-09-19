@@ -1,6 +1,10 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - file
+    - ol_main
+    - ol_text_docs
 id: standard_user
 label: 'Standard User'
 weight: -6
@@ -8,4 +12,5 @@ is_admin: null
 permissions:
   - 'access all openlucius content'
   - 'access all users'
+  - 'delete own files'
   - 'sort book pages'

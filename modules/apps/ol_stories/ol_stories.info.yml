@@ -1,7 +1,7 @@
 name: 'OL Stories'
 type: module
 description: 'OL Stories'
-core_version_requirement: ^9
+core_version_requirement: ^11
 package: 'OL app'
 dependencies:
   - ol_members

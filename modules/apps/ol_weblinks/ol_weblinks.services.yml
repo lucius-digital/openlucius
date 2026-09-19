@@ -1,0 +1,4 @@
+services:
+  olweblinks.weblinks:
+    class: Drupal\ol_weblinks\Services\OlWeblinks
+    arguments: ['@current_route_match', '@database']

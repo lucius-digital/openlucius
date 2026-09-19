@@ -62,7 +62,7 @@ class ColorSettingsForm extends FormBase {
       '#prefix' => '<div>',
       '#type' => 'textfield',
       '#default_value' => $color_settings->nav,
-      '#title' => t('Main Navigation'),
+      '#title' => t('Primary color'),
       '#attributes' => [
         'data-disable-refocus' => 'true',
         'data-huebee' => ' {"notation": "hex"}',
@@ -75,7 +75,7 @@ class ColorSettingsForm extends FormBase {
       '#prefix' => '<div class="mt-3 ">',
       '#type' => 'textfield',
       '#default_value' => $color_settings->global_background,
-      '#title' => t('Global Background'),
+      '#title' => t('Global background color'),
       '#attributes' => [
         'data-disable-refocus' => 'true',
         'data-huebee' => ' {"notation": "hex"}',

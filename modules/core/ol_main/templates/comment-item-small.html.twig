@@ -1,28 +1,41 @@
 <!--- Comment-->
-<div class="media text-muted pt-1 ">
+<div class="media text-muted pt-1 border-top-dashed">
   <img class="rounded-circle mr-2 mt-1" src="{{ vars.user_picture }}" alt="User picture" height="25">
-  <div class="media-body pb-1 mb-0 small lh-125">
-    <strong class="d-block text-gray-dark">
-      <a href="/user/{{ vars.user_id }}/profile" class="username text-muted">{{ vars.username }}</a>
-      <span class="badge badge-pill badge-light text-muted">{{ vars.created }}</span>
-      {% if vars.owner == TRUE %}
-      <span class="dropdown">
-          <button class="btn btn-link p-0" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-            <i class="lni lni-line-dotted"></i>
-          </button>
-          <span class="dropdown-menu dropdown-menu-left" aria-labelledby="ol-drop2" >
-            {% if vars.is_task_comment == true %}
-            <a class="dropdown-item drop-down-edit-comment" href="#" data-comment_id="{{ vars.comment_id }}" ><i class="lni lni-pencil"></i> {{ 'Edit'|t }}</a>
-            {% else %}
-            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editCommentModal_{{ vars.comment_id }}">{{ 'Edit'|t }}</a>
-            {% endif %}
+  <div class="media-body pb-1 mb-0 lh-125">
+    <div class="d-flex font-weight-bold text-gray-dark justify-content-between">
+      <div>
+        <a href="/user/{{ vars.user_id }}/profile" class="username text-muted">{{ vars.username }}</a>
+        <span class="badge badge-pill badge-light text-muted">{{ vars.created }}</span>
+        {% if vars.owner == TRUE %}
+        <span class="dropdown">
+            <button class="btn btn-link p-0" type="button" id="ol-drop2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              <i class="lni lni-line-dotted"></i>
+            </button>
+            <span class="dropdown-menu dropdown-menu-left" aria-labelledby="ol-drop2" >
+              {% if vars.is_task_comment == true %}
+              <a class="dropdown-item drop-down-edit-comment" href="#" data-comment_id="{{ vars.comment_id }}">
+                <i class="lni lni-pencil"></i> {{ 'Edit'|t }}
+              </a>
+              {% else %}
+              <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editCommentModal_{{ vars.comment_id }}">{{ 'Edit'|t }}</a>
+              {% endif %}
+            </span>
           </span>
-        </span>
-      {% endif %}
-    </strong>
-    <div class="body-text img-fluid" id="body-text-id_{{ vars.comment_id }}">{{ vars.body|raw }}</div>
+        {% endif %}
+      </div>
+      {# TODO: Make this work.
+        <div class="mr-3 ml-4">
+        <button id="mark-comment-as-done_{{ vars.comment_id }}"
+                class="small btn text-muted p-0 mb-0 mark-comment-as-done "
+                data-comment_id="{{ vars.comment_id }}"
+                title="Mark as completed"
+        >
+          <i class="lni lni-checkmark-circle {{ vars.checked_class }}"></i>
+        </button>
+      </div>#}
+    </div>
+    <div class="body-text img-fluid {{ vars.body_hidden }}" id="comment-body-id_{{ vars.comment_id }}">{{ vars.body|raw }}</div>
   </div>
-
 </div>
 
 {% if vars.owner == TRUE %}

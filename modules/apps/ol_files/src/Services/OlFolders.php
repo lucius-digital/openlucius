@@ -4,7 +4,6 @@ namespace Drupal\ol_files\Services;
 
 use Drupal\Core\Url;
 use Drupal\ol_folder\Entity\OlFolder;
-use Drupal\user\Entity\User;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**

@@ -285,10 +285,10 @@ class OlStream{
     // If icon class not filled yet, check if it's a 'left over type'.
     if (empty($icon_class)){
       $left_overs_types = [
-        'comment' =>  'lni lni-comments',
-        'user' =>  'lni lni-user',
-        'category' => 'lni lni-tag',
-        'folder' => 'lni lni-folder',
+          'comment' =>  'lni lni-comments',
+          'user' =>  'lni lni-user',
+          'category' => 'lni lni-tag',
+          'folder' => 'lni lni-folder',
       ];
       if(!empty($left_overs_types[$entity_type])) {
         $icon_class = $left_overs_types[$entity_type];
@@ -338,12 +338,12 @@ class OlStream{
    */
   private function getBodyTextLabels(){
     $labels = [
-      'user_added' => t('added a user to the group'),
-      'user_removed' => t('remove a user from the group'),
-      'comment_added' => t('added a comment'),
-      'message_added' => t('added a message'),
-      'post_added' => t('added a post'),
-      'text_doc_removed' => t('removed a notebook'),
+        'user_added' => t('added a user to the group'),
+        'user_removed' => t('remove a user from the group'),
+        'comment_added' => t('added a comment'),
+        'message_added' => t('added a message'),
+        'post_added' => t('added a post'),
+        'text_doc_removed' => t('removed a notebook'),
     ];
     // Invoke hook to add labels from other modules.
     $external_labels = \Drupal::moduleHandler()->invokeAll('stream_item_body_labels');
@@ -371,23 +371,23 @@ class OlStream{
       // Content.
       case 'notebooks':
         $path = Url::fromRoute('ol_text_docs.text_doc', ['gid' => $stream_item->group_id, 'id' => $stream_item->entity_id])->toString();
-      break;
+        break;
       case 'messages':
         $path = Url::fromRoute('lus_message.message', ['gid' => $stream_item->group_id, 'id' => $stream_item->entity_id])->toString();
-      break;
+        break;
       case 'posts':
         $path = Url::fromRoute('lus_post.posts', ['gid' => $stream_item->group_id])->toString();
-      break;
+        break;
       case 'folder':
         $path = Url::fromRoute('ol_files.group_files', ['gid' => $stream_item->group_id, 'folder' => $stream_item->entity_id])->toString();
-      break;
+        break;
       // Files.
       case 'files':
         $file_uri = $this->files->getFileUri($stream_item->entity_id);
         if ($file_uri) {
           $path = Url::fromUri(file_create_url($file_uri));
         }
-      break;
+        break;
       // Comments.
       case 'comment':
         // Get comment data.
@@ -413,12 +413,12 @@ class OlStream{
         if($comment_data->entity_type == 'text_doc') {
           $path = Url::fromRoute('ol_text_docs.text_doc', ['gid' => $stream_item->group_id, 'id' => $comment_data->entity_id])->toString();
         }
-      break; // End "case 'comment'":
+        break; // End "case 'comment'":
     }
     if(!empty($path)) {
       return [
-        'path' => $path,
-        'label' => $label,
+          'path' => $path,
+          'label' => $label,
       ];
     }
   }
@@ -459,21 +459,21 @@ class OlStream{
     $user_id = (empty($user_id)) ? \Drupal::currentUser()->id() : $user_id;
     // Add stream item.
     $ol_stream_item = OlStreamItem::create([
-      'name' => $name,
-      'stream_body' => $body,
-      'user_id' => $user_id,
-      'group_id' => $group_id,
-      'entity_type' => $entity_type,
-      'entity_id' => $entity_id,
+        'name' => $name,
+        'stream_body' => $body,
+        'user_id' => $user_id,
+        'group_id' => $group_id,
+        'entity_type' => $entity_type,
+        'entity_id' => $entity_id,
     ]);
     $ol_stream_item->save();
     $id = $ol_stream_item->id();
     // Update the record with own id for chat items, to it keep all consistent.
     if($entity_type == 'chat') {
       \Drupal::database()->update('ol_stream_item')
-        ->fields(['entity_id' => $id])
-        ->condition('id', $id)
-        ->execute();
+          ->fields(['entity_id' => $id])
+          ->condition('id', $id)
+          ->execute();
     }
   }
 }

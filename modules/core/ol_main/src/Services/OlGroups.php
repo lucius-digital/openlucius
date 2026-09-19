@@ -41,6 +41,8 @@ class OlGroups{
    */
   protected $members;
 
+  private $files;
+
   /**
    * OlMembers constructor.
    *
@@ -50,12 +52,13 @@ class OlGroups{
    * @param $renderer
    * @param $members
    */
-  public function __construct($route, $messenger, $current_user, $renderer, $members) {
+  public function __construct($route, $messenger, $current_user, $renderer, $members, $files) {
     $this->route = $route;
     $this->messenger = $messenger;
     $this->current_user = $current_user;
     $this->renderer = $renderer;
     $this->members = $members;
+    $this->files = $files;
   }
 
 
@@ -201,6 +204,8 @@ class OlGroups{
       // Get current user id.
       $uid = $this->current_user->id();
       $gid = $group_data->id;
+      // Set header image
+      $group_data->header_image_link = $this->getGroupImageLink($gid);
 
       // Get user count.
       $query = \Drupal::database()->select('ol_group_user', 'ogu');
@@ -331,7 +336,7 @@ class OlGroups{
     // Handle on_top setting.
     //$on_top = ($on_top) ? 99 : 1 ; // 99 = on top | 1 = default.
     // Get current gid.
-    $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
+    $gid = $this->route->getParameter('gid');
     // Build array with only ticked values.
     $enabled_sections_array = array();
     foreach ($sections as $key => $section){
@@ -374,7 +379,7 @@ class OlGroups{
    * @return bool
    */
   public function isOnTop(){
-    $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
+    $gid = $this->route->getParameter('gid');
     $query = \Drupal::database()->select('ol_group', 'gr');
     $query->addField('gr', 'id');
     $query->condition('gr.id', $gid);
@@ -387,7 +392,7 @@ class OlGroups{
    * @return mixed
    */
   public function isArchived(){
-    $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
+    $gid = $this->route->getParameter('gid');
     $query = \Drupal::database()->select('ol_group', 'gr');
     $query->addField('gr', 'status');
     $query->condition('gr.id', $gid);
@@ -448,7 +453,24 @@ class OlGroups{
     $query->addField('olf', 'file_id');
     $query->condition('olf.group_id', $gid);
     $query->condition('olf.entity_type', 'group_header');
+    $query->condition('olf.status', 1);
     return $query->execute()->fetchField();
+  }
+  /**
+   * @param $group_id
+   *
+   * @return mixed
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  public function getGroupImageLink($gid){
+    // TODO: de-duplicate, also in OlStream Service
+    $header_fid = $this->getHeaderImage($gid);
+    if (!empty($header_fid)) {
+      $header_uri = $this->files->getFileUri($header_fid);
+      $style = \Drupal::entityTypeManager()->getStorage('image_style')->load('50x50');
+      return $style->buildUrl($header_uri);
+    }
   }
 
   /**
@@ -560,8 +582,11 @@ class OlGroups{
     $query = \Drupal::database()->select('ol_general_settings', 'ogs');
     $query->addField('ogs', 'tabs');
     $query->join('users_field_data', 'ufd', 'ufd.uid = ogs.user_id');
-    $query->addTag('ol_user_list');
-    return json_decode($query->execute()->fetchField());
+    if ($tabs = $query->addTag('ol_user_list')) {
+      return json_decode($tabs);
+    }
+    // TODO, proper error handling.
+    return [];
   }
 
 }

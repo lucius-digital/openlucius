@@ -206,6 +206,10 @@ class OlComment extends ContentEntityBase implements OlCommentInterface {
       ->setDescription(t('The referenced Entity type of the comment.'))
       ->setStorageRequired(TRUE);
 
+    $fields['done'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('done'))
+      ->setDescription(t('done.'))
+      ->setRequired(TRUE);
 
     return $fields;
   }

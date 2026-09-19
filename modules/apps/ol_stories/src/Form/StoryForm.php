@@ -115,7 +115,7 @@ class StoryForm extends FormBase {
       '#progress_indicator' => 'bar',
       '#progress_message' => t('Please wait...'),
       '#upload_validators' => array(
-        'file_validate_extensions' => $this->files->getAllowedImageExtentions(),
+        'FileExtension' => $this->files->getAllowedImageExtentions(),
       ),
       '#weight' => '30',
     );

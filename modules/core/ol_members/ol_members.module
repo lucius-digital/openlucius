@@ -1,6 +1,7 @@
 <?php
 
 use Drupal\user\Entity\User;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
 
 /**
  * Implements hook_theme().
@@ -51,7 +52,7 @@ function ol_members_preprocess_image_widget(&$variables) {
 
   if (!empty($element['fids']['#value'])) {
     $file = reset($element['#files']);
-    $element['file_' . $file->id()]['filename']['#suffix'] = ' <span class="file-size">(' . format_size($file->getSize()) . ')</span> ';
+    $element['file_' . $file->id()]['filename']['#suffix'] = ' <span class="file-size">(' . ByteSizeMarkup::create($file->getSize()) . ')</span> ';
     $file_variables = array(
       'style_name' => $element['#preview_image_style'],
       'uri' => $file->getFileUri(),

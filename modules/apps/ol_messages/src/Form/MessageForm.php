@@ -158,7 +158,7 @@ class MessageForm extends FormBase {
       '#progress_indicator' => 'bar',
       '#progress_message' => t('Please wait...'),
       '#upload_validators' => array(
-        'file_validate_extensions' => $this->files->getAllowedFileExtentions(),
+        'FileExtension' => $this->files->getAllowedFileExtentions(),
       ),
       '#attributes' => array(
         'class' => ['small text-muted pl-md-3'],

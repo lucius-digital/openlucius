@@ -17,40 +17,63 @@
     </div>
     {# Content #}
     <div class="col-lg-7 pl-md-3 bd-content mb-5">
-        {{ vars.tab_content }}
+      {{ vars.tab_content }}
     </div>
     {# Groups #}
     <div class="col-lg-3 bd-content mb-5">
       <div class="card shadow-sm">
-        <div class="py-2 border-bottom">
-          <span class="pl-3 pt-2 text-muted font-weight-lighter"> {{ 'Groups'|t }}</span>
+        <div class="py-3 border-bottom bg-light-grey">
+          <span class="pl-3 text-muted font-weight-bold"> <i class="lni lni-users mr-1"></i> {{ 'Your Groups'|t }}</span>
         </div>
         <div class="list-group list-group-flush">
           {% for group in vars.groups %}
-            {# Nasty active styling for now ¯\_(ツ)_/¯ #}
+            {# Nasty active styling and link building for now ¯\_(ツ)_/¯ #}
             {% if group.non_chat_count or group.chat_count %}
               {% set active_class = 'font-weight-bold' %}
             {% else %}
               {% set active_class = 'text-muted' %}
             {% endif %}
             <a href="{{ base_path }}group/{{ group.id }}/{{ group.landing }}"
-               class="{{ active_class }} small py-2 list-group-item d-flex justify-content-between align-items-center list-group-item-action">
-              {{ group.name|raw }}
-              {% if group.non_chat_count %}
-                <span class="badge badge-danger badge-pill"> {{ group.non_chat_count }}</span>
-              {% endif %}
-              {% if group.chat_count %}
-                <span class="badge badge-primary badge-pill"><i class="lni lni-comments"></i> {{ group.chat_count }}</span>
-              {% endif %}
+               class="{{ active_class }} py-2 pl-3 list-group-item d-flex justify-content-between align-items-center list-group-item-action">
+              <span>
+                 {% if group.header_image_link %}
+                   <img style="height: 32px;" class="p-0 mr-2 border" src="{{ group.header_image_link }}" alt="group image" />
+                {% else %}
+                  <img alt="group image" class="p-0 mr-2 img-fluid img-thumbnail" src="https://api.dicebear.com/10.x/landscape/svg?seed={{ group.id }}&size=32" />
+                {% endif %}
+
+                  {{ group.name|length > 19 ? group.name|slice(0, 19) ~ '…' : group.name }}
+                  {% if group.non_chat_count %}
+                    <span class="badge badge-danger badge-pill"> {{ group.non_chat_count }}</span>
+                  {% endif %}
+                  {% if group.chat_count %}
+                    <span class="badge badge-primary badge-pill"><i class="lni lni-comments"></i> {{ group.chat_count }}</span>
+                  {% endif %}
+                </span>
               <span class="badge badge-light text-muted badge-pill"><i class="lni lni-user"></i> {{ group.user_count }}</span>
             </a>
           {% endfor %}
-          <a href="{{ url('ol_main.group_archived') }}" class="text-muted small py-2 list-group-item d-flex justify-content-between align-items-center list-group-item-action">
-           <span> <i class="lni lni-archive"></i> {{ 'Archived Groups'|t }}</span>
-          </a>
-
         </div>
-      </div>
+    </div>
+    <div class="ml-2 mt-3 text-left">
+      <img alt="group image"
+           class="img-fluid rounded img-thumbnail w-25"
+           src="https://api.dicebear.com/10.x/big-smile/svg?skinColor=C99A7A&seed={{ random() }}&backgroundColor=d4e1df,f9eabf,f6dcd7,f6dcd7,dfd1f2&backgroundColorFill=linear&mouthVariant=kawaii,openedSmile,teethSmile&eyesVariant=cheery,normal&accessoriesVariant=sailormoonCrown,sunglasses&flip=horizontal" />
     </div>
   </div>
+
 </div>
+  <div class="mt-1 small mt-1 mr-2 text-right">
+    <a href="https://www.openlucius.com" target="_blank">
+      OpenLucius.com
+    </a>
+    |
+    <a href="https://www.drupal.org" target="_blank">
+      Powered by Drupal
+    </a>
+    |
+    {# TODO, implement dicebear local, so no external request are needed. #}
+    <a href="https://www.dicebear.com/why-dicebear/" target="_blank">
+      Credits avatars
+    </a>
+  </div>

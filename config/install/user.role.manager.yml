@@ -1,6 +1,11 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - file
+    - ol_group
+    - ol_main
+    - ol_text_docs
 id: manager
 label: Manager
 weight: -7
@@ -10,4 +15,5 @@ permissions:
   - 'access all users'
   - 'add ol group entities'
   - 'administer ol users'
+  - 'delete own files'
   - 'sort book pages'

@@ -58,7 +58,7 @@ class OlComments{
    * @return int|string|null
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function saveComment($body, $entity_id, $reference_type, $privacy = 0, $in_stream = true){
+  public function saveComment($body, $entity_id, $reference_type, int $privacy = 0, bool $in_stream = true){
     // Prepare data.
     $gid = $this->route->getParameter('gid');
     $name = shortenString(strip_tags($body),20);
@@ -180,6 +180,8 @@ class OlComments{
       $comment_row_data['user_id'] = $comment->user_id;
       $comment_row_data['owner'] = $comment->user_id == $current_uid;
       $comment_row_data['comment_id'] = $comment->id;
+      $comment_row_data['checked_class'] = ($comment->done) ? 'text-success' : '';
+      $comment_row_data['body_hidden'] = ($comment->done) ? 'hidden' : '';
       $comment_row_data['created'] = time_elapsed_string('@'.$comment->created);
       $comment_row_data['user_picture'] = $this->members->getUserPictureUrl($comment->user_id);
       $comment_row_data['like_button'] = \Drupal::formBuilder()->getForm(\Drupal\ol_like\Form\LikeForm::class, 'comment', $comment->id);
@@ -238,6 +240,7 @@ class OlComments{
     $query->addField('comm', 'privacy');
     $query->addField('comm', 'group_id');
     $query->addField('comm', 'created');
+    $query->addField('comm', 'done');
     $query->condition('comm.entity_id', $entity_id);
     $query->condition('comm.entity_type', $entity_type);
     $query->orderBy('comm.created', $order);
@@ -281,6 +284,68 @@ class OlComments{
     $uid = $query->execute()->fetchField();
     return ($uid == $this->members->getUserId());
   }
+
+  /**
+   * @param $task_id
+   *
+   * @return int
+   * @throws \Exception
+   */
+  public function updateCommentDone($guuid, $comment_id){
+    // Get current group.
+    $group = \Drupal::service('olmain.groups');
+    $group_id = $group->getGroupIdByUuid($guuid);
+    $user_in_group = $this->members->checkUserInGroup($group_id);
+    $comment_in_group = $this->checkCommentInGroup($group_id, $comment_id);
+
+    // Update with security checks.
+    if ($user_in_group && $comment_in_group) {
+      // Get current state.
+      $current_state = $this->getCommentDoneStatus($comment_id);
+      // Make new state opposite of current.
+      if (empty($current_state)){
+        $new_state = 1;
+      } elseif ($current_state == 1 ){
+        $new_state = 0;
+      }
+      // Update.
+      \Drupal::database()->update('ol_comment')
+        ->fields(['done' => $new_state])
+        ->condition('id', $comment_id)
+        ->condition('group_id', $group_id)
+        ->execute();
+    }
+    // TODO, proper error handling, and setting default of $new_state.
+    return $new_state;
+  }
+
+  /**
+   * @param $group_id
+   * @param $comment_id
+   *
+   * @return bool
+   */
+  private function checkCommentInGroup($group_id, $comment_id){
+    $query = \Drupal::database()->select('ol_comment', 'comment');
+    $query->addField('comment', 'id');
+    $query->condition('comment.id', $comment_id);
+    $query->condition('comment.group_id', $group_id);
+    return (is_numeric($query->execute()->fetchField())) ? true: false;
+  }
+
+  /**
+   * @param $comment_id
+   *
+   * @return mixed
+   */
+  private function getCommentDoneStatus($comment_id){
+    // Get data.
+    $query = \Drupal::database()->select('ol_comment', 'comment');
+    $query->addField('comment', 'done');
+    $query->condition('comment.id', $comment_id);
+    return $query->execute()->fetchField();
+  }
+
 
 
 }

@@ -5,6 +5,7 @@ global:
       '//stackpath.bootstrapcdn.com/bootstrap/4.4.0/css/bootstrap.min.css': { type: external, minified: true}
       '//cdn.lineicons.com/2.0/LineIcons.css': { type: external, minified: true}
       '//cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css': { type: external, minified: true}
+      '//fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700&display=swap': { type: external, minified: true}
       css/components/pager.css: {}
       css/components/tabs.css: {}
       css/components/user.css: {}
@@ -13,11 +14,14 @@ global:
       css/styles.css: {}
       css/styles_mobile.css: {}
   js:
-    '//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js': { type: external }
-    '//stackpath.bootstrapcdn.com/bootstrap/4.4.0/js/bootstrap.min.js': { type: external }
-    '//cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js': { type: external }
+    '//code.jquery.com/jquery-3.6.4.min.js': { type: external, weight: -20 }
+    '//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js': { type: external, weight: -15  }
+    '//stackpath.bootstrapcdn.com/bootstrap/4.4.0/js/bootstrap.min.js': { type: external, weight: -10  }
+    '//cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js': { type: external, weight: -5  }
     js/global.js: {}
   dependencies:
-    - core/jquery
-    - core/jquery.once
+    - core/once
     - core/drupal
+# Forcefully tell the asset system that core/jquery maps to false
+  libraries-override:
+    core/jquery: false

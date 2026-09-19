@@ -211,7 +211,7 @@ class MembersForm extends FormBase {
     // Check if email already exists.
     $user = user_load_by_mail($email);
     if ($user == TRUE){
-      $this->messenger->addWarning(t($email .' was not added, because it already exists.'));
+      $this->messenger->addError(t($email .' was not added, because it already exists.'));
     }
     return !empty($user);
   }

@@ -1,5 +1,5 @@
-name: 'ol_members'
+name: 'OL Members'
 type: module
 description: 'OL Members Module'
 package: 'OL Core'
-core_version_requirement: ^9
+core_version_requirement: ^9 || ^10 || ^11

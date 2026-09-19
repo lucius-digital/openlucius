@@ -144,7 +144,7 @@ class CommentForm extends FormBase {
       '#progress_indicator' => 'bar',
       '#progress_message' => t('Please wait...'),
       '#upload_validators' => array(
-        'file_validate_extensions' => $this->files->getAllowedFileExtentions(),
+        'FileExtension' => $this->files->getAllowedFileExtentions(),
       ),
       '#weight' => '40',
     );
@@ -184,7 +184,8 @@ class CommentForm extends FormBase {
     $body = Xss::filter($form_state->getValue('body'), getAllowedHTMLTags() );
     $body = sanatizeSummernoteInput($body);
     $files = $form_state->getValue('files');
-    $privacy = $form_state->getValue('privacy')[1];
+    $privacy_input = $form_state->getValue('privacy');
+    $privacy = (!empty($privacy_input[1])) ? 1 : 0;
     // Existing, update comment.
     if(is_numeric($comment_id)){
       $this->comments->updateComment($comment_id, $body, $privacy);

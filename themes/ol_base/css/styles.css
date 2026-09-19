@@ -63,17 +63,48 @@ li.nav-item.dropdown.plus-dropdown {
 .js-filter-wrapper{
   display:none;
 }
-.btn-success,
-.badge-success{
-  background-color:#00b894;
-  border-color: #03b592;
+.btn-success {
+  background-color:#fff;
+  color: #a7a7a7;
+  border:1px solid #dee5e4;
+  font-size: 0.8rem;
+  padding: .5rem 1.5em;
+  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075) !important;
+}
+.btn-primary{
+  background-color:#fff;
+  border:1px solid #dee5e4;
+  color: #5d5d5d !important;
+  padding: .4rem 1.5em;
+  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075) !important;
+}
+.btn-add-story {
+  background-color:#fff;
+  border:1px solid #dee5e4;
+  font-size: 0.7rem;
+  margin-top:10px;
+  padding: .2rem .8em;
+  border-radius: .5rem;
+  box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075) !important;
 }
 .btn-success:hover,
 .btn-success.focus,
-.btn-success:focus{
-  background-color: #009e7c;
-  border-color: #03b592;
+.btn-success:focus,
+.btn-add-story:hover {
+  background-color: #fff;
+  color: #5d5d5d;
+  border-color:#ededed;
+  text-decoration: none !important;
 }
+.toggle-group .btn-success{
+  background-color:#00b894;
+  padding-bottom:4px;
+  padding-left:8px;
+  padding-right:24px;
+  padding-top:5.6px;
+  color:white;
+}
+
 .text-success{
   color:#00b894 !important;
 }
@@ -86,6 +117,9 @@ li.nav-item.dropdown.plus-dropdown {
 .card-body a,
 .card-body li{
   font-size: 0.9rem;
+}
+nav.bg-light-grey {
+  background-color: #a7a7a7;
 }
 .bg-light-grey {
   background-color: #f8f8f8;
@@ -137,7 +171,7 @@ main .shadow-sm {
   text-decoration:line-through;
 }
 .smaller{
-  font-size: 75%;
+  font-size: 75% !important;
 }
 .smallest{
   font-size: 60%;
@@ -160,4 +194,59 @@ main .shadow-sm {
 }
 main table{
   font-size: .9rem;
+}
+.border-top-dashed{
+  border-top:1px dashed #ececec;
+}
+.navbar-dark .navbar-nav .nav-link {
+  color: rgb(255 255 255 / 80%);
+  font-size: 0.9rem;
+}
+.navbar-dark .navbar-nav .nav-link .lni {
+  font-size: 1.1rem;
+}
+.navbar-dark .navbar-nav .nav-link:focus, .navbar-dark .navbar-nav .nav-link:hover {
+  color: rgb(255 255 255);
+}
+body {
+  font-family: "Nunito Sans", sans-serif;
+  font-size: 14px;
+  line-height: 1.2155;
+}
+main .nav-link {
+  color: #6a7189;
+  background-color:#fff;
+  padding: 0.8rem 1rem;
+}
+.form-control-sm {
+  height: calc(1.5em + 0.87rem + 2px);
+}
+#title-container {
+  background-color: #fcfcfc !important;
+}
+.bg-lighter-grey{
+  background-color: #fcfcfc !important;
+}
+.nav-scroller .nav {
+  margin-top: 3px;
+}
+.list-group-item{
+  margin-top:2px;
+  font-size: 0.8rem;
+}
+.py-2_5 {
+  padding-top: .8rem !important;
+  padding-bottom: .8rem !important;
+}
+.dropdown-item .lni{
+  padding-right: 5px;
+}
+nav .navbar-nav .dropdown-item {
+  padding: .5rem 1.5rem .25rem 0.75rem;
+}
+.badge-danger{
+  color:#fff !important;
+}
+.photo-credit a {
+  color: #b0b0b0;
 }

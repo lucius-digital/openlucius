@@ -1,0 +1,4 @@
+services:
+  olshoutouts.shoutouts:
+    class: Drupal\ol_shoutouts\Services\Shoutouts
+    arguments: ['@current_route_match','@olmembers.members','@olstream.stream','@olmain.mail', '@olmain.groups','@olmain.comments','@olmain.files']

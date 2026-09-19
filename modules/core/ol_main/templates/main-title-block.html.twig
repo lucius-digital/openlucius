@@ -7,15 +7,16 @@
     {% endif %}
       <h1 class="h4 pl-3 pt-3 main-heading">
         {% if vars.group_image_url %}
-        <img style="height: 40px;" class="img-thumbnail small" src="{{ vars.group_image_url }}" alt="group image" />
+        <img style="height: 40px;" class="img-thumbnail small rounded" src="{{ vars.group_image_url }}" alt="group image" />
         {% elseif vars.title_icon %}
-          <i class="lni lni-{{ vars.title_icon }} text-muted"></i>
+          <img alt="group image" class="img-fluid rounded img-thumbnail" src="https://api.dicebear.com/10.x/landscape/svg?seed={{ vars.group_id }}&size=32" />
+{#          <i class="lni lni-{{ vars.title_icon }} text-muted"></i>#}
         {% endif %}
         {# Make generic page titles translatable, not group titles #}
         {% if vars.group_id %}
           {{ vars.title }}
         {% elseif vars.title %}
-          {{ vars.title|t }}
+          {{ vars.title }}
         {% endif %}
         {% if vars.group_id and vars.is_group_admin is not empty %}
           <span class="dropdown">

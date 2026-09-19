@@ -93,6 +93,7 @@ function ol_base_form_user_register_form_process_pass(&$element, FormStateInterf
 function ol_base_preprocess_html(&$variables) {
   // Get data, if user is logged in.
   if(\Drupal::currentUser()->isAuthenticated()) {
+    // TODO, convert this to route or parameter.
     $path = \Drupal::request()->getpathInfo();
     $arg = explode('/', $path);
     // Add extra class to user page

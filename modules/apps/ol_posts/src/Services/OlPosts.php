@@ -100,8 +100,8 @@ class OlPosts{
       $posts_row_data['view'] = $view;
       $posts_row_data['user_picture'] = $this->members->getUserPictureUrl($post_data->user_id);
       $posts_row_data['link'] = '/group/'.$post_data->group_id.'/posts/'.$post_data->id;
-      if($posts_row_data['owner'] == TRUE) {
-        $posts_row_data['post_edit_form'] = \Drupal::formBuilder()->getForm(\Drupal\ol_posts\Form\PostForm::class, 'edit', $post_data->id);
+      if ($posts_row_data['owner']) {
+        $posts_row_data['post_edit_form'] = \Drupal::formBuilder()->getForm(\Drupal\ol_posts\Form\PostForm::class, 'edit', $post_data->id, null, $post_data->group_id);
       }
       $posts_row_data['comment_count'] = $this->comments->getCommentCount($post_data->id, 'post', $post_data->group_id);
       $posts_row_data['comment_items'] = $this->comments->getComments($post_data->id, 'post', 'asc', true, false);

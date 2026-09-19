@@ -301,6 +301,22 @@ class OlTextDocs{
     }
     $text_doc_row_data['comment_count'] = $this->comments->getCommentCount($text_doc->id, 'text_doc', $text_doc->group_id);
     $text_doc_row_data['files'] = $this->files->getAttachedFiles('text_doc_attachment', $text_doc->id);
+    // Weblinks.
+    // Set params.
+    $params['gid'] = $text_doc->group_id;
+    $params['entity_id'] = $text_doc->id;
+    $params['entity_type'] = 'text_doc';
+    // Get weblinks forms.
+    $weblinks = \Drupal::service('olweblinks.weblinks');
+    $weblink_form = \Drupal::formBuilder()->getForm(\Drupal\ol_weblinks\Form\AddWeblinkForm::class, 'text_doc', $text_doc->id );
+    $weblink_delete_form = \Drupal::formBuilder()->getForm(\Drupal\ol_weblinks\Form\WeblinkDeleteForm::class);
+    // Get weblinks html.
+    $weblinks_items = $weblinks->getWeblinks($params);
+    $weblinks_html = $weblinks->renderWeblinks($weblinks_items);
+    // Weblinks twig vars.
+    $text_doc_row_data['weblink_form'] = $weblink_form;
+    $text_doc_row_data['weblink_delete_form'] = $weblink_delete_form;
+    $text_doc_row_data['weblinks_html'] = $weblinks_html;
     // Render the data to html.
     $render = ['#theme' => 'text_doc_card', '#vars' => $text_doc_row_data];
     return \Drupal::service('renderer')->render($render);

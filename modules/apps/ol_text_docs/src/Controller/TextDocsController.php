@@ -15,6 +15,7 @@ use Drupal\ol_text_docs\Services\OlTextDocs;
 use Drupal\ol_main\Services\OlComments;
 use Drupal\ol_main\Services\OlSections;
 use Drupal\ol_members\Services\OlMembers;
+use Drupal\ol_weblinks\Services\OlWeblinks;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -73,9 +74,14 @@ class TextDocsController extends ControllerBase {
   protected $route;
 
   /**
+   * @var $weblinks
+   */
+  protected $weblinks;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(FormBuilder $form_builder, OlTextdocs $textdocs, OlCategories $categories, PagerManager $pager, PagerParameters $pager_params, OlComments $comments, OlMembers $members, OlSections $sections, OlGroups $groups, CurrentRouteMatch $route) {
+  public function __construct(FormBuilder $form_builder, OlTextdocs $textdocs, OlCategories $categories, PagerManager $pager, PagerParameters $pager_params, OlComments $comments, OlMembers $members, OlSections $sections, OlGroups $groups, CurrentRouteMatch $route, OlWeblinks $weblinks) {
     $this->form_builder = $form_builder;
     $this->textdocs = $textdocs;
     $this->categories = $categories;
@@ -86,6 +92,7 @@ class TextDocsController extends ControllerBase {
     $this->sections = $sections;
     $this->groups = $groups;
     $this->route = $route;
+    $this->weblinks = $weblinks;
   }
   /**
    * {@inheritdoc}
@@ -101,7 +108,8 @@ class TextDocsController extends ControllerBase {
       $container->get('olmembers.members'),
       $container->get('olmain.sections'),
       $container->get('olmain.groups'),
-      $container->get('current_route_match')
+      $container->get('current_route_match'),
+      $container->get('olweblinks.weblinks')
     );
   }
 
@@ -112,7 +120,9 @@ class TextDocsController extends ControllerBase {
    */
   public function getTextDocs($gid){
 
-    $current_category = Html::escape(\Drupal::request()->query->get('category'));
+    // TODO, convert to parameters instead of direct from query.
+    $category_id = \Drupal::request()->query->get('category');
+    $current_category = (is_numeric($category_id)) ? $category_id : null;
     $group_uuid = $this->groups->getGroupUuidById($gid);
 
     $total_textdocs_count = $this->getTotalTextDocCount($gid);
@@ -194,7 +204,9 @@ class TextDocsController extends ControllerBase {
   public function getTextDoc($id){
     // Get data.3
     $categories = $this->categories->getCategoriesData();
-    $current_category = Html::escape(\Drupal::request()->query->get('category'));
+    // TODO, check if spoofing is not possible.
+    $category_id = \Drupal::request()->query->get('category');
+    $current_category = (is_numeric($category_id))? $category_id : null;
     $data = $this->textdocs->getTextDocData($id);
     $title = $this->textdocs->getTextDocTitle($data);
     $text_doc = $this->textdocs->renderTextDoc($data);

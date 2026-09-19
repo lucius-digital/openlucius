@@ -11,6 +11,7 @@ use Drupal\Core\Url;
 use Drupal\ol_files\Services\OlFolders;
 use Drupal\ol_main\Services\OlComments;
 use Drupal\ol_main\Services\OlFiles;
+use Drupal\ol_main\Services\OlGroups;
 use Drupal\ol_main\Services\OlSections;
 use Drupal\ol_members\Services\OlMembers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -63,9 +64,14 @@ class FilesController extends ControllerBase {
   protected $sections;
 
   /**
+   * @var $groups
+   */
+  protected $groups;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(FormBuilder $form_builder, OlFiles $files, OlFolders $folders, PagerManager $pager, PagerParameters $pager_params, OlComments $comments, OlMembers $members, OlSections $sections) {
+  public function __construct(FormBuilder $form_builder, OlFiles $files, OlFolders $folders, PagerManager $pager, PagerParameters $pager_params, OlComments $comments, OlMembers $members, OlSections $sections, OlGroups $groups ) {
     $this->form_builder = $form_builder;
     $this->files = $files;
     $this->folders = $folders;
@@ -74,6 +80,7 @@ class FilesController extends ControllerBase {
     $this->comments = $comments;
     $this->members = $members;
     $this->sections = $sections;
+    $this->groups = $groups;
   }
   /**
    * {@inheritdoc}
@@ -87,7 +94,8 @@ class FilesController extends ControllerBase {
       $container->get('pager.parameters'),
       $container->get('olmain.comments'),
       $container->get('olmembers.members'),
-      $container->get('olmain.sections')
+      $container->get('olmain.sections'),
+      $container->get('olmain.groups')
     );
   }
 
@@ -99,7 +107,9 @@ class FilesController extends ControllerBase {
   public function getFiles($gid){
 
     // Get data.
-    $current_folder = Html::escape(\Drupal::request()->query->get('folder'));
+    // TODO, convert query get to parameter get.
+    $folder_id = \Drupal::request()->query->get('folder');
+    $current_folder = (is_numeric($folder_id)) ? $folder_id : NULL;
     $total_files_count = getTotalFileCount($gid);
     $folders = $this->folders->getFoldersData($gid);
     $path = \Drupal::request()->getpathInfo();
@@ -124,6 +134,12 @@ class FilesController extends ControllerBase {
     $pager = $this->pager->createPager($total_result, $num_per_page);
     $pager->getCurrentPage();
 
+    $group_id = $this->groups->getCurrentGroupId();
+
+    // Remove folder modal.
+    $vars['remove_folder_modal'] = \Drupal::formBuilder()->getForm(\Drupal\ol_files\Form\DeleteFolderForm::class);
+    $remove_folder_modal = ['#theme' => 'file_modal_remove_folder','#vars' => $vars];
+
     // Build theme vars.
     $theme_vars = [
       'file_form' => $file_form,
@@ -135,6 +151,7 @@ class FilesController extends ControllerBase {
       'remove_from_folder' => $remove_from_folder,
       'page_title' => $page_title,
       'total_files_count' => $total_files_count,
+      'remove_folder_modal' => $remove_folder_modal,
     ];
     // Build render array.
     $render[] = [
@@ -143,7 +160,10 @@ class FilesController extends ControllerBase {
       '#type' => 'remote',
       '#attached' => [
         'library' => ['ol_files/ol_files','ol_files/datatables'],
+        'drupalSettings' => [
+          'group_id' => $group_id,
         ],
+      ],
     ];
     // Add pager to the render array and return.
     $render[] = ['#type' => 'pager'];

@@ -1,7 +1,7 @@
-name: 'lus_stream'
+name: 'OL Stream'
 type: module
-description: 'Lus Stream'
-core_version_requirement: ^9
+description: 'OL Stream'
+core_version_requirement: ^11
 package: 'OL app'
 dependencies:
   - ol_main

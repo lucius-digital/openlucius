@@ -97,6 +97,7 @@ class MainController extends ControllerBase {
     // Groups block right.
     $groups_data = $this->groups->getGroups(1);
     $groups = $this->groups->addActivityBadge($groups_data);
+    $tabs = [];
 
     // Invoke hook to get data from modules that provide a tab.
     \Drupal::moduleHandler()->invokeAll('add_home_tab', [&$tabs]);

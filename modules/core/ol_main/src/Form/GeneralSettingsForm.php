@@ -50,11 +50,12 @@ class GeneralSettingsForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     // Get all homepage tabs.
+    $tabs = [];
     \Drupal::moduleHandler()->invokeAll('add_home_tab', [&$tabs]);
     // Get manual tabs order.
     $tabs_order = $this->groups->getHomeTabsPositions();
     // Order tabs when manually ordered before.
-    if(is_array($tabs_order)) {
+    if (is_array($tabs_order)) {
       $tabs = array_merge(array_flip($tabs_order), $tabs);
     }
 

@@ -129,7 +129,9 @@ class MainSectionsBlock extends BlockBase implements ContainerFactoryPluginInter
   private function makeSectionsThemeable($sections, $current_gid){
     // Get section override info and decode json to an array.
     $section_overrides_json = $this->sections->getSectionOverridesData($current_gid);
-    $section_overrides = json_decode($section_overrides_json, true);
+    if($section_overrides_json) {
+      $section_overrides = json_decode($section_overrides_json, true);
+    }
     // Build new, usable array.
     $options = array();
     foreach ($sections as $section){

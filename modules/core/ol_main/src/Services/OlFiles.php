@@ -105,28 +105,59 @@ class OlFiles{
 
   /**
    * @param null $fid
-   * @param null $show_in_stream
+   * @param bool $show_in_stream
+   *
+   * @param bool $force_delete
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function removeOlFileAndFile($fid = null, $show_in_stream = false){
+  public function removeOlFileAndFile($fid = null, $show_in_stream = false, $force_delete = false){
     // Get parameters from url
     $gid = $this->route->getParameter('gid');
     $fid = ($fid == null) ? $this->route->getParameter('fid') : $fid;
     // Delete if file owner is true.
-    if($this->isFileOwner($fid)) {
+    if($this->isFileOwner($fid) || $force_delete === true) {
       // Needed for stream item.
       $name = $this->getFilename($fid);
-      // Delete file from hdd.
-      $storage = \Drupal::entityTypeManager()->getStorage('file');
+
+      // But unpublish:
+      $entity = File::load($fid);
+      if ($entity) {
+        $entity->set("status", 0);
+        $entity->save();
+      }
+
+      // Delete reference from dbase (and search index).
+      $ol_file_id = $this->getOlFileReferenceIdByFileId($fid);
+      $ol_entity = OlFile::load($ol_file_id);
+      $ol_entity->set("status", 0);
+      $ol_entity->save();
+
+      //And build log
+      // Get current url
+      $current_uri = \Drupal::request()->getRequestUri();
+      \Drupal::logger('inline_file_removed')->warning('<pre><code>
+            uri: '.$current_uri .'
+            fid: '.$fid .'
+            ol_fid: '.$ol_file_id .'
+        </code></pre>');
+
+
+      // Delete file from hdd,
+      //  TODO: Let cron do this work here for files deleted xx days ago. So short term restore is easy.
+
+      /* $storage = \Drupal::entityTypeManager()->getStorage('file');
       $entities = $storage->loadMultiple([$fid]);
       $storage->delete($entities);
       // Delete reference from dbase (and search index).
       $file_ref_id = $this->getOlFileReferenceIdByFileId($fid);
       $file_ref_entity = OlFile::load($file_ref_id);
-      $file_ref_entity->delete();
+      $file_ref_entity->delete();*/
+
+
+
       // Add stream item.
       if($show_in_stream == true) {
         // We can't have this as dependency, else install profile will bitch during install.
@@ -160,7 +191,6 @@ class OlFiles{
       $query->addField('lfr', 'file_id');
     }
     $query->condition('lfr.group_id', $group_id);
-//    $query->condition('lfr.entity_type', ['file','text_doc'],'IN');
     $query->condition('lfr.status', 1);
     if($folder_id > 0){
       $query->condition('lfr.folder_id', $folder_id);
@@ -227,12 +257,8 @@ class OlFiles{
       $vars['file_in_folder'] = \Drupal::formBuilder()->getForm(\Drupal\ol_files\Form\PlaceFileInFolderForm::class);
       $modal2_render = ['#theme' => 'file_modal_put_in_folder','#vars' => $vars];
       $file_in_folder_html = \Drupal::service('renderer')->render($modal2_render);
-      // Remove folder modal.
-      $vars['remove_folder_modal'] = \Drupal::formBuilder()->getForm(\Drupal\ol_files\Form\DeleteFolderForm::class);
-      $modal3_render = ['#theme' => 'file_modal_remove_folder','#vars' => $vars];
-      $remove_folder_html = \Drupal::service('renderer')->render($modal3_render);
     }
-    return $files_html .$file_remove_modal_html .$file_in_folder_html .$remove_folder_html;
+    return $files_html .$file_remove_modal_html .$file_in_folder_html;
   }
 
 
@@ -257,7 +283,7 @@ class OlFiles{
     $file_row_data['entity_type'] = ($file->entity_type != 'file') ? str_replace("_", " ", $file->entity_type) : null ;
     $file_row_data['user_name'] = shortenString($this->members->getUserName($file->user_id),25);
     $file_row_data['owner'] = $file->user_id == $this->members->getUserId();
-    $file_row_data['url'] = Url::fromUri(file_create_url($file->uri));
+    $file_row_data['url'] = Url::fromUri(\Drupal::service('file_url_generator')->generateAbsoluteString(($file->uri)));
     $file_row_data['file_size'] = $this->formatBytes($file->filesize,1);
     $file_row_data['foldername'] = $file->foldername;
     $file_row_data['id_folder'] = $file->folder_id;
@@ -269,11 +295,15 @@ class OlFiles{
     $style_ol_filelist = ImageStyle::load('ol_filelist');
     if (strpos($allowed_extensions[0], $file_extension) !== false){
       $file_row_data['thumbnail_url'] = $style_ol_filelist->buildUrl($file->uri);
-    } else{
+    } else {
       // Get icon based on extension.
-      $file_row_data['extension_icon'] = $extension_icons[substr(strrchr($file->name, '.'), 1)];
-      // Fallback for empty result.
-      $file_row_data['extension_icon'] = (empty($file_row_data['extension_icon'])) ? 'bi bi-file-earmark' : $file_row_data['extension_icon'];
+      $extension = substr(strrchr($file->name, '.'), 1);
+      if (!empty($extension_icons[$extension])) {
+        $file_row_data['extension_icon'] = $extension_icons[$extension];
+      }
+      else {
+        $file_row_data['extension_icon'] = (empty($file_row_data['extension_icon'])) ? 'bi bi-file-earmark' : $file_row_data['extension_icon'];
+      }
     }
     return $file_row_data;
   }
@@ -366,7 +396,7 @@ class OlFiles{
       $file_row_data['filename'] = shortenString($file->filename, 50);
       $file_row_data['uri'] = $file->uri;
       $file_row_data['ol_fid'] = $file->ol_fid;
-      $file_row_data['url'] = Url::fromUri(file_create_url($file->uri));
+      $file_row_data['url'] = Url::fromUri(\Drupal::service('file_url_generator')->generateAbsoluteString($file->uri));
       $file_row_data['file_size'] = $this->formatBytes($file->filesize,1);
       // Check if current file is an allowed image, print a thumbnail if so.
       $file_extension = str_replace('image/','', $file->filemime);
@@ -431,9 +461,7 @@ class OlFiles{
     $query->condition('olf.group_id', $group_id);
     $query->condition('olf.entity_id', $entity_id);
     $query->condition('olf.entity_type', $entity_type);
-    //if($fids) {
-     // $query->condition('olf.file_id', [$fids], 'IN');
-    //}
+    $query->condition('olf.status', 1);
     $query->join('file_managed', 'file','file.fid = olf.file_id');
     $query->join('users_field_data', 'ufd','ufd.uid = olf.user_id');
     if($entity_type == 'comment') {
@@ -470,14 +498,14 @@ class OlFiles{
    * @return array
    */
   public function getAllowedFileExtentions(){
-    return array('jpg jpeg gif png txt doc docx zip xls xlsx pdf ppt pps odt ods odp wav mp3');
+    return array('jpg jpeg gif png txt doc docx zip xls xlsx pdf ppt pps odt ods odp wav mp3 md');
   }
 
   /**
    * @return array
    */
   public function getAllowedImageExtentions(){
-    return array('jpg jpeg gif png');
+    return array('extensions' => 'jpg jpeg gif png');
   }
 
   /**
@@ -552,8 +580,8 @@ class OlFiles{
     $fids_delete = array_diff($fids_old, $fids_new);
     // Delete $fids (files) that are not there anymore.
     foreach($fids_delete as $fid_delete) {
-      $this->removeOlFileAndFile($fid_delete);
-      \Drupal::logger('inline_file_removed')->warning('<pre><code>' . print_r($fid_delete, TRUE) . '</code></pre>');
+      // Remove file.
+      $this->removeOlFileAndFile($fid_delete, false, true);
     }
   }
 
@@ -563,6 +591,7 @@ class OlFiles{
    * @return array
    */
   private function getFidsFromContent($content){
+    // TODO, not working (for inline files), this generates warnings.
     if (empty($content)){
       return [];
     }
@@ -571,7 +600,7 @@ class OlFiles{
     $dom->preserveWhiteSpace = false;
     $imgs = $dom->getElementsByTagName("img");
     $fids = array();
-    for($i = 0; $i < $imgs->length; $i++) {
+    for ($i = 0; $i < $imgs->length; $i++) {
       $fids[] = $imgs->item($i)->getAttribute("data-fid");
     }
     return $fids;

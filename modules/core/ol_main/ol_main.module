@@ -158,7 +158,8 @@ function ol_main_mail($key, &$message, $params) {
       $message['cta_url'] = $params['cta_url'];
       $message['cta_text'] = $params['cta_text'];
       $message['lower_body'] = $params['lower_body'];
-      $message['bold_text'] = $params['bold_text'];
+      $bold_text = (!empty($params['bold_text'])) ? $params['bold_text'] : '';
+      $message['bold_text'] = html_entity_decode($bold_text, ENT_QUOTES | ENT_XML1, 'UTF-8');
       $message['sender_name'] = $params['sender_name'];
       $message['name_recipient'] = $params['name_recipient'];
       $message['base_url'] = $params['base_url'];
@@ -191,13 +192,14 @@ function ol_main_file_download($uri) {
   $query->join('file_managed', 'file_man', 'file_man.fid = file.file_id');
   $query->condition('group_user.member_uid', $user_id);
   $query->condition('file_man.uri', $uri);
+  $query->condition('file.status', 1);
   $access = $query->execute()->fetchField();
 
 
   // Check if this maybe is a USER PICTURE.
   // Provide access to user picture if current user is somewhere in a group with requested user picture.
   // This way we are also prepared for 'external' role.
-  if(empty($access)){
+  if (empty($access)) {
     // Get all groups user picture owner is in.
     $query = \Drupal::database()->select('file_managed', 'file');
     $query->addField('ogu', 'group_id');
@@ -205,6 +207,7 @@ function ol_main_file_download($uri) {
     // This join is needed, so we only query user pictures.
     $query->join('user__field_user_picture', 'fup', 'fup.field_user_picture_target_id = file.fid');
     $query->condition('file.uri', $uri);
+    $query->condition('file.status', 1);
     $group_ids = $query->execute()->fetchCol();
 
     // Get all groups current user is in.
@@ -214,29 +217,34 @@ function ol_main_file_download($uri) {
   }
 
   // OWN USER PICTURE during upload?
-  if(empty($access)){
-    // Get all groups user picture owner is in.
+  // This also applied to ALL FILES UPLOADED BY CURRENT USER.
+  if (empty($access)){
+    // Check if current user is owner of current file.
     $query = \Drupal::database()->select('file_managed', 'file');
     $query->addField('file', 'fid');
     $query->condition('file.uri', $uri);
     $query->condition('file.uid', $user_id);
     $fid = $query->execute()->fetchField();
     // Grant access if this is a picture user owns, even status 0.
+    // In this case status 0 means: file is uploaded just now, but not saved yet.
+    // For example in user profile.
     $access = !empty($fid);
   }
 
   // Check if this maybe is a STORY IMAGE.
   // Provide access to story image if current user is somewhere in a group with requested image.
   // This way we are also prepared for 'external' role.
-  if(empty($access)) {
+  if (empty($access)) {
+
     // Get all groups user of story image is in.
     $query = \Drupal::database()->select('file_managed', 'file');
     $query->addField('ogu', 'group_id');
     $query->join('ol_group_user', 'ogu', 'ogu.member_uid = file.uid');
-    // This join is needed, so we only query story images.
+    // This join is needed, so we can query only story images.
     $query->join('ol_file', 'ol_file', 'ol_file.file_id = file.fid');
     $query->condition('file.uri', $uri);
     $query->condition('ol_file.entity_type', 'story');
+    $query->condition('file.status', 1);
     $group_ids = $query->execute()->fetchCol();
 
     // Get all groups current user is in.
@@ -400,27 +408,41 @@ function time_elapsed_string($datetime, $full = false) {
   $ago = new DateTime($datetime);
   $diff = $now->diff($ago);
 
-  $diff->w = floor($diff->d / 7);
-  $diff->d -= $diff->w * 7;
+  // Calculate weeks based on days
+  $weeks = floor($diff->d / 7);
+  $days = $diff->d - ($weeks * 7);
 
-  $string = array(
-    'y' => t('year'),
-    'm' => t('month'),
-    'w' => t('week'),
-    'd' => t('day'),
-    'h' => t('hour'),
-    'i' => t('minute'),
-    's' => t('second'),
-  );
+  // Build a safe array instead of modifying the DateInterval object
+  $string = [
+    'y' => $diff->y,
+    'm' => $diff->m,
+    'w' => $weeks,
+    'd' => $days,
+    'h' => $diff->h,
+    'i' => $diff->i,
+    's' => $diff->s,
+  ];
+
+  $format = [
+    'y' => 'year',
+    'm' => 'month',
+    'w' => 'week',
+    'd' => 'day',
+    'h' => 'hour',
+    'i' => 'minute',
+    's' => 'second',
+  ];
+
   foreach ($string as $k => &$v) {
-    if ($diff->$k) {
-      $v = $diff->$k . ' ' . t($v . ($diff->$k > 1 ? 's' : ''));
+    if ($v) {
+      $string[$k] = $v . ' ' . $format[$k] . ($v > 1 ? 's' : '');
     } else {
       unset($string[$k]);
     }
   }
+
   if (!$full) $string = array_slice($string, 0, 1);
-  return $string ? implode(', ', $string) . t(' ago') : t('just now');
+  return $string ? implode(', ', $string) . ' ago' : 'just now';
 }
 
 /**
