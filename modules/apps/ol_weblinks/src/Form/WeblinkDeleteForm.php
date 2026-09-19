@@ -30,11 +30,6 @@ class WeblinkDeleteForm extends FormBase {
   protected $files;
 
   /**
-   * @var $tasks
-   */
-  protected $tasks;
-
-  /**
    * @var $weblinks
    */
   protected $weblinks;
@@ -42,10 +37,9 @@ class WeblinkDeleteForm extends FormBase {
   /**
    * @param \Drupal\ol_main\Services\OlComments $comments
    */
-  public function __construct(OlComments $comments, OlFiles $files, OlTasks $tasks, OlWeblinks $weblinks) {
+  public function __construct(OlComments $comments, OlFiles $files, OlWeblinks $weblinks) {
     $this->comments = $comments;
     $this->files = $files;
-    $this->tasks = $tasks;
     $this->weblinks = $weblinks;
   }
   /**
@@ -55,7 +49,6 @@ class WeblinkDeleteForm extends FormBase {
     return new static(
       $container->get('olmain.comments'),
       $container->get('olmain.files'),
-      $container->get('olboard.tasks'),
       $container->get('olweblinks.weblinks')
     );
   }
