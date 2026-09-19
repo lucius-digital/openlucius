@@ -5,11 +5,8 @@ description: 'A lean, fast social productivity Drupal distribution.'
 distribution:
   name: OpenLucius
 install:
-  - admin_toolbar
-  - admin_toolbar_tools
   - block
   - breakpoint
-  - ckeditor
   - dblog
   - dynamic_page_cache
   - editor
@@ -45,8 +42,6 @@ install:
   - ol_text_docs
   - ol_story
   - ol_stories
-  - ol_chat
-  - ol_chat_item
   - ol_stream_item
   - ol_category
   - ol_general_settings
