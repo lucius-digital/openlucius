@@ -11,8 +11,6 @@
 function openlucius_install_tasks() {
   $tasks = [];
 
-  $tasks['openlucius_create_private_directory'] = [];
-  $tasks['openlucius_set_default_file_scheme'] = [];
   $tasks['openlucius_set_front_page'] = [];
   $tasks['openlucius_add_first_group'] = [];
   $tasks['openlucius_set_default_theme'] = [];
