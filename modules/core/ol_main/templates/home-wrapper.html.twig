@@ -39,30 +39,25 @@
                  {% if group.header_image_link %}
                    <img style="height: 32px;" class="p-0 mr-2 border" src="{{ group.header_image_link }}" alt="group image" />
                 {% else %}
-                  <img alt="group image" class="p-0 mr-2 img-fluid img-thumbnail" src="https://api.dicebear.com/10.x/landscape/svg?seed={{ group.id }}&size=32" />
-                {% endif %}
+                   <img alt="group image" class="p-0 mr-2 img-fluid img-thumbnail" src="https://api.dicebear.com/10.x/landscape/svg?seed={{ group.id }}&size=32" />
+                 {% endif %}
 
-                  {{ group.name|length > 19 ? group.name|slice(0, 19) ~ '…' : group.name }}
-                  {% if group.non_chat_count %}
-                    <span class="badge badge-danger badge-pill"> {{ group.non_chat_count }}</span>
-                  {% endif %}
-                  {% if group.chat_count %}
-                    <span class="badge badge-primary badge-pill"><i class="lni lni-comments"></i> {{ group.chat_count }}</span>
-                  {% endif %}
+                {{ group.name|length > 19 ? group.name|slice(0, 19) ~ '…' : group.name }}
+                {% if group.non_chat_count %}
+                  <span class="badge badge-danger badge-pill"> {{ group.non_chat_count }}</span>
+                {% endif %}
+                {% if group.chat_count %}
+                  <span class="badge badge-primary badge-pill"><i class="lni lni-comments"></i> {{ group.chat_count }}</span>
+                {% endif %}
                 </span>
               <span class="badge badge-light text-muted badge-pill"><i class="lni lni-user"></i> {{ group.user_count }}</span>
             </a>
           {% endfor %}
         </div>
+      </div>
     </div>
-    <div class="ml-2 mt-3 text-left">
-      <img alt="group image"
-           class="img-fluid rounded img-thumbnail w-25"
-           src="https://api.dicebear.com/10.x/big-smile/svg?skinColor=C99A7A&seed={{ random() }}&backgroundColor=d4e1df,f9eabf,f6dcd7,f6dcd7,dfd1f2&backgroundColorFill=linear&mouthVariant=kawaii,openedSmile,teethSmile&eyesVariant=cheery,normal&accessoriesVariant=sailormoonCrown,sunglasses&flip=horizontal" />
-    </div>
-  </div>
 
-</div>
+  </div>
   <div class="mt-1 small mt-1 mr-2 text-right">
     <a href="https://www.openlucius.com" target="_blank">
       OpenLucius.com
@@ -77,3 +72,4 @@
       Credits avatars
     </a>
   </div>
+</div>

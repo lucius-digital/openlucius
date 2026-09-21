@@ -3,13 +3,23 @@
   <div class="posts-list-wrapper">
     <div class="card mb-2 py-2 px-3">
       <div class="row">
-        <div class="col-sm-8 pl-md-4 text-center text-md-left p-2 pb-md-0">
-          <span class="text-muted font-weight-light"><i class="lni lni-invention"></i> <i>
-            {%  set username = user.displayname|length > 30 ? user.displayname|slice(0, 30) ~ '...' : user.displayname  %}
+        <div class="col-sm-8 pl-3 text-center text-md-left pb-md-0">
+          <div class="d-flex align-items-center">
+            <img
+              alt="group image"
+              class="rounded mr-2"
+              style="width: 40px; height: 40px; object-fit: cover;"
+              src="https://api.dicebear.com/10.x/big-smile/svg?skinColor=C99A7A&seed={{ random() }}&backgroundColor=d4e1df,f9eabf,f6dcd7,f6dcd7,dfd1f2&backgroundColorFill=linear&mouthVariant=kawaii,openedSmile,teethSmile&eyesVariant=cheery,normal&accessoriesVariant=sailormoonCrown,sunglasses"
+            />
+            <span class="text-muted font-weight-light">
+            <i>
+              {% set username = user.displayname|length > 30 ? user.displayname|slice(0, 30) ~ '...' : user.displayname %}
               {% trans %}
                 Hi {{ username }}, what's happening?
               {% endtrans %}
-            </i></span>
+            </i>
+          </span>
+          </div>
         </div>
         <div class="col-sm-4 pb-1 pb-md-0 text-center text-md-right">
           <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#addPostModal">

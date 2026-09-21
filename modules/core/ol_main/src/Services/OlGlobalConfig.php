@@ -43,8 +43,8 @@ class OlGlobalConfig{
    */
   public function getDefaultColors(){
     $color_settings = new \StdClass();
-    $color_settings->nav = '#0811fb';
-    $color_settings->global_background = '#f1f3f6';
+    $color_settings->nav = '#00a573';
+    $color_settings->global_background = '#f4f2ee';
     return $color_settings;
   }
 
