@@ -1,0 +1,8 @@
+@media (min-width: 1200px) {
+  .list-group-item > span > .badge-danger {
+    position: absolute;
+    top: 5px;
+    right: 195px;
+    z-index: 10;
+  }
+}

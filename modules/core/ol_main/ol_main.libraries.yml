@@ -20,6 +20,9 @@ ol_home:
   version: 1.x
   js:
     js/ol_home.js: {}
+  css:
+    theme:
+      css/ol_home.css: {}
 ol_sortable:
   version: 1.x
   js:
