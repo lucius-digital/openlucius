@@ -7,23 +7,25 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\ol_stories\Services\OlStories;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class DeleteStoryForm.
+ * Form for deleting stories.
  */
 class DeleteStoryForm extends FormBase {
 
   /**
-   * @var $stories
+   * Stories service.
+   *
+   * @var \Drupal\ol_stories\Services\OlStories
    */
   protected $stories;
 
   /**
-   * Class constructor.
+   * DeleteStoryForm constructor.
    *
-   * @param \Drupal\ol_main\Services\OlFiles $files
+   * @param \Drupal\ol_stories\Services\OlStories $stories
+   *   Stories service.
    */
-  public function __construct( OlStories $stories) {
+  public function __construct(OlStories $stories) {
     $this->stories = $stories;
   }
 
@@ -35,6 +37,7 @@ class DeleteStoryForm extends FormBase {
       $container->get('olstories.stories')
     );
   }
+
   /**
    * {@inheritdoc}
    */
@@ -50,17 +53,17 @@ class DeleteStoryForm extends FormBase {
     $form['story_id'] = [
       '#type' => 'hidden',
       '#weight' => '0',
-      '#attributes' => array('id' => array('remove-story-id')),
+      '#attributes' => ['id' => ['remove-story-id']],
     ];
     $form['markup'] = [
       '#type' => 'markup',
-      '#markup' => '<button type="button" class="btn btn-default" data-dismiss="modal">' .t('Cancel').'</button>',
+      '#markup' => '<button type="button" class="btn btn-default" data-dismiss="modal">' . t('Cancel') . '</button>',
       '#allowed_tags' => ['button'],
     ];
     $form['submit'] = [
       '#type' => 'submit',
       '#weight' => '20',
-      '#attributes' => array('class' => array('btn btn-danger')),
+      '#attributes' => ['class' => ['btn btn-danger']],
       '#value' => t('Yes, Delete Permanently'),
     ];
     return $form;

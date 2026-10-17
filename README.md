@@ -10,7 +10,7 @@ If you'd like to try it, please visit [the product website](https://www.openluci
 Install it using Composer:
 
 ```
-composer create-project lucius-digital/openlucius-project:3.0.0-beta1 MY_PROJECT_FOLDER
+composer create-project lucius-digital/openlucius-project:3.0.0-beta2 MY_PROJECT_FOLDER
 ```
 
 ## Support requests, feature requests and bugs

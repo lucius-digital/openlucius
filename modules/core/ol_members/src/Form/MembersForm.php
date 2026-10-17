@@ -4,69 +4,95 @@ namespace Drupal\ol_members\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\ol_group_user\Entity\OlGroupUser;
-use Drupal\Component\Utility\Html;
-use Drupal\ol_main\Services\OlGroups;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\ol_members\Services\OlMembers;
-use Drupal\Core\Routing\CurrentRouteMatch;
-use Drupal\Core\Messenger\Messenger;
 use Drupal\Core\Language\LanguageManager;
+use Drupal\Core\Messenger\Messenger;
+use Drupal\Core\Routing\CurrentRouteMatch;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\ol_main\Services\OlGroups;
+use Drupal\ol_members\Services\OlMembers;
 use Drupal\ol_stream\Services\OlStream;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class MembersForm.
+ * Form for managing group members.
  */
 class MembersForm extends FormBase {
 
   /**
-   * @var AccountInterface $account
+   * Current user account.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
    */
   protected $account;
 
   /**
-   * @var $members
+   * Members service.
+   *
+   * @var \Drupal\ol_members\Services\OlMembers
    */
   protected $members;
 
   /**
-   * @var $current_route
+   * Current route match.
+   *
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
    */
-  protected $current_route;
+  protected $currentRoute;
 
   /**
-   * @var $messenger
+   * Messenger service.
+   *
+   * @var \Drupal\Core\Messenger\Messenger
    */
   protected $messenger;
 
   /**
-   * @var $language_manager
+   * Language manager service.
+   *
+   * @var \Drupal\Core\Language\LanguageManager
    */
-  protected $language_manager;
+  protected $languageManager;
 
   /**
-   * @var $stream
+   * Stream service.
+   *
+   * @var \Drupal\ol_stream\Services\OlStream
    */
   protected $stream;
 
   /**
-   * @var $groups
+   * Groups service.
+   *
+   * @var \Drupal\ol_main\Services\OlGroups
    */
   protected $groups;
 
   /**
-   * Class constructor.
-   * @param AccountInterface $account
+   * MembersForm constructor.
+   *
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   Current user account.
+   * @param \Drupal\ol_members\Services\OlMembers $members
+   *   Members service.
+   * @param \Drupal\Core\Routing\CurrentRouteMatch $currentRoute
+   *   Current route match.
+   * @param \Drupal\Core\Messenger\Messenger $messenger
+   *   Messenger service.
+   * @param \Drupal\Core\Language\LanguageManager $languageManager
+   *   Language manager service.
+   * @param \Drupal\ol_stream\Services\OlStream $stream
+   *   Stream service.
+   * @param \Drupal\ol_main\Services\OlGroups $groups
+   *   Groups service.
    */
-  public function __construct(AccountInterface $account, OlMembers $members, CurrentRouteMatch $current_route, Messenger $messenger, LanguageManager $language_manager, OlStream $stream, OlGroups $groups) {
+  public function __construct(AccountInterface $account, OlMembers $members, CurrentRouteMatch $currentRoute, Messenger $messenger, LanguageManager $languageManager, OlStream $stream, OlGroups $groups) {
     $this->account = $account;
     $this->members = $members;
-    $this->current_route = $current_route;
+    $this->currentRoute = $currentRoute;
     $this->messenger = $messenger;
-    $this->language_manager = $language_manager;
+    $this->languageManager = $languageManager;
     $this->stream = $stream;
-    $this->groups =  $groups;
+    $this->groups = $groups;
   }
 
   /**
@@ -97,12 +123,12 @@ class MembersForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     // Get current group id.
-    $group_id = $this->current_route->getParameter('gid');
+    $group_id = $this->currentRoute->getParameter('gid');
     // Handle new members permission.
-    $disabled = true;
+    $disabled = TRUE;
     $placeholder = t('(Disabled: only Managers can add new members)');
-    if($this->account->hasPermission('administer ol users')) {
-      $disabled = false;
+    if ($this->account->hasPermission('administer ol users')) {
+      $disabled = FALSE;
       $placeholder = t('Email address of new user...');
     }
 
@@ -119,8 +145,8 @@ class MembersForm extends FormBase {
       '#title' => t('Choose an existing user from within your organization:'),
       '#default_value' => '0',
       '#options' => $this->getUsersNotInCurrentGroup(),
-      '#attributes' => array('class' => array('form-control')),
-      '#suffix' => '</div>'
+      '#attributes' => ['class' => ['form-control']],
+      '#suffix' => '</div>',
     ];
     $form['new_member_email'] = [
       '#prefix' => '<div class="form-row"><div class="col-6">',
@@ -129,8 +155,8 @@ class MembersForm extends FormBase {
       '#weight' => '0',
       '#label' => 'test',
       '#disabled' => $disabled,
-      '#attributes' => array('placeholder' => $placeholder, 'class' => array('form-control')),
-      '#suffix' => '</div>'
+      '#attributes' => ['placeholder' => $placeholder, 'class' => ['form-control']],
+      '#suffix' => '</div>',
     ];
     $form['role'] = [
       '#prefix' => '<div class="col-6">',
@@ -140,20 +166,19 @@ class MembersForm extends FormBase {
       '#default_value' => '0',
       '#options' => $this->getRoleOptions(),
       '#disabled' => $disabled,
-      '#attributes' => array('class' => array('form-control')),
-      '#suffix' => '</div></div>'
+      '#attributes' => ['class' => ['form-control']],
+      '#suffix' => '</div></div>',
     ];
     $form['submit'] = [
       '#prefix' => '</div><div class="modal-footer">',
       '#type' => 'submit',
       '#weight' => '20',
-      '#attributes' => array('class' => array('btn btn-success')),
+      '#attributes' => ['class' => ['btn btn-success']],
       '#value' => $this->t('Add member'),
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
     return $form;
   }
-
 
   /**
    * {@inheritdoc}
@@ -167,94 +192,101 @@ class MembersForm extends FormBase {
     // Check if 'new' email already exists.
     $email_exists = $this->checkEmailExistence($email);
     // Get current language code.
-    $language = $this->language_manager->getCurrentLanguage()->getId();
+    $language = $this->languageManager->getCurrentLanguage()->getId();
 
     // Create new user, if it doesn't exist already.
-    if(!empty($email) && $role && $email_exists == FALSE && $this->account->hasPermission('administer ol users')) {
+    if (!empty($email) && $role && $email_exists == FALSE && $this->account->hasPermission('administer ol users')) {
       // Create new user.
       $account = $this->members->addNewUser($email, $language, $role);
       $account_id = $account->id();
       // Get group type.
       $group_type = $this->groups->getGroupType();
       // If group type is 'company', add new user to all company-wide groups.
-      if($group_type == 'company'){
+      if ($group_type == 'company') {
         $this->members->addUserToCompanyWideGroups($account_id);
-      // If type is not 'company', add only to this group.
-      } else {
+        // If type is not 'company', add only to this group.
+      }
+      else {
         $this->members->addUserToGroup($account_id, $group_id);
       }
       // Add new user to global group.
-      if($role == 'manager' or $role == 'standard_user') {
+      if ($role == 'manager' || $role == 'standard_user') {
         $this->groups->addUserToGlobalGroup($account_id);
       }
       // Send login email to new user.
       _user_mail_notify('register_no_approval_required', $account);
       // Create new stream item.
-      $this->stream->addStreamItem($group_id, 'user_added', $email,'user', $account_id);
+      $this->stream->addStreamItem($group_id, 'user_added', $email, 'user', $account_id);
       // Add message.
-      $this->messenger->addStatus(t('@mail added as a member. A login link was sent by e-mail.', array('@mail' => $email)));
+      $this->messenger->addStatus(
+        t('@mail added as a member. A login link was sent by e-mail.', ['@mail' => $email])
+      );
     }
     // Add existing user to group.
     elseif (!empty($uid)) {
       $this->members->addUserToGroup($uid, $group_id);
       $username = $this->members->getUserName($uid);
-      $this->stream->addStreamItem($group_id, 'user_added', $username,'user', $uid); // Create stream item.
-      $this->messenger->addStatus(t( 'Member successfully added to this group'));
+      // Create stream item.
+      $this->stream->addStreamItem($group_id, 'user_added', $username, 'user', $uid);
+      $this->messenger->addStatus(t('Member successfully added to this group'));
     }
   }
 
   /**
-   * @param $email
+   * Check if an email already exists.
+   *
+   * @param string $email
+   *   The email address to check.
+   *
    * @return bool
+   *   TRUE if email exists, FALSE otherwise.
    */
-  private function checkEmailExistence($email){
+  private function checkEmailExistence($email) {
     // Check if email already exists.
     $user = user_load_by_mail($email);
-    if ($user == TRUE){
-      $this->messenger->addError(t($email .' was not added, because it already exists.'));
+    if ($user == TRUE) {
+      $this->messenger->addError(t('@email was not added, because it already exists.', ['@email' => $email]));
     }
     return !empty($user);
   }
 
   /**
-   * Helper function, for populating user drop down .
+   * Helper function for populating user drop down.
    */
-  function getUsersNotInCurrentGroup() {
+  private function getUsersNotInCurrentGroup() {
     // Get all members in current group.
     $current_members = $this->members->getUsersInGroup();
-    $group_members = array();
-    foreach ($current_members as $member){
+    $group_members = [];
+    foreach ($current_members as $member) {
       array_push($group_members, $member->uid);
     }
     $query = \Drupal::database()->select('users_field_data', 'ufd');
     $query->addField('ufd', 'name');
     $query->addField('ufd', 'uid');
-    $query->condition('ufd.uid', $group_members ,'NOT IN');
+    $query->condition('ufd.uid', $group_members, 'NOT IN');
     $query->condition('ufd.status', 1);
     $query->addTag('ol_user_list');
     $users = $query->execute()->fetchAll();
 
     // Build and return the option list.
-    $user_list = array('0' => '- '.t('Select user') .' -');
-    foreach ($users as $user){
+    $user_list = ['0' => '- ' . t('Select user') . ' -'];
+    foreach ($users as $user) {
       $user_list[$user->uid] = $user->name;
     }
     return $user_list;
   }
 
   /**
-   * Helper function, for populating user drop down .
+   * Helper function for populating role drop down.
    */
-  function getRoleOptions() {
+  private function getRoleOptions() {
     // Get all roles and return options.
     $roles = $this->members->getRoles();
     $roles_options = [];
-    foreach ($roles as $key => $role){
+    foreach ($roles as $key => $role) {
       $roles_options[$key] = $role;
     }
     return $roles_options;
   }
-
-
 
 }

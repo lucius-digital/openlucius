@@ -7,23 +7,25 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\ol_text_docs\Services\OlTextDocs;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class DeleteTextdocForm.
+ * Form for deleting text documents.
  */
 class DeleteTextdocForm extends FormBase {
 
   /**
-   * @var $textdocs
+   * Textdocs service.
+   *
+   * @var \Drupal\ol_text_docs\Services\OlTextDocs
    */
   protected $textdocs;
 
   /**
-   * Class constructor.
+   * DeleteTextdocForm constructor.
    *
-   * @param \Drupal\ol_text_docs\Services\OlTextdocs $textdocs
+   * @param \Drupal\ol_text_docs\Services\OlTextDocs $textdocs
+   *   The textdocs service.
    */
-  public function __construct(OlTextdocs $textdocs) {
+  public function __construct(OlTextDocs $textdocs) {
     $this->textdocs = $textdocs;
   }
 
@@ -35,6 +37,7 @@ class DeleteTextdocForm extends FormBase {
       $container->get('oltextdocs.textdocs')
     );
   }
+
   /**
    * {@inheritdoc}
    */
@@ -50,17 +53,18 @@ class DeleteTextdocForm extends FormBase {
     $form['id'] = [
       '#type' => 'hidden',
       '#weight' => '0',
-      '#attributes' => array('id' => array('remove-textdoc-id')),
+      '#attributes' => ['id' => ['remove-textdoc-id']],
     ];
     $form['markup'] = [
       '#type' => 'markup',
-      '#markup' => '<button type="button" class="btn btn-default" data-dismiss="modal">' .t('Cancel').'</button>',
+      '#markup' => '<button type="button" class="btn btn-default" data-dismiss="modal">' . t('Cancel') . '</button>',
       '#allowed_tags' => ['button'],
     ];
+
     $form['submit'] = [
       '#type' => 'submit',
       '#weight' => '20',
-      '#attributes' => array('class' => array('btn btn-danger')),
+      '#attributes' => ['class' => ['btn btn-danger']],
       '#value' => t('Yes, Delete Permanently'),
     ];
     return $form;
@@ -72,7 +76,7 @@ class DeleteTextdocForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Get vars.
     $id = $form_state->getValue('id');
-    $this->textdocs->removeTextdoc($id, true);
+    $this->textdocs->removeTextdoc($id, TRUE);
   }
 
 }

@@ -12,7 +12,7 @@ use Drupal\ol_main\Services\OlGroups;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use \Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * The MainAjaxController .
@@ -20,17 +20,23 @@ use \Symfony\Component\HttpFoundation\Response;
 class MainAjaxController extends ControllerBase {
 
   /**
-   * @var $files
+   * The OL files service.
+   *
+   * @var \Drupal\ol_main\Services\OlFiles
    */
   protected $files;
 
   /**
-   * @var $config
+   * The global configuration service.
+   *
+   * @var \Drupal\ol_main\Services\OlGlobalConfig
    */
   protected $config;
 
   /**
-   * @var $groups
+   * The OL groups service.
+   *
+   * @var \Drupal\ol_main\Services\OlGroups
    */
   protected $groups;
 
@@ -42,53 +48,65 @@ class MainAjaxController extends ControllerBase {
     $this->files = $files;
     $this->groups = $groups;
   }
+
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('olmain.global_config'),
-      $container->get('olmain.files'),
-      $container->get('olmain.groups')
-    );
+          $container->get('olmain.global_config'),
+          $container->get('olmain.files'),
+          $container->get('olmain.groups')
+      );
   }
 
   /**
+   * Update the home tabs positions via AJAX.
+   *
    * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current request object.
    *
    * @return \Symfony\Component\HttpFoundation\Response
+   *   The response indicating success or failure.
    */
-  public function updateHomeTabsPositions(Request $request ) {
+  public function updateHomeTabsPositions(Request $request) {
     $ordered_items = $request->get('orderedItems');
     $success = $this->config->updateHomeTabsPositions($ordered_items);
-    $response = ($success) ? 1: 0;
+    $response = ($success) ? 1 : 0;
     return new Response($response);
   }
 
   /**
+   * Handle inline image upload via AJAX.
+   *
    * @param \Symfony\Component\HttpFoundation\Request $request
-   * @param $uuid
+   *   The current request object.
+   * @param string $uuid
+   *   The group UUID.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   The JSON response with upload result.
    */
   public function uploadInlineImage(Request $request, $uuid) {
 
-    /** @var \Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile */
+    /**
+* @var \Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile
+*/
     $uploadedFile = $request->files->get('file');
     if (!$uploadedFile->isValid()) {
       return $this->makeUploadErrorResponse('Invalid file upload.');
     }
-    //Get uploaded file metadata.
+    // Get uploaded file metadata.
     $uploadedFileName = $uploadedFile->getClientOriginalName();
-   // $uploadedFileExtension = $uploadedFile->getClientOriginalExtension();
-   // $uploadedFileSize = $uploadedFile->getClientSize();
+    // $uploadedFileExtension = $uploadedFile->getClientOriginalExtension();
+    // $uploadedFileSize = $uploadedFile->getClientSize();
     $uploadedFilePath = $uploadedFile->getPathname();
 
-    //OK. Attach the file.
-    //Prepare the directory.
+    // OK. Attach the file.
+    // Prepare the directory.
     $gid = $this->groups->getGroupIdByUuid($uuid);
     $hdd_file_location = $this->files->buildFileLocaton('inline_image', $gid);
-    $directory = 'private://'.$hdd_file_location;
+    $directory = 'private://' . $hdd_file_location;
     $result = \Drupal::service('file_system')->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
     if (!$result) {
       return $this->makeUploadErrorResponse('Error preparing directory.');
@@ -96,7 +114,7 @@ class MainAjaxController extends ControllerBase {
     // Read the file's contents.
     $fileData = file_get_contents($uploadedFilePath);
     // Save in right dir, creating a file entity instance.
-    $savedFile = \Drupal::service('file.repository')->writeData()($fileData,$directory . '/' . $uploadedFileName);
+    $savedFile = \Drupal::service('file.repository')->writeData()($fileData, $directory . '/' . $uploadedFileName);
     $this->createOlFile($savedFile, $gid);
     $uri = $savedFile->getFileUri();
     $fid = $savedFile->id();
@@ -105,32 +123,46 @@ class MainAjaxController extends ControllerBase {
     if (!$savedFile) {
       return $this->makeUploadErrorResponse('Error saving file.');
     }
-    return new JsonResponse([
-      'success' => TRUE,
-      'url' => $url,
-      'fid' => $fid,
-    ]);
+    return new JsonResponse(
+          [
+            'success' => TRUE,
+            'url' => $url,
+            'fid' => $fid,
+          ]
+      );
   }
 
-  private function createOlFile($savedFile, $gid){
+  /**
+   * Create an OL file entity from a saved Drupal file.
+   *
+   * @param \Drupal\file\Entity\File $savedFile
+   *   The saved file entity.
+   * @param int $gid
+   *   The group ID.
+   */
+  private function createOlFile($savedFile, $gid) {
     $fid = $savedFile->id();
     $name = $savedFile->getFilename();
-    // Create ol_file entity
-    $ol_file = OlFile::create([
-      'name' => $name,
-      'file_id' => $fid,
-      'group_id' => $gid,
-      'entity_type' => 'inline_image',
-    ]);
+    // Create ol_file entity.
+    $ol_file = OlFile::create(
+          [
+            'name' => $name,
+            'file_id' => $fid,
+            'group_id' => $gid,
+            'entity_type' => 'inline_image',
+          ]
+      );
     $ol_file->save();
   }
 
   /**
    * Make a response for file upload attempt with an error message.
    *
-   * @param string $message The error message.
+   * @param string $message
+   *   The error message.
    *
-   * @return \Symfony\Component\HttpFoundation\JsonResponse Response to return to client.
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   Response to return to client.
    */
   protected function makeUploadErrorResponse($message) {
     $result = [
@@ -139,6 +171,5 @@ class MainAjaxController extends ControllerBase {
     ];
     return new JsonResponse($result);
   }
-
 
 }

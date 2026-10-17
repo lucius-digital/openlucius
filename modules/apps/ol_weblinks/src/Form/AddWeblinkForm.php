@@ -9,36 +9,52 @@ use Drupal\Core\Ajax\RemoveCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
-use Drupal\ol_board\Services\OlTasks;
 use Drupal\ol_main\Services\OlFiles;
-use Drupal\ol_weblink\Entity\OlWeblink;
 use Drupal\ol_weblinks\Services\OlWeblinks;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class AddWeblinkForm.
+ * Form for adding weblinks to entities.
  */
 class AddWeblinkForm extends FormBase {
 
   /**
-   * @var $files
+   * Files service.
+   *
+   * @var \Drupal\ol_main\Services\OlFiles
    */
   protected $files;
 
   /**
-   * @var $weblinks
+   * Weblinks service.
+   *
+   * @var \Drupal\ol_weblinks\Services\OlWeblinks
+   */
+  protected $tasks;
+
+  /**
+   * Weblinks service.
+   *
+   * @var \Drupal\ol_weblinks\Services\OlWeblinks
    */
   protected $weblinks;
 
   /**
-   * @var $route
+   * Current route match service.
+   *
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
    */
   protected $route;
 
   /**
-   * Class constructor.
+   * AddWeblinkForm constructor.
+   *
    * @param \Drupal\ol_main\Services\OlFiles $files
+   *   The files service.
+   * @param \Drupal\ol_weblinks\Services\OlWeblinks $weblinks
+   *   The weblinks service.
+   * @param \Drupal\Core\Routing\CurrentRouteMatch $route
+   *   The current route match service.
    */
   public function __construct(OlFiles $files, OlWeblinks $weblinks, CurrentRouteMatch $route) {
     $this->files = $files;
@@ -67,7 +83,7 @@ class AddWeblinkForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $entity_type = null, $entity_id = null) {
+  public function buildForm(array $form, FormStateInterface $form_state, $entity_type = NULL, $entity_id = NULL) {
     // Build form.
     $form['markup_form_row_start'] = [
       '#type' => 'markup',
@@ -78,28 +94,28 @@ class AddWeblinkForm extends FormBase {
     $form['link_title'] = [
       '#prefix' => '<div class="col-4 pl-2">',
       '#type' => 'textfield',
-      '#required' => true,
+      '#required' => TRUE,
       '#attributes' => [
         'placeholder' => t('Link title...'),
         'maxlength' => '150',
         'class' => [
-          'form-control'
+          'form-control',
         ],
       ],
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
     $form['weblink'] = [
       '#prefix' => '<div class="col-4 pl-0">',
       '#type' => 'textfield',
-      '#required' => true,
+      '#required' => TRUE,
       '#attributes' => [
         'placeholder' => t('Link..'),
         'maxlength' => '150',
         'class' => [
-          'form-control'
+          'form-control',
         ],
       ],
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
     $form['entity_id_weblink'] = [
       '#type' => 'hidden',
@@ -121,7 +137,7 @@ class AddWeblinkForm extends FormBase {
       '#value' => t('Add'),
       '#attributes' => [
         'data-disable-refocus' => 'true',
-        'class' => array('btn btn-success btn-block'),
+        'class' => ['btn btn-success btn-block'],
         'onsubmit' => 'return false',
       ],
       '#ajax' => [
@@ -133,7 +149,7 @@ class AddWeblinkForm extends FormBase {
           'message' => t('Please wait...'),
         ],
       ],
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
     $form['hide-weblink-form'] = [
       '#prefix' => '<div class="col-2 pl-0">',
@@ -141,12 +157,12 @@ class AddWeblinkForm extends FormBase {
       '#value' => 'X',
       '#attributes' => [
         'data-disable-refocus' => 'true',
-        'class' => array('btn btn-light text-muted'),
+        'class' => ['btn btn-light text-muted'],
         'onsubmit' => 'return false',
       ],
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
-    // End class="form-row"
+    // End class="form-row".
     $form['markup_form_row_end'] = [
       '#type' => 'markup',
       '#markup' => '</div>',
@@ -162,6 +178,7 @@ class AddWeblinkForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Interface requirement, dummy method.
   }
+
   /**
    * {@inheritdoc}
    */
@@ -169,15 +186,14 @@ class AddWeblinkForm extends FormBase {
     // Init response.
     $response = new AjaxResponse();
     // Get form data and save files.
-
-/*  {# internal link: 1 veld: alleen link #}
+    /*  {# internal link: 1 veld: alleen link #}
     {# external link: 2 velden #}
     {# dynamisch maken in link form #}
 
     name = 'internal' voor interne links.
     interne links automatisch juiste title geven realtime on-render.
 
-*/
+     */
 
     $params['weblink'] = strip_tags($form_state->getValue('weblink'));
     $params['link_title'] = strip_tags($form_state->getValue('link_title'));
@@ -204,12 +220,9 @@ class AddWeblinkForm extends FormBase {
     $response->addCommand(new InvokeCommand('#add-weblink-form #edit-link-title', 'val', ['']));
     $response->addCommand(new InvokeCommand('#add-weblink-form #edit-weblink', 'val', ['']));
 
-
     // Clear messages and return response.
     \Drupal::messenger()->deleteAll();
     return $response;
   }
 
 }
-
-

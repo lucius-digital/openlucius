@@ -8,53 +8,74 @@ use Drupal\Core\Pager\PagerParameters;
 use Drupal\ol_main\Services\OlComments;
 use Drupal\ol_main\Services\OlSections;
 use Drupal\ol_members\Services\OlMembers;
+use Drupal\ol_posts\Form\PostCommentForm;
+use Drupal\ol_posts\Form\PostConfigForm;
+use Drupal\ol_posts\Form\PostForm;
 use Drupal\ol_posts\Services\OlPosts;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class postController.
+ * Controller for handling posts page requests.
  */
 class PostsController extends ControllerBase {
 
   /**
-   * @var $comments
+   * Posts service.
+   *
+   * @var \Drupal\ol_posts\Services\OlPosts
    */
   protected $posts;
 
   /**
-   * @var $pager
+   * Pager manager service.
+   *
+   * @var \Drupal\Core\Pager\PagerManager
    */
   protected $pager;
 
   /**
-   * @var $pager_params
+   * Pager parameters service.
+   *
+   * @var \Drupal\Core\Pager\PagerParameters
    */
   protected $pager_params;
 
   /**
-   * @var $comments
+   * Comments service.
+   *
+   * @var \Drupal\ol_main\Services\OlComments
    */
   protected $comments;
 
   /**
-   * @var $members
+   * Members service.
+   *
+   * @var \Drupal\ol_members\Services\OlMembers
    */
   protected $members;
 
   /**
-   * @var $sections
+   * Sections service.
+   *
+   * @var \Drupal\ol_main\Services\OlSections
    */
   protected $sections;
 
   /**
-   * Constructor
+   * PostsController constructor.
    *
    * @param \Drupal\ol_posts\Services\OlPosts $posts
+   *   Posts service.
    * @param \Drupal\Core\Pager\PagerManager $pager
+   *   Pager manager service.
    * @param \Drupal\Core\Pager\PagerParameters $pager_params
+   *   Pager parameters service.
    * @param \Drupal\ol_main\Services\OlComments $comments
+   *   Comments service.
    * @param \Drupal\ol_members\Services\OlMembers $members
+   *   Members service.
    * @param \Drupal\ol_main\Services\OlSections $sections
+   *   Sections service.
    */
   public function __construct(OlPosts $posts, PagerManager $pager, PagerParameters $pager_params, OlComments $comments, OlMembers $members, OlSections $sections) {
     $this->posts = $posts;
@@ -80,12 +101,17 @@ class PostsController extends ControllerBase {
   }
 
   /**
-   * @param $gid
+   * Render the posts list page.
+   *
+   * @param int $gid
+   *   The group ID.
    *
    * @return array
+   *   A render array for the posts list page.
+   *
    * @throws \Exception
    */
-  public function getPostList($gid){
+  public function getPostList($gid) {
 
     // Pager init.
     $page = $this->pager_params->findPage();
@@ -95,15 +121,15 @@ class PostsController extends ControllerBase {
     // Get posts data.
     $is_group_admin = $this->members->isGroupAdmin();
     $post_settings = $this->posts->getPostSettings();
-    $post_form = \Drupal::formBuilder()->getForm(\Drupal\ol_posts\Form\PostForm::class, null, null, $post_settings);
-    $post_config_form = \Drupal::formBuilder()->getForm(\Drupal\ol_posts\Form\PostConfigForm::class, $post_settings);
+    $post_form = \Drupal::formBuilder()->getForm(PostForm::class, NULL, NULL, $post_settings);
+    $post_config_form = \Drupal::formBuilder()->getForm(PostConfigForm::class, $post_settings);
 
-    $post_list_data = $this->posts->getPostsList(null, $num_per_page, $offset, null);
+    $post_list_data = $this->posts->getPostsList(NULL, $num_per_page, $offset, NULL);
     $posts = $this->posts->renderPostsList($post_list_data);
     $page_title = $this->sections->getSectionOverrideTitle('posts', 'Posts');
 
     // Pager, now that we have the total number of results.
-    $total_result = $this->posts->getPostsList(null, null, null, true);
+    $total_result = $this->posts->getPostsList(NULL, NULL, NULL, TRUE);
     $pager = $this->pager->createPager($total_result, $num_per_page);
     $pager->getCurrentPage();
     // Used for mentions.
@@ -133,11 +159,11 @@ class PostsController extends ControllerBase {
           'ol_posts/ol_posts',
         ],
         'drupalSettings' => [
-          'users_in_group' => $group_users
+          'users_in_group' => $group_users,
         ],
       ],
-
     ];
     return $render;
   }
+
 }

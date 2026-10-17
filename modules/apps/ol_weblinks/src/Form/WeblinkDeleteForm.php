@@ -2,46 +2,58 @@
 
 namespace Drupal\ol_weblinks\Form;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Component\Utility\Html;
-use Drupal\ol_board\Services\OlTasks;
 use Drupal\ol_main\Services\OlComments;
 use Drupal\ol_main\Services\OlFiles;
 use Drupal\ol_weblinks\Services\OlWeblinks;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class WeblinkDeleteForm.
+ * Form for deleting weblinks.
  */
 class WeblinkDeleteForm extends FormBase {
 
   /**
-   * @var $comments
+   * Comments service.
+   *
+   * @var \Drupal\ol_main\Services\OlComments
    */
   protected $comments;
 
   /**
-   * @var $files
+   * Files service.
+   *
+   * @var \Drupal\ol_main\Services\OlFiles
    */
   protected $files;
 
   /**
-   * @var $weblinks
+   * Weblinks service.
+   *
+   * @var \Drupal\ol_weblinks\Services\OlWeblinks
    */
   protected $weblinks;
 
   /**
+   * WeblinkDeleteForm constructor.
+   *
    * @param \Drupal\ol_main\Services\OlComments $comments
+   *   The comments service.
+   * @param \Drupal\ol_main\Services\OlFiles $files
+   *   The files service.
+   * @param \Drupal\ol_weblinks\Services\OlWeblinks $weblinks
+   *   The weblinks service.
    */
   public function __construct(OlComments $comments, OlFiles $files, OlWeblinks $weblinks) {
     $this->comments = $comments;
     $this->files = $files;
     $this->weblinks = $weblinks;
   }
+
   /**
    * {@inheritdoc}
    */
@@ -52,6 +64,7 @@ class WeblinkDeleteForm extends FormBase {
       $container->get('olweblinks.weblinks')
     );
   }
+
   /**
    * {@inheritdoc}
    */
@@ -76,7 +89,7 @@ class WeblinkDeleteForm extends FormBase {
       '#type' => 'button',
       '#value' => 'button',
       '#attributes' => [
-        'class' => array('hidden'),
+        'class' => ['hidden'],
       ],
       '#ajax' => [
         'callback' => '::deleteWeblink',
@@ -94,7 +107,14 @@ class WeblinkDeleteForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {}
 
-
+  /**
+   * Delete a weblink via AJAX.
+   *
+   * @param array $form
+   *   The form array.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The form state object.
+   */
   public function deleteWeblink(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
     // Get data.
@@ -105,7 +125,7 @@ class WeblinkDeleteForm extends FormBase {
       // Init delete weblink.
       $success = $this->weblinks->deleteWeblink($ol_weblink_id);
       // Remove weblink element if success.
-      if($success) {
+      if ($success) {
         $response->addCommand(new InvokeCommand('#weblink-li-id_' . $ol_weblink_id, 'hide', ['fade']));
       }
       // Clear messages and return response.
@@ -113,4 +133,5 @@ class WeblinkDeleteForm extends FormBase {
       return $response;
     }
   }
+
 }

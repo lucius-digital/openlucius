@@ -2,30 +2,30 @@
 
 namespace Drupal\ol_main\Form;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Component\Utility\Html;
 use Drupal\Core\Site\Settings;
-use Drupal\ol_board\Services\OlTasks;
 use Drupal\ol_main\Services\OlGroups;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class AddGroupForm.
+ * Provides a form for adding a new group.
  */
 class AddGroupForm extends FormBase {
 
-
   /**
-   * @var $groups
+   * The OL groups service.
+   *
+   * @var \Drupal\ol_main\Services\OlGroups
    */
   protected $groups;
 
   /**
-   * Class constructor.
+   * Constructs an AddGroupForm instance.
    *
    * @param \Drupal\ol_main\Services\OlGroups $groups
+   *   The OL groups service.
    */
   public function __construct(OlGroups $groups) {
     $this->groups = $groups;
@@ -36,8 +36,8 @@ class AddGroupForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('olmain.groups')
-    );
+          $container->get('olmain.groups')
+      );
   }
 
   /**
@@ -54,14 +54,14 @@ class AddGroupForm extends FormBase {
 
     // Security hardening.
     $access = \Drupal::currentUser()->hasPermission('add ol group entities');
-    if(!$access){
+    if (!$access) {
       $form['markup'] = [
         '#type' => 'markup',
         '#markup' => '<div class="my-3 p-3 bg-white rounded shadow-sm text-muted text-center small">
                           <i class="lni lni-invention"></i> <i>'
-                        .t('Sorry, only Managers are allowed to add groups.')
-                    .'</div>',
-        '#allowed_tags' => ['div','i'],
+        . t('Sorry, only Managers are allowed to add groups.')
+        . '</div>',
+        '#allowed_tags' => ['div', 'i'],
       ];
       return $form;
     };
@@ -70,7 +70,7 @@ class AddGroupForm extends FormBase {
     $form['type'] = [
       '#type' => 'hidden',
       '#weight' => '0',
-      '#attributes' => array('id' => array('group-type-id')),
+      '#attributes' => ['id' => ['group-type-id']],
     ];
     $form['name'] = [
       '#prefix' => '<div class="col-md-4 col-xl-5 offset-xl-4 offset-md-4 py-3 bd-content mb-5 bg-white rounded shadow-sm">
@@ -78,17 +78,17 @@ class AddGroupForm extends FormBase {
                       <div class="form-group">',
       '#type' => 'textfield',
       '#weight' => '0',
-      '#required' => true,
-      '#attributes' => array('placeholder' => t('Name...'), 'class' => array('form-control')),
-      '#suffix' => '</div>'
+      '#required' => TRUE,
+      '#attributes' => ['placeholder' => t('Name...'), 'class' => ['form-control']],
+      '#suffix' => '</div>',
     ];
     $form['submit'] = [
       '#prefix' => '<div class="modal-footer">',
       '#type' => 'submit',
       '#weight' => '20',
-      '#attributes' => array('class' => array('btn btn-success')),
+      '#attributes' => ['class' => ['btn btn-success']],
       '#value' => t('Add New Group'),
-      '#suffix' => '</div></div>'
+      '#suffix' => '</div></div>',
     ];
     $form['#attached']['library'][] = 'ol_main/ol_add_group';
     return $form;
@@ -119,16 +119,16 @@ class AddGroupForm extends FormBase {
     $type = Html::escape($form_state->getValue('type'));
     // Use global settings, if any.
     $enabled_sections_settings = Settings::get('enabled_sections');
-    if(!empty($enabled_sections_settings)){
+    if (!empty($enabled_sections_settings)) {
       $enabled_sections = implode(',', $enabled_sections_settings);
     }
-    // Fallback settings
+    // Fallback settings.
     else {
       $enabled_sections = 'stream,board,chat,messages,posts,notebooks,files,members';
     }
 
     // Save group.
-    $this->groups->addGroup($name, $type, null, true, $enabled_sections);
+    $this->groups->addGroup($name, $type, NULL, TRUE, $enabled_sections);
 
     if ($type == 'company') {
       \Drupal::messenger()

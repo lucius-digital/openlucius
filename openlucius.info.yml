@@ -4,7 +4,7 @@ type: profile
 description: 'A lean, fast social productivity Drupal distribution.'
 distribution:
   name: OpenLucius
-version: '3.0.0-beta1'
+version: '3.0.0-beta2'
 install:
   - block
   - breakpoint
@@ -50,4 +50,5 @@ install:
   - ol_weblinks
 themes:
   - ol_base
+  - default_admin
   - claro

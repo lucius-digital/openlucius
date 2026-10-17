@@ -5,36 +5,46 @@ namespace Drupal\ol_main\Services;
 use Drupal\Core\Site\Settings;
 
 /**
- * Class OlSections.
+ * Service for managing section operations.
  */
-class OlSections{
+class OlSections {
 
   /**
+   * Get all sections data from modules.
+   *
    * @return array
+   *   Array of section data.
    */
   public function getSectionsData() {
-    $sections = array();
+    $sections = [];
     \Drupal::moduleHandler()->invokeAll('add_ol_section', [&$sections]);
     usort($sections, 'sortByWeight');
     return $sections;
   }
 
   /**
+   * Get global menu items from modules.
+   *
    * @return array
+   *   Array of global menu items.
    */
   public function getGlobalMenuData() {
-    $sections = array();
+    $sections = [];
     \Drupal::moduleHandler()->invokeAll('add_global_menu_item', [&$sections]);
     usort($sections, 'sortByWeight');
     return $sections;
   }
 
   /**
-   * @param $gid
+   * Get enabled sections for a group.
    *
-   * @return false|array
+   * @param int $gid
+   *   The group ID.
+   *
+   * @return array|false
+   *   Array of enabled section keys.
    */
-  public function getEnabledSections($gid){
+  public function getEnabledSections($gid) {
     $query = \Drupal::database()->select('ol_group', 'gr');
     $query->addField('gr', 'enabled_sections');
     $query->condition('gr.id', $gid);
@@ -46,11 +56,15 @@ class OlSections{
   }
 
   /**
-   * @param $gid
+   * Get section overrides data for a group.
    *
-   * @return mixed
+   * @param int $gid
+   *   The group ID.
+   *
+   * @return string
+   *   JSON encoded section overrides.
    */
-  public function getSectionOverridesData($gid){
+  public function getSectionOverridesData($gid) {
     $query = \Drupal::database()->select('ol_group', 'gr');
     $query->addField('gr', 'section_overrides');
     $query->condition('gr.id', $gid);
@@ -58,40 +72,52 @@ class OlSections{
   }
 
   /**
-   * @param $section_key
-   * @param $default_title
+   * Get the override title for a section, or the default.
    *
-   * @return mixed
+   * @param string $section_key
+   *   The section key.
+   * @param string $default_title
+   *   The default title if no override exists.
+   *
+   * @return string
+   *   The section title.
    */
-  public function getSectionOverrideTitle($section_key, $default_title){
+  public function getSectionOverrideTitle($section_key, $default_title) {
     $gid = \Drupal::service('current_route_match')->getParameter('gid');
     $section_overrides_json = $this->getSectionOverridesData($gid);
     if ($section_overrides_json) {
       $section_overrides = json_decode($section_overrides_json, TRUE);
     }
-    if (!empty($section_overrides[$section_key])){
+    if (!empty($section_overrides[$section_key])) {
       return $section_overrides[$section_key];
-    } else {
+    }
+    else {
       return $default_title;
     }
   }
 
   /**
-   * @param $sections
+   * Build an options array from sections data.
+   *
+   * @param array $sections
+   *   Array of section data.
+   *
    * @return array
+   *   Associative array of section keys to labels.
    */
-  public function buildOptionsFromSections($sections){
+  public function buildOptionsFromSections($sections) {
     // Get global domain settings, if any.
     $enabled_sections = Settings::get('enabled_sections');
     // Build sections.
-    $options = array();
+    $options = [];
     // Loop through all by-module-available sections.
-    foreach ($sections as $section){
+    foreach ($sections as $section) {
       // Set label and key.
-      $label = (string) $section['label']; // Casting to string is needed here.
+      // Casting to string is needed here.
+      $label = (string) $section['label'];
       $key = (string) $section['path'];
       // Only allow section, if domain settings are set -and allow it.
-      if(!empty($enabled_sections)) {
+      if (!empty($enabled_sections)) {
         if (in_array($key, $enabled_sections)) {
           $options[$key] = $label;
         }

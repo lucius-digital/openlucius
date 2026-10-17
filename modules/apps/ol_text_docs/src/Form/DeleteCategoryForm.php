@@ -7,21 +7,23 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\ol_text_docs\Services\OlCategories;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class DeleteCategoryForm.
+ * Form for deleting text document categories.
  */
 class DeleteCategoryForm extends FormBase {
 
   /**
-   * @var $categories
+   * Categories service.
+   *
+   * @var \Drupal\ol_text_docs\Services\OlCategories
    */
   protected $categories;
 
   /**
-   * Class constructor.
+   * DeleteCategoryForm constructor.
    *
-   * @param \Drupal\ol_files\Services\OlCategories $categories
+   * @param \Drupal\ol_text_docs\Services\OlCategories $categories
+   *   The categories service.
    */
   public function __construct(OlCategories $categories) {
     $this->categories = $categories;
@@ -35,6 +37,7 @@ class DeleteCategoryForm extends FormBase {
       $container->get('oltextdocs.categories')
     );
   }
+
   /**
    * {@inheritdoc}
    */
@@ -50,17 +53,17 @@ class DeleteCategoryForm extends FormBase {
     $form['category_id'] = [
       '#type' => 'hidden',
       '#weight' => '0',
-      '#attributes' => array('id' => array('remove-category-id')),
+      '#attributes' => ['id' => ['remove-category-id']],
     ];
     $form['markup'] = [
       '#type' => 'markup',
-      '#markup' => '<button type="button" class="btn btn-default" data-dismiss="modal">' .t('Cancel').'</button>',
+      '#markup' => '<button type="button" class="btn btn-default" data-dismiss="modal">' . t('Cancel') . '</button>',
       '#allowed_tags' => ['button'],
     ];
     $form['submit'] = [
       '#type' => 'submit',
       '#weight' => '20',
-      '#attributes' => array('class' => array('btn btn-danger')),
+      '#attributes' => ['class' => ['btn btn-danger']],
       '#value' => t('Yes, Delete Permanently'),
     ];
     return $form;

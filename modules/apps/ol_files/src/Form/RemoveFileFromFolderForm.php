@@ -8,22 +8,23 @@ use Drupal\Component\Utility\Html;
 use Drupal\ol_files\Services\OlFolders;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class RemoveFileFromFolderForm.
+ * Form for removing a file from a folder.
  */
 class RemoveFileFromFolderForm extends FormBase {
 
-
   /**
-   * @var $folders
+   * Folders service.
+   *
+   * @var \Drupal\ol_files\Services\OlFolders
    */
   protected $folders;
 
   /**
-   * Class constructor.
+   * RemoveFileFromFolderForm constructor.
    *
    * @param \Drupal\ol_files\Services\OlFolders $folders
+   *   Folders service.
    */
   public function __construct(OlFolders $folders) {
     $this->folders = $folders;
@@ -52,15 +53,15 @@ class RemoveFileFromFolderForm extends FormBase {
 
     $form['id'] = [
       '#type' => 'hidden',
-      '#attributes' => array('id' => array('edit-file-id')),
+      '#attributes' => ['id' => ['edit-file-id']],
     ];
     $form['submit'] = [
       '#prefix' => '<div class="modal-footer">',
       '#type' => 'submit',
       '#weight' => '30',
-      '#attributes' => array('class' => array('btn btn-warning')),
+      '#attributes' => ['class' => ['btn btn-warning']],
       '#value' => $this->t('Yes, remove file from folder'),
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
     return $form;
   }

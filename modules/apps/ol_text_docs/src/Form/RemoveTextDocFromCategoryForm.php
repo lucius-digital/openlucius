@@ -2,28 +2,29 @@
 
 namespace Drupal\ol_text_docs\Form;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Component\Utility\Html;
 use Drupal\ol_text_docs\Services\OlCategories;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class RemoveTextDocFromCategoryForm.
+ * Form for removing text documents from categories.
  */
 class RemoveTextDocFromCategoryForm extends FormBase {
 
-
   /**
-   * @var $categories
+   * Categories service.
+   *
+   * @var \Drupal\ol_text_docs\Services\OlCategories
    */
   protected $categories;
 
   /**
-   * Class constructor.
+   * RemoveTextDocFromCategoryForm constructor.
    *
    * @param \Drupal\ol_text_docs\Services\OlCategories $categories
+   *   The categories service.
    */
   public function __construct(OlCategories $categories) {
     $this->categories = $categories;
@@ -52,15 +53,15 @@ class RemoveTextDocFromCategoryForm extends FormBase {
 
     $form['id'] = [
       '#type' => 'hidden',
-      '#attributes' => array('id' => array('edit-textdoc-id')),
+      '#attributes' => ['id' => ['edit-textdoc-id']],
     ];
     $form['submit'] = [
       '#prefix' => '<div class="modal-footer">',
       '#type' => 'submit',
       '#weight' => '30',
-      '#attributes' => array('class' => array('btn btn-warning')),
+      '#attributes' => ['class' => ['btn btn-warning']],
       '#value' => $this->t('Yes, remove file from category'),
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
     return $form;
   }
@@ -71,6 +72,7 @@ class RemoveTextDocFromCategoryForm extends FormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
 
   }
+
   /**
    * {@inheritdoc}
    */
@@ -81,5 +83,3 @@ class RemoveTextDocFromCategoryForm extends FormBase {
   }
 
 }
-
-

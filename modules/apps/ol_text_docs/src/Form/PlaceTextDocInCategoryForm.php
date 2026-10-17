@@ -2,27 +2,29 @@
 
 namespace Drupal\ol_text_docs\Form;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Component\Utility\Html;
 use Drupal\ol_text_docs\Services\OlCategories;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class PlaceTextDocInCategoryForm.
+ * Form for placing text documents into categories.
  */
 class PlaceTextDocInCategoryForm extends FormBase {
 
-
   /**
-   * @var $categories
+   * Categories service.
+   *
+   * @var \Drupal\ol_text_docs\Services\OlCategories
    */
   protected $categories;
 
   /**
-   * Class constructor.
-   * @param \Drupal\ol_main\Services\OlFiles $files
+   * PlaceTextDocInCategoryForm constructor.
+   *
+   * @param \Drupal\ol_text_docs\Services\OlCategories $categories
+   *   The categories service.
    */
   public function __construct(OlCategories $categories) {
     $this->categories = $categories;
@@ -51,7 +53,7 @@ class PlaceTextDocInCategoryForm extends FormBase {
 
     $form['id'] = [
       '#type' => 'hidden',
-      '#attributes' => array('id' => array('edit-textdoc-id')),
+      '#attributes' => ['id' => ['edit-textdoc-id']],
     ];
     $form['category_id'] = [
       '#prefix' => '<div class="modal-body"><div class="form-group">',
@@ -60,16 +62,16 @@ class PlaceTextDocInCategoryForm extends FormBase {
       '#title' => t('Choose a category'),
       '#default_value' => '0',
       '#options' => $this->categories->getCategoriesInCurrentGroup(),
-      '#attributes' => array('class' => array('form-control')),
-      '#suffix' => '</div>'
+      '#attributes' => ['class' => ['form-control']],
+      '#suffix' => '</div>',
     ];
     $form['submit'] = [
       '#prefix' => '</div><div class="modal-footer">',
       '#type' => 'submit',
       '#weight' => '30',
-      '#attributes' => array('class' => array('btn btn-success')),
+      '#attributes' => ['class' => ['btn btn-success']],
       '#value' => $this->t('Submit'),
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
 
     return $form;
@@ -81,6 +83,7 @@ class PlaceTextDocInCategoryForm extends FormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
 
   }
+
   /**
    * {@inheritdoc}
    */
@@ -90,10 +93,6 @@ class PlaceTextDocInCategoryForm extends FormBase {
     $category_id = Html::escape($form_state->getValue('category_id'));
     // Place in category.
     $this->categories->placeTextDocInCategory($category_id, $id);
-
   }
 
-
 }
-
-

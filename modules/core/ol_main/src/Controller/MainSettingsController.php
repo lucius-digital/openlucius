@@ -3,16 +3,21 @@
 namespace Drupal\ol_main\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ol_main\Form\ColorSettingsForm;
+use Drupal\ol_main\Form\GeneralSettingsForm;
+use Drupal\ol_main\Form\HomeImageSettingsForm;
 use Drupal\ol_main\Services\OlGlobalConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class MainSettingsController.
+ * Controller for main settings pages.
  */
 class MainSettingsController extends ControllerBase {
 
   /**
-   * @var $config
+   * The global configuration service.
+   *
+   * @var \Drupal\ol_main\Services\OlGlobalConfig
    */
   protected $config;
 
@@ -28,16 +33,19 @@ class MainSettingsController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('olmain.global_config')
-    );
+          $container->get('olmain.global_config')
+      );
   }
 
   /**
+   * Return the home tabs settings page.
+   *
    * @return array
+   *   A renderable array for the settings page.
    */
-  public function getHomeTabsSettings(){
+  public function getHomeTabsSettings() {
     // Get general config form.
-    $config_form = \Drupal::formBuilder()->getForm(\Drupal\ol_main\Form\GeneralSettingsForm::class);
+    $config_form = \Drupal::formBuilder()->getForm(GeneralSettingsForm::class);
     $config_tabs = $this->config->getConfigTabs();
     // Build it.
     $theme_vars = [
@@ -57,12 +65,14 @@ class MainSettingsController extends ControllerBase {
   }
 
   /**
-  /**
+   * Return the home image settings page.
+   *
    * @return array
+   *   A renderable array for the settings page.
    */
-  public function getHomeImageSettings(){
+  public function getHomeImageSettings() {
     // Get general config form.
-    $config_form = \Drupal::formBuilder()->getForm(\Drupal\ol_main\Form\HomeImageSettingsForm::class);
+    $config_form = \Drupal::formBuilder()->getForm(HomeImageSettingsForm::class);
     $config_tabs = $this->config->getConfigTabs();
     // Build it.
     $theme_vars = [
@@ -82,11 +92,14 @@ class MainSettingsController extends ControllerBase {
   }
 
   /**
+   * Return the color settings page.
+   *
    * @return array
+   *   A renderable array for the settings page.
    */
-  public function getColorSettings(){
+  public function getColorSettings() {
     // Get general config form.
-    $config_form = \Drupal::formBuilder()->getForm(\Drupal\ol_main\Form\ColorSettingsForm::class);
+    $config_form = \Drupal::formBuilder()->getForm(ColorSettingsForm::class);
     $config_tabs = $this->config->getConfigTabs();
     // Build it.
     $theme_vars = [
@@ -104,6 +117,5 @@ class MainSettingsController extends ControllerBase {
       ],
     ];
   }
-
 
 }

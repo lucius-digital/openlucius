@@ -2,9 +2,6 @@
 
 namespace Drupal\ol_main\Form;
 
-use Drupal\Component\Utility\Html;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\ol_main\Services\OlFiles;
@@ -12,32 +9,41 @@ use Drupal\ol_main\Services\OlGlobalConfig;
 use Drupal\ol_main\Services\OlGroups;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class HomeImageSettingsForm.
+ * Provides a form for configuring the home header image.
  */
 class HomeImageSettingsForm extends FormBase {
 
   /**
-   * @var $config
+   * The global configuration service.
+   *
+   * @var \Drupal\ol_main\Services\OlGlobalConfig
    */
   protected $config;
 
   /**
-   * @var $files
+   * The OL files service.
+   *
+   * @var \Drupal\ol_main\Services\OlFiles
    */
   protected $files;
 
   /**
-   * @var $groups
+   * The OL groups service.
+   *
+   * @var \Drupal\ol_main\Services\OlGroups
    */
   protected $groups;
 
   /**
-   * Class constructor.
+   * Constructs a HomeImageSettingsForm instance.
    *
    * @param \Drupal\ol_main\Services\OlGlobalConfig $config
+   *   The global configuration service.
    * @param \Drupal\ol_main\Services\OlFiles $files
+   *   The OL files service.
+   * @param \Drupal\ol_main\Services\OlGroups $groups
+   *   The OL groups service.
    */
   public function __construct(OlGlobalConfig $config, OlFiles $files, OlGroups $groups) {
     $this->config = $config;
@@ -50,10 +56,10 @@ class HomeImageSettingsForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('olmain.global_config'),
-      $container->get('olmain.files'),
-      $container->get('olmain.groups')
-    );
+          $container->get('olmain.global_config'),
+          $container->get('olmain.files'),
+          $container->get('olmain.groups')
+      );
   }
 
   /**
@@ -73,34 +79,34 @@ class HomeImageSettingsForm extends FormBase {
     $default_fid = ($default_fid) ? $default_fid : '';
     $hdd_file_location = $this->files->buildFileLocaton('home_header', $global_group_id);
 
-    $form['file'] = array(
+    $form['file'] = [
       '#prefix' => '<div class="form-group p-5">',
       '#title' => t('Home header image'),
       '#type' => 'managed_file',
       '#description' => t('Preferably 1280x200, otherwise image will get cropped from the middle'),
       '#required' => FALSE,
       '#default_value' => [$default_fid],
-      '#upload_location' => 'private://'.$hdd_file_location,
+      '#upload_location' => 'private://' . $hdd_file_location,
       '#progress_indicator' => 'bar',
       '#progress_message' => t('Please wait...'),
       '#multiple' => FALSE,
-      '#upload_validators' => array(
+      '#upload_validators' => [
         'FileExtension' => $this->files->getAllowedImageExtentions(),
-      ),
+      ],
       '#theme' => 'image_widget',
       '#preview_image_style' => '50x50',
       '#attributes' => [
-        'class' => array('form-control')
+        'class' => ['form-control'],
       ],
-      '#suffix' => '</div>'
-    );
+      '#suffix' => '</div>',
+    ];
 
     $form['submit'] = [
       '#prefix' => '<div class="mt-4 border-top pt-4"><div>',
       '#type' => 'submit',
-      '#attributes' => array('class' => array('btn btn-success')),
+      '#attributes' => ['class' => ['btn btn-success']],
       '#value' => t('Save'),
-      '#suffix' => '</span>'
+      '#suffix' => '</span>',
     ];
     return $form;
   }
@@ -114,15 +120,16 @@ class HomeImageSettingsForm extends FormBase {
     $current_header_fid = $this->config->getHomeHeaderImage();
     $global_gid = $this->groups->getGlobalGroupId();
     // If there is no file, remove existing (if any).
-    if(empty($file[0])){
+    if (empty($file[0])) {
       $this->removeExistingHeaderFile();
     }
     // Check if there is a change in file, if so: remove existing and save new.
-    elseif ($current_header_fid != $file[0]){
+    elseif ($current_header_fid != $file[0]) {
       $this->removeExistingHeaderFile();
-      $this->files->saveFiles($file, 'home_header',null, null, null, $global_gid );
+      $this->files->saveFiles($file, 'home_header', NULL, NULL, NULL, $global_gid);
     }
   }
+
   /**
    * Remove existing file.
    */

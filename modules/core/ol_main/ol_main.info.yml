@@ -1,9 +1,10 @@
 name: 'OL Main'
 type: module
 description: 'OL Main Module'
-core_version_requirement: ^9 || ^10 || ^11
+core_version_requirement: ^11
 package: 'OL Core'
 dependencies:
   - ol_members
   - ol_files
   - ol_stream
+

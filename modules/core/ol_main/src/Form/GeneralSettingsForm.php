@@ -4,25 +4,26 @@ namespace Drupal\ol_main\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\ol_board\Services\OlTasks;
 use Drupal\ol_main\Services\OlGroups;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class GeneralSettingsForm.
+ * Provides a form for configuring general group settings.
  */
 class GeneralSettingsForm extends FormBase {
 
   /**
-   * @var $groups
+   * The OL groups service.
+   *
+   * @var \Drupal\ol_main\Services\OlGroups
    */
   protected $groups;
 
   /**
-   * Class constructor.
+   * Constructs a GeneralSettingsForm instance.
    *
    * @param \Drupal\ol_main\Services\OlGroups $groups
+   *   The OL groups service.
    */
   public function __construct(OlGroups $groups) {
     $this->groups = $groups;
@@ -33,8 +34,8 @@ class GeneralSettingsForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('olmain.groups')
-    );
+          $container->get('olmain.groups')
+      );
   }
 
   /**
@@ -63,14 +64,14 @@ class GeneralSettingsForm extends FormBase {
     $form['markup'] = [
       '#type' => 'markup',
       '#markup' => '<ul id="sortable-tab-settings" class="list-unstyled">',
-      '#allowed_tags' => ['div','ul'],
+      '#allowed_tags' => ['div', 'ul'],
     ];
-    // Loop though tabs
+    // Loop though tabs.
     foreach ($tabs as $key => $tab) {
-      $form['tab_'.$key] = [
+      $form['tab_' . $key] = [
         '#type' => 'markup',
-        '#markup' => '<li data-id="'.$key.'"><button class="btn btn-light mb-3" type="button"> <i class="lni lni-arrows-vertical"></i> '.$tab['label'] .'</button></li>',
-        '#allowed_tags' => ['li','i','button'],
+        '#markup' => '<li data-id="' . $key . '"><button class="btn btn-light mb-3" type="button"> <i class="lni lni-arrows-vertical"></i> ' . $tab['label'] . '</button></li>',
+        '#allowed_tags' => ['li', 'i', 'button'],
       ];
     }
     $form['markup_2'] = [

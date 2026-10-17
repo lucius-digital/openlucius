@@ -2,9 +2,9 @@
 
 namespace Drupal\ol_main\Access;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Access\AccessResult;
 
 /**
  * Checks access for displaying configuration translation page.
@@ -12,29 +12,27 @@ use Drupal\Core\Access\AccessResult;
 class GroupUuidAccessChecker implements AccessInterface {
 
   /**
-   * A custom access check.
-   *
-   * @param \Drupal\Core\Session\AccountInterface $account
-   *   Run access checks for this account.
-   *
-   * @param $gid
-   * @return \Drupal\Core\Access\AccessResultInterface
-   *   The access result.
+   * {@inheritdoc}
    */
   public function access(AccountInterface $account, $uuid) {
-    // Check permissions and combine that with any custom access checking needed. Pass forward
-    // parameters from the route and/or request as needed.
-    return ($account->hasPermission('access ol content') && $this->checkGroupAccess($account, $uuid)) ? AccessResult::allowed() : AccessResult::forbidden();
+    // Check permissions and combine with custom access checking.
+    return ($account->hasPermission('access ol content')
+      && $this->checkGroupAccess($account, $uuid))
+      ? AccessResult::allowed() : AccessResult::forbidden();
   }
 
   /**
-   * Check if current user can access group, based on group uuid, so group id can not be guessed.
+   * Check if user can access group by UUID to prevent guessing.
    *
-   * @param $account
-   * @param $gid
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The user account to check.
+   * @param string $uuid
+   *   The group UUID.
+   *
    * @return bool
+   *   TRUE if the user has access, FALSE otherwise.
    */
-  private function checkGroupAccess($account, $uuid){
+  private function checkGroupAccess($account, $uuid) {
 
     // Query.
     $query = \Drupal::database()->select('ol_group_user', 'ogu');
@@ -45,7 +43,7 @@ class GroupUuidAccessChecker implements AccessInterface {
     $group_id = $query->execute()->fetchField();
 
     // Return true if current user is in group.
-    return (is_numeric($group_id) && !empty($group_id)) ? TRUE : FALSE ;
+    return (is_numeric($group_id) && !empty($group_id)) ? TRUE : FALSE;
   }
 
 }

@@ -6,10 +6,10 @@
   position: relative !important;
 }
 label[for="edit-notifications"] {
-  display:inline;
+  display: inline;
   font-size: 0.8rem;
 }
-.multiselect{
+.multiselect {
   font-size: 0.8rem !important;
 }
 .multiselect-search.form-control {

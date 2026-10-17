@@ -18,61 +18,97 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Class FilesController.
+ * Controller for handling files page requests.
  */
 class FilesController extends ControllerBase {
 
-
   /**
-   * @var $form_builder
+   * Form builder service.
+   *
+   * @var \Drupal\Core\Form\FormBuilder
    */
-  protected $form_builder;
+  protected $formBuilder;
 
   /**
-   * @var $files
+   * Files service.
+   *
+   * @var \Drupal\ol_main\Services\OlFiles
    */
   protected $files;
 
   /**
-   * @var $folders
+   * Folders service.
+   *
+   * @var \Drupal\ol_files\Services\OlFolders
    */
   protected $folders;
 
   /**
-   * @var $pager
+   * Pager manager service.
+   *
+   * @var \Drupal\Core\Pager\PagerManager
    */
   protected $pager;
 
   /**
-   * @var $pager_params
+   * Pager parameters service.
+   *
+   * @var \Drupal\Core\Pager\PagerParameters
    */
   protected $pager_params;
 
   /**
-   * @var $comments
+   * Comments service.
+   *
+   * @var \Drupal\ol_main\Services\OlComments
    */
   protected $comments;
 
   /**
-   * @var $members
+   * Members service.
+   *
+   * @var \Drupal\ol_members\Services\OlMembers
    */
   protected $members;
 
   /**
-   * @var $sections
+   * Sections service.
+   *
+   * @var \Drupal\ol_main\Services\OlSections
    */
   protected $sections;
 
   /**
-   * @var $groups
+   * Groups service.
+   *
+   * @var \Drupal\ol_main\Services\OlGroups
    */
   protected $groups;
 
   /**
-   * {@inheritdoc}
+   * FilesController constructor.
+   *
+   * @param \Drupal\Core\Form\FormBuilder $formBuilder
+   *   Form builder service.
+   * @param \Drupal\ol_main\Services\OlFiles $files
+   *   Files service.
+   * @param \Drupal\ol_files\Services\OlFolders $folders
+   *   Folders service.
+   * @param \Drupal\Core\Pager\PagerManager $pager
+   *   Pager manager service.
+   * @param \Drupal\Core\Pager\PagerParameters $pager_params
+   *   Pager parameters service.
+   * @param \Drupal\ol_main\Services\OlComments $comments
+   *   Comments service.
+   * @param \Drupal\ol_members\Services\OlMembers $members
+   *   Members service.
+   * @param \Drupal\ol_main\Services\OlSections $sections
+   *   Sections service.
+   * @param \Drupal\ol_main\Services\OlGroups $groups
+   *   Groups service.
    */
-  public function __construct(FormBuilder $form_builder, OlFiles $files, OlFolders $folders, PagerManager $pager, PagerParameters $pager_params, OlComments $comments, OlMembers $members, OlSections $sections, OlGroups $groups ) {
-    $this->form_builder = $form_builder;
+  public function __construct(FormBuilder $formBuilder, OlFiles $files, OlFolders $folders, PagerManager $pager, PagerParameters $pager_params, OlComments $comments, OlMembers $members, OlSections $sections, OlGroups $groups) {
+    $this->formBuilder = $formBuilder;
     $this->files = $files;
     $this->folders = $folders;
     $this->pager = $pager;
@@ -100,11 +136,15 @@ class FilesController extends ControllerBase {
   }
 
   /**
-   * @param $gid
+   * Render the files list page.
    *
-   * @return mixed
+   * @param int $gid
+   *   The group ID.
+   *
+   * @return array
+   *   A render array for the files page.
    */
-  public function getFiles($gid){
+  public function getFiles($gid) {
 
     // Get data.
     // TODO, convert query get to parameter get.
@@ -116,9 +156,9 @@ class FilesController extends ControllerBase {
     $page_title = $this->sections->getSectionOverrideTitle('files', 'Files');
 
     // Get forms.
-    $file_form = $this->form_builder->getForm(\Drupal\ol_files\Form\AddOlFileForm::class);
-    $folder_form = $this->form_builder->getForm(\Drupal\ol_files\Form\AddFolderForm::class);
-    $remove_from_folder = $this->form_builder->getForm(\Drupal\ol_files\Form\RemoveFileFromFolderForm::class);
+    $file_form = $this->formBuilder->getForm(\Drupal\ol_files\Form\AddOlFileForm::class);
+    $folder_form = $this->formBuilder->getForm(\Drupal\ol_files\Form\AddFolderForm::class);
+    $remove_from_folder = $this->formBuilder->getForm(\Drupal\ol_files\Form\RemoveFileFromFolderForm::class);
 
     // Pager initialization.
     $page = $this->pager_params->findPage();
@@ -126,11 +166,11 @@ class FilesController extends ControllerBase {
     $offset = $num_per_page * $page;
 
     // Get and render files.
-    $file_list_data = $this->files->getFileListPage($num_per_page, $offset, false, $current_folder);
+    $file_list_data = $this->files->getFileListPage($num_per_page, $offset, FALSE, $current_folder);
     $files = $this->files->renderFileListPage($file_list_data);
 
-    // Pager, now that we have the total number of results .
-    $total_result = $this->files->getFileListPage(null, null, true, $current_folder);
+    // Pager, now that we have the total number of results.
+    $total_result = $this->files->getFileListPage(NULL, NULL, TRUE, $current_folder);
     $pager = $this->pager->createPager($total_result, $num_per_page);
     $pager->getCurrentPage();
 
@@ -138,7 +178,7 @@ class FilesController extends ControllerBase {
 
     // Remove folder modal.
     $vars['remove_folder_modal'] = \Drupal::formBuilder()->getForm(\Drupal\ol_files\Form\DeleteFolderForm::class);
-    $remove_folder_modal = ['#theme' => 'file_modal_remove_folder','#vars' => $vars];
+    $remove_folder_modal = ['#theme' => 'file_modal_remove_folder', '#vars' => $vars];
 
     // Build theme vars.
     $theme_vars = [
@@ -174,9 +214,9 @@ class FilesController extends ControllerBase {
 
 
   /**
-   * Needs to be migrated to dynamic form -and modal.
+   * @todo Needs to be migrated to dynamic form and modal.
    */
-  public function removeFolder(){
+  public function removeFolder() {
     $this->folders->removeFolder();
   }
 

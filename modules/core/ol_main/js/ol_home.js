@@ -1,32 +1,44 @@
-(function ($, Drupal, drupalSettings) {
+/**
+ * Home page tab switching and AJAX content loading behavior.
+ *
+ * @file
+ */
 
-  $(document).ready(function() {
+(function ($, Drupal, once) {
 
-  });
+    /**
+     * Home page tab behaviors.
+     *
+     * @type {Drupal~behavior}
+     */
+    Drupal.behaviors.olHome = {
+        attach(context) {
+            // Attach tab shown event handler once per tab link.
+            $(once('olHome-tabShown', 'a[data-toggle="tab"]', context)).on(
+                'shown.bs.tab', function (e) {
+                    const tabId = $(e.target).data('content');
+                    if (tabId === 'nav-posts') {
+                        const url = Drupal.url('ol_home/get_posts');
+                        Drupal.ajax({url: url}).execute();
+                    }
+                    if (tabId === 'nav-activity') {
+                        const url = Drupal.url('ol_home/get_stream');
+                        Drupal.ajax({url: url}).execute();
+                    }
+                }
+            );
 
-  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    const tab_id = $(e.target).data('content')
-    // e.target // newly activated tab
-    // e.relatedTarget // previous active tab
-    if(tab_id === 'nav-posts') {
-      let url = Drupal.url('ol_home/get_posts')
-      Drupal.ajax({url: url}).execute();
-    }
-    if(tab_id === 'nav-activity') {
-      let url = Drupal.url('ol_home/get_stream')
-      Drupal.ajax({url: url}).execute();
-    }
-  })
-  $('a[data-toggle="tab"]').on('hide.bs.tab', function (e) {
-    // e.target // previous active tab
-    // e.relatedTarget // newly activated tab
-    const tab_id = $(e.target).data('content')
-    const selector = '#'+tab_id
-    $(selector +' .stream-block-wrapper').empty()
-    $(selector +' .stream-block-wrapper').text('Loading...')
-    $('#pager-container').empty()
-    // e.target // newly activated tab
-    // e.relatedTarget // previous active tab
-  })
+        // Attach tab hide event handler once per tab link.
+        $(once('olHome-tabHide', 'a[data-toggle="tab"]', context)).on(
+            'hide.bs.tab', function (e) {
+                const tabId = $(e.target).data('content');
+                const selector = '#' + tabId;
+                $(selector + ' .stream-block-wrapper').empty();
+                $(selector + ' .stream-block-wrapper').text('Loading...');
+                $('#pager-container').empty();
+            }
+        );
+        }
+    };
 
-})(jQuery, Drupal, drupalSettings);
+})(jQuery, Drupal, once);

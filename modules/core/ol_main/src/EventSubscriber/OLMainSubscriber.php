@@ -2,12 +2,15 @@
 
 namespace Drupal\ol_main\EventSubscriber;
 
+use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Drupal\Core\Session\AccountInterface;
 
+/**
+ * Event subscriber for OL main module functionality.
+ */
 class OLMainSubscriber implements EventSubscriberInterface {
 
 
@@ -24,8 +27,10 @@ class OLMainSubscriber implements EventSubscriberInterface {
   }
 
   /**
-   * Makes sure no anonymous users can not enter.
-   * @param RequestEvent $event
+   * Prevent anonymous users from accessing protected pages.
+   *
+   * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
+   *   The current request event.
    */
   public function checkAnonymous(RequestEvent $event) {
 
@@ -38,18 +43,21 @@ class OLMainSubscriber implements EventSubscriberInterface {
     // Check if this is a JS file in sites/default/files/js.
     $js_file = str_starts_with($current_path, '/sites/default/files/js/');
     if ($this->account->isAnonymous()
-      && $current_path != '/user/login'
-      && $current_path != '/user/password'
-      && $current_path != '/register'
-      && $user_reset != true
-      && $js_file != true
-    ){
+          && $current_path != '/user/login'
+          && $current_path != '/user/password'
+          && $current_path != '/register'
+          && $user_reset != TRUE
+          && $js_file != TRUE
+      ) {
       $event->setResponse(new RedirectResponse('/user/login', 301));
     }
   }
 
   /**
+   * Update the last visited timestamp for the current group.
+   *
    * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
+   *   The current request event.
    */
   public function updateGroupVisitedTimestamp(RequestEvent $event) {
 
@@ -60,18 +68,20 @@ class OLMainSubscriber implements EventSubscriberInterface {
     // Check if we are on a group page.
     $is_group_page = str_starts_with($current_path, '/group/');
 
-    if($is_group_page) {
+    if ($is_group_page) {
       // Get current user id.
-      $current_uid =$this->account->id();
+      $current_uid = $this->account->id();
       // Get group id.
       $path_args = explode('/', $current_path);
       $gid = $path_args[2];
       // Update timestamp, we use the 'changed' field.
-      if(is_numeric($gid)){
+      if (is_numeric($gid)) {
         \Drupal::database()->update('ol_group_user')
-          ->fields([
-            'changed' => time(),
-          ])
+          ->fields(
+                  [
+                    'changed' => time(),
+                  ]
+              )
           ->condition('group_id', $gid)
           ->condition('member_uid', $current_uid)
           ->execute();

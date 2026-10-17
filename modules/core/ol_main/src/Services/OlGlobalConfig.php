@@ -2,46 +2,57 @@
 
 namespace Drupal\ol_main\Services;
 
-
 use Drupal\Core\Url;
 
 /**
- * Class OlGlobalConfig.
+ * Service for managing global configuration settings.
  */
-class OlGlobalConfig{
+class OlGlobalConfig {
 
   /**
-   * @var $current_user
+   * The current user account.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
    */
-  protected $current_user;
+  protected $currentUser;
 
   /**
-   * @var $groups
+   * The OL groups service.
+   *
+   * @var \Drupal\ol_main\Services\OlGroups
    */
   protected $groups;
 
   /**
-   * @var $members
+   * The OL members service.
+   *
+   * @var \Drupal\ol_members\Services\OlMembers
    */
   protected $members;
 
   /**
-   * OlMembers constructor.
+   * Constructs an OlGlobalConfig instance.
    *
-   * @param $current_user
-   * @param $groups
-   * @param $members
+   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
+   *   The current user account.
+   * @param \Drupal\ol_main\Services\OlGroups $groups
+   *   The OL groups service.
+   * @param \Drupal\ol_members\Services\OlMembers $members
+   *   The OL members service.
    */
   public function __construct($current_user, $groups, $members) {
-    $this->current_user = $current_user;
+    $this->currentUser = $current_user;
     $this->groups = $groups;
     $this->members = $members;
   }
 
   /**
-   * @return mixed
+   * Get the default color settings.
+   *
+   * @return \stdClass
+   *   Object containing default color values.
    */
-  public function getDefaultColors(){
+  public function getDefaultColors() {
     $color_settings = new \StdClass();
     $color_settings->nav = '#00a573';
     $color_settings->global_background = '#f4f2ee';
@@ -49,9 +60,10 @@ class OlGlobalConfig{
   }
 
   /**
-   * Returns fid of current group header image.
+   * Get the home header image file ID.
    *
-   * @return integer
+   * @return int
+   *   The file ID of the home header image.
    */
   public function getHomeHeaderImage() {
     $gid = $this->groups->getGlobalGroupId();
@@ -64,11 +76,13 @@ class OlGlobalConfig{
     return $query->execute()->fetchField();
   }
 
-
   /**
-   * @return mixed
+   * Get configuration tabs for the settings page.
+   *
+   * @return array
+   *   Array of tab definitions.
    */
-  public function getConfigTabs(){
+  public function getConfigTabs() {
     // Config Tabs.
     $tabs['tabs'][] = [
       'label' => t('Color Settings'),
@@ -79,7 +93,7 @@ class OlGlobalConfig{
     $tabs['tabs'][] = [
       'label' => t('Home Tabs'),
       'weight' => 10,
-      'url' =>  Url::fromRoute('ol_main.general_settings_tabs')->toString(),
+      'url' => Url::fromRoute('ol_main.general_settings_tabs')->toString(),
       'icon' => 'lni lni-tab',
     ];
     $tabs['tabs'][] = [
@@ -95,73 +109,90 @@ class OlGlobalConfig{
   }
 
   /**
-   * @param $ordered_items
+   * Update the home tabs positions.
+   *
+   * @param array $ordered_items
+   *   Array of ordered tab items.
    *
    * @return bool
+   *   TRUE if update was successful.
    */
-  public function updateHomeTabsPositions($ordered_items){
+  public function updateHomeTabsPositions($ordered_items) {
     // Encode for database.
-    $json_items  = json_encode($ordered_items);
+    $json_items = json_encode($ordered_items);
     // For security hardening.
     $group_id = $this->groups->getGlobalGroupId();
     $in_group = $this->members->checkUserInGroup($group_id);
-    if($in_group && $group_id) {
+    if ($in_group && $group_id) {
       \Drupal::database()->update('ol_general_settings')
-        ->fields([
-          'tabs' => $json_items,
-        ])
+        ->fields(
+                [
+                  'tabs' => $json_items,
+                ]
+            )
         ->condition('global_group_id', $group_id)
         ->execute();
-      return true;
+      return TRUE;
     }
-    return false;
+    return FALSE;
   }
 
   /**
-   * @param $colors
+   * Update color settings.
+   *
+   * @param array $colors
+   *   Array of color values.
    *
    * @return bool
+   *   TRUE if update was successful.
    */
-  public function updateColors($colors){
+  public function updateColors($colors) {
     // Encode for database.
-    $json_colors  = json_encode($colors);
+    $json_colors = json_encode($colors);
     // For security hardening.
     $group_id = $this->groups->getGlobalGroupId();
     $in_group = $this->members->checkUserInGroup($group_id);
-    if($in_group && $group_id) {
+    if ($in_group && $group_id) {
       \Drupal::database()->update('ol_general_settings')
-        ->fields([
-          'colors' => $json_colors,
-        ])
+        ->fields(
+                [
+                  'colors' => $json_colors,
+                ]
+            )
         ->condition('global_group_id', $group_id)
         ->execute();
-      return true;
+      return TRUE;
     }
-    return false;
+    return FALSE;
   }
 
   /**
-   * @return mixed
+   * Get the current color settings.
+   *
+   * @return \stdClass
+   *   Object containing color settings.
    */
-  public function getColorSettings(){
+  public function getColorSettings() {
     // Get groups data.
     $query = \Drupal::database()->select('ol_general_settings', 'ogs');
     $query->addField('ogs', 'colors');
     $query->join('users_field_data', 'ufd', 'ufd.uid = ogs.user_id');
     $query->addTag('ol_user_list');
     $result = $query->execute()->fetchField();
-    $color_config = ($result) ? json_decode($result): null;
-    if(empty($color_config)){
+    $color_config = ($result) ? json_decode($result) : NULL;
+    if (empty($color_config)) {
       $color_config = $this->getDefaultColors();
     }
     return $color_config;
   }
 
-
   /**
-   * @return mixed
+   * Get the home tabs positions.
+   *
+   * @return array
+   *   Array of tab positions.
    */
-  public function getHomeTabsPositions(){
+  public function getHomeTabsPositions() {
     // Get groups data.
     $query = \Drupal::database()->select('ol_general_settings', 'ogs');
     $query->addField('ogs', 'tabs');

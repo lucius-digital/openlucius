@@ -12,49 +12,67 @@ use Drupal\ol_messages\Services\OlMessages;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class messageController.
+ * Controller for handling messages page requests.
  */
 class MessageController extends ControllerBase {
 
   /**
-   * @var $comments
+   * Messages service.
+   *
+   * @var \Drupal\ol_messages\Services\OlMessages
    */
   protected $messages;
 
   /**
-   * @var $pager
+   * Pager manager service.
+   *
+   * @var \Drupal\Core\Pager\PagerManager
    */
   protected $pager;
 
   /**
-   * @var $pager_params
+   * Pager parameters service.
+   *
+   * @var \Drupal\Core\Pager\PagerParameters
    */
   protected $pager_params;
 
   /**
-   * @var $comments
+   * Comments service.
+   *
+   * @var \Drupal\ol_main\Services\OlComments
    */
   protected $comments;
 
   /**
-   * @var $members
+   * Members service.
+   *
+   * @var \Drupal\ol_members\Services\OlMembers
    */
   protected $members;
 
   /**
-   * @var $sections
+   * Sections service.
+   *
+   * @var \Drupal\ol_main\Services\OlSections
    */
   protected $sections;
 
   /**
-   * Constructor
+   * MessageController constructor.
    *
    * @param \Drupal\ol_messages\Services\OlMessages $messages
+   *   Messages service.
    * @param \Drupal\Core\Pager\PagerManager $pager
+   *   Pager manager service.
    * @param \Drupal\Core\Pager\PagerParameters $pager_params
+   *   Pager parameters service.
    * @param \Drupal\ol_main\Services\OlComments $comments
+   *   Comments service.
    * @param \Drupal\ol_members\Services\OlMembers $members
+   *   Members service.
    * @param \Drupal\ol_main\Services\OlSections $sections
+   *   Sections service.
    */
   public function __construct(OlMessages $messages, PagerManager $pager, PagerParameters $pager_params, OlComments $comments, OlMembers $members, OlSections $sections) {
     $this->messages = $messages;
@@ -80,12 +98,17 @@ class MessageController extends ControllerBase {
   }
 
   /**
-   * @param $gid
+   * Render the messages list page.
+   *
+   * @param int $gid
+   *   The group ID.
    *
    * @return array
+   *   A render array for the messages list page.
+   *
    * @throws \Exception
    */
-  public function getMessageList($gid){
+  public function getMessageList($gid) {
 
     // Pager init.
     $page = $this->pager_params->findPage();
@@ -93,13 +116,15 @@ class MessageController extends ControllerBase {
     $offset = $num_per_page * $page;
 
     // Get messages data.
-    $message_form = \Drupal::formBuilder()->getForm(\Drupal\ol_messages\Form\MessageForm::class);
-    $message_list_data = $this->messages->getMessagesList(null, $num_per_page, $offset, null);
+    $message_form = \Drupal::formBuilder()->getForm(
+      '\Drupal\ol_messages\Form\MessageForm'
+    );
+    $message_list_data = $this->messages->getMessagesList(NULL, $num_per_page, $offset, NULL);
     $messages = $this->messages->renderMessagesList($message_list_data, 'list');
     $page_title = $this->sections->getSectionOverrideTitle('messages', 'Messages');
 
     // Pager, now that we have the total number of results.
-    $total_result = $this->messages->getMessagesList(null, null, null, true);
+    $total_result = $this->messages->getMessagesList(NULL, NULL, NULL, TRUE);
     $pager = $this->pager->createPager($total_result, $num_per_page);
     $pager->getCurrentPage();
 
@@ -117,7 +142,7 @@ class MessageController extends ControllerBase {
       '#type' => 'remote',
       '#attached' => [
         'library' => [
-          'ol_messages/ol_messages'
+          'ol_messages/ol_messages',
         ],
       ],
     ];
@@ -127,19 +152,27 @@ class MessageController extends ControllerBase {
   }
 
   /**
-   * @param $id
+   * Render a single message page with comments.
+   *
+   * @param int $id
+   *   The message ID.
    *
    * @return array
+   *   A render array for the message page.
+   *
    * @throws \Exception
    */
-  public function getMessage($id){
+  public function getMessage($id) {
     // Get data.
     $message_data = $this->messages->getMessagesList($id);
     $message_title = $this->messages->getMessageTitle($message_data);
     $message = $this->messages->renderMessagesList($message_data, 'page');
-    $comment_form = \Drupal::formBuilder()->getForm(\Drupal\ol_main\Form\CommentForm::class, null, null, 'message', $id);
+    // Comment form for the message.
+    $comment_form = \Drupal::formBuilder()->getForm(
+      '\Drupal\ol_main\Form\CommentForm', NULL, NULL, 'message', $id
+    );
     $comment_items = $this->comments->getComments($id, 'message', 'asc');
-    $current_user_picture = $this->members->getUserPictureUrl(); // Should move to CommentForm
+    $current_user_picture = $this->members->getUserPictureUrl();
 
     // Build it.
     $theme_vars = [
@@ -155,7 +188,7 @@ class MessageController extends ControllerBase {
       '#attached' => [
         'library' => [
           'ol_messages/ol_messages',
-          'ol_main/ol_comments'
+          'ol_main/ol_comments',
         ],
       ],
     ];

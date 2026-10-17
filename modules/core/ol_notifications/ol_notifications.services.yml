@@ -2,4 +2,3 @@ services:
   olnotifications.notifications:
     class: Drupal\ol_notifications\Services\OlNotifications
     arguments: ['@current_route_match']
-

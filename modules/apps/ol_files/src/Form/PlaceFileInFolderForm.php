@@ -8,21 +8,23 @@ use Drupal\Component\Utility\Html;
 use Drupal\ol_files\Services\OlFolders;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class PlaceFileInFolderForm.
+ * Form for placing a file into a folder.
  */
 class PlaceFileInFolderForm extends FormBase {
 
-
   /**
-   * @var $folders
+   * Folders service.
+   *
+   * @var \Drupal\ol_files\Services\OlFolders
    */
   protected $folders;
 
   /**
-   * Class constructor.
-   * @param \Drupal\ol_main\Services\OlFiles $files
+   * PlaceFileInFolderForm constructor.
+   *
+   * @param \Drupal\ol_files\Services\OlFolders $folders
+   *   Folders service.
    */
   public function __construct(OlFolders $folders) {
     $this->folders = $folders;
@@ -51,7 +53,7 @@ class PlaceFileInFolderForm extends FormBase {
 
     $form['id'] = [
       '#type' => 'hidden',
-      '#attributes' => array('id' => array('edit-fid')),
+      '#attributes' => ['id' => ['edit-fid']],
     ];
     $form['folder_id'] = [
       '#prefix' => '<div class="modal-body"><div class="form-group">',
@@ -60,16 +62,16 @@ class PlaceFileInFolderForm extends FormBase {
       '#title' => t('Choose a folder'),
       '#default_value' => '0',
       '#options' => $this->folders->getFoldersInCurrentGroup(),
-      '#attributes' => array('class' => array('form-control')),
-      '#suffix' => '</div>'
+      '#attributes' => ['class' => ['form-control']],
+      '#suffix' => '</div>',
     ];
     $form['submit'] = [
       '#prefix' => '</div><div class="modal-footer">',
       '#type' => 'submit',
       '#weight' => '30',
-      '#attributes' => array('class' => array('btn btn-success')),
+      '#attributes' => ['class' => ['btn btn-success']],
       '#value' => $this->t('Submit'),
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
 
     return $form;
@@ -90,9 +92,7 @@ class PlaceFileInFolderForm extends FormBase {
     $folder_id = Html::escape($form_state->getValue('folder_id'));
     // Place in folder.
     $this->folders->placeFileInFolder($folder_id, $id);
-
   }
-
 
 }
 

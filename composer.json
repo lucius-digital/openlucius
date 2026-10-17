@@ -1,6 +1,6 @@
 {
     "name": "lucius-digital/openlucius",
-    "version": "3.0.0-beta1",
+    "version": "3.0.0-beta2",
     "type": "drupal-profile",
     "description": "A lean and fast social productivity Drupal installation profile",
     "license": "GPL-2.0-or-later",

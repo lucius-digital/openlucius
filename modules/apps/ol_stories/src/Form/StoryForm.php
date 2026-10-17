@@ -2,41 +2,49 @@
 
 namespace Drupal\ol_stories\Form;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Component\Utility\Html;
 use Drupal\ol_main\Services\OlFiles;
 use Drupal\ol_members\Services\OlMembers;
 use Drupal\ol_stories\Services\OlStories;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class StoryForm.
+ * Form for creating and editing stories.
  */
 class StoryForm extends FormBase {
 
   /**
-   * @var $stories
+   * Stories service.
+   *
+   * @var \Drupal\ol_stories\Services\OlStories
    */
   protected $stories;
 
   /**
-   * @var $files
+   * Files service.
+   *
+   * @var \Drupal\ol_main\Services\OlFiles
    */
   protected $files;
 
   /**
-   * @var $members
+   * Members service.
+   *
+   * @var \Drupal\ol_members\Services\OlMembers
    */
   protected $members;
 
   /**
-   * Class constructor.
+   * StoryForm constructor.
    *
    * @param \Drupal\ol_stories\Services\OlStories $stories
+   *   Stories service.
    * @param \Drupal\ol_main\Services\OlFiles $files
+   *   Files service.
    * @param \Drupal\ol_members\Services\OlMembers $members
+   *   Members service.
    */
   public function __construct(OlStories $stories, OlFiles $files, OlMembers $members) {
     $this->stories = $stories;
@@ -65,16 +73,16 @@ class StoryForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $op = null, $id = null, $story_settings = null) {
+  public function buildForm(array $form, FormStateInterface $form_state, $op = NULL, $id = NULL, $story_settings = NULL) {
 
     // Defaults.
     $body = '';
     $button_text = t('Submit');
     $hdd_file_location = $this->files->buildFileLocaton('story', 0);
-    $question = t('What\'s happening?');
+    $question = t("What's happening?");
 
     // Handle edit vars.
-    if ($op == 'edit'){
+    if ($op == 'edit') {
       $story_data = $this->getStoryData($id);
       $body = $story_data->body;
       $button_text = t('Update Story');
@@ -82,9 +90,9 @@ class StoryForm extends FormBase {
 
     // Build form.
     $form['story_id'] = [
-     '#type' => 'hidden',
-     '#default_value' => $id,
-     '#weight' => '0',
+      '#type' => 'hidden',
+      '#default_value' => $id,
+      '#weight' => '0',
     ];
     $form['body'] = [
       '#prefix' => '<div class="modal-body"><div class="form-group story-body">',
@@ -92,12 +100,12 @@ class StoryForm extends FormBase {
       '#weight' => '20',
       '#attributes' => [
         'placeholder' => $question,
-        'class' => array('form-control'),
-        'rows' => 3
+        'class' => ['form-control'],
+        'rows' => 3,
       ],
       '#default_value' => $body,
-      '#required' => false,
-      '#suffix' => '</div>'
+      '#required' => FALSE,
+      '#suffix' => '</div>',
     ];
     $form['markup'] = [
       '#type' => 'markup',
@@ -106,19 +114,19 @@ class StoryForm extends FormBase {
       '#weight' => '25',
     ];
 
-    $form['files'] = array(
+    $form['files'] = [
       '#title' => t('Attach Image'),
       '#type' => 'managed_file',
       '#required' => FALSE,
-      '#upload_location' => 'private://'.$hdd_file_location,
+      '#upload_location' => 'private://' . $hdd_file_location,
       '#multiple' => FALSE,
       '#progress_indicator' => 'bar',
       '#progress_message' => t('Please wait...'),
-      '#upload_validators' => array(
+      '#upload_validators' => [
         'FileExtension' => $this->files->getAllowedImageExtentions(),
-      ),
+      ],
       '#weight' => '30',
-    );
+    ];
     $form['markup_2'] = [
       '#type' => 'markup',
       '#markup' => '</div></div>',
@@ -129,9 +137,9 @@ class StoryForm extends FormBase {
       '#prefix' => '</div></div><div class="modal-footer">',
       '#type' => 'submit',
       '#weight' => '100',
-      '#attributes' => array('class' => array('btn btn-success')),
+      '#attributes' => ['class' => ['btn btn-success']],
       '#value' => $button_text,
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
 
     return $form;
@@ -143,6 +151,7 @@ class StoryForm extends FormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
 
   }
+
   /**
    * {@inheritdoc}
    */
@@ -154,22 +163,27 @@ class StoryForm extends FormBase {
     $name = $name_shortened = shortenString($body);
     $files = $form_state->getValue('files');
     // New, save story.
-    if(!empty(strip_tags($body)) || !empty($files)){
+    if (!empty(strip_tags($body)) || !empty($files)) {
       $id = $this->stories->saveStory($name, $body);
     }
-    elseif(empty($files) && empty(strip_tags($body))){
-      \Drupal::messenger()->addError( t('No story posted: no text or image placed.'));
+    elseif (empty($files) && empty(strip_tags($body))) {
+      \Drupal::messenger()->addError(t('No story posted: no text or image placed.'));
     }
-    if(!empty($files)) {
+    if (!empty($files)) {
       $this->files->saveFiles($files, 'story', $id);
     }
   }
 
   /**
-   * @param $id
-   * @return mixed
+   * Retrieve story data by ID.
+   *
+   * @param int $id
+   *   Story ID.
+   *
+   * @return object
+   *   Story data object.
    */
-  private function getStoryData($id){
+  private function getStoryData($id) {
     $query = \Drupal::database()->select('ol_story', 'mess');
     $query->addField('mess', 'body');
     $query->addField('mess', 'name');

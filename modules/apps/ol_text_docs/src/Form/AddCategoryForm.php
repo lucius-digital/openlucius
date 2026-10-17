@@ -2,26 +2,29 @@
 
 namespace Drupal\ol_text_docs\Form;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Component\Utility\Html;
 use Drupal\ol_text_docs\Services\OlCategories;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class AddCategoryForm.
+ * Form for adding and editing text document categories.
  */
 class AddCategoryForm extends FormBase {
 
   /**
-   * @var $categories
+   * Categories service.
+   *
+   * @var \Drupal\ol_text_docs\Services\OlCategories
    */
   protected $categories;
 
   /**
-   * Class constructor.
-   * @param \Drupal\ol_main\Services\OlFiles $files
+   * AddCategoryForm constructor.
+   *
+   * @param \Drupal\ol_text_docs\Services\OlCategories $categories
+   *   The categories service.
    */
   public function __construct(OlCategories $categories) {
     $this->categories = $categories;
@@ -50,25 +53,25 @@ class AddCategoryForm extends FormBase {
 
     $form['category_id'] = [
       '#type' => 'hidden',
-      '#attributes' => array('id' => array('edit-category-id')),
+      '#attributes' => ['id' => ['edit-category-id']],
     ];
 
     $form['name'] = [
       '#prefix' => '<div class="modal-body"><div class="form-group">',
       '#type' => 'textfield',
       '#weight' => '0',
-      '#required' => true,
-      '#attributes' => array('placeholder' => t('Add a category name...'), 'class' => array('form-control')),
-      '#suffix' => '</div>'
+      '#required' => TRUE,
+      '#attributes' => ['placeholder' => t('Add a category name...'), 'class' => ['form-control']],
+      '#suffix' => '</div>',
     ];
 
     $form['submit'] = [
       '#prefix' => '</div><div class="modal-footer">',
       '#type' => 'submit',
       '#weight' => '30',
-      '#attributes' => array('class' => array('btn btn-success')),
+      '#attributes' => ['class' => ['btn btn-success']],
       '#value' => $this->t('Submit'),
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
 
     return $form;
@@ -98,18 +101,16 @@ class AddCategoryForm extends FormBase {
     $name = Html::escape($form_state->getValue('name'));
     $category_id = Html::escape($form_state->getValue('category_id'));
     // Update or add.
-    if(is_numeric($category_id)){
+    if (is_numeric($category_id)) {
       // Update Category.
       $this->categories->updateCategory($name, $category_id);
-      \Drupal::messenger()->addStatus(t('Your category was successfully updated to ' .$name));
-    } else {
+      \Drupal::messenger()->addStatus(t('Your category was successfully updated to @name', ['@name' => $name]));
+    }
+    else {
       // Add New Category.
       $this->categories->saveCategory($name);
       \Drupal::messenger()->addStatus(t('Your category was added successfully.'));
     }
-
   }
 
 }
-
-

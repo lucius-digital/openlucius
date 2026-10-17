@@ -7,21 +7,23 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\ol_files\Services\OlFolders;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class DeleteFolderForm.
+ * Form for deleting a folder.
  */
 class DeleteFolderForm extends FormBase {
 
   /**
-   * @var $folders
+   * Folders service.
+   *
+   * @var \Drupal\ol_files\Services\OlFolders
    */
   protected $folders;
 
   /**
-   * Class constructor.
+   * DeleteFolderForm constructor.
    *
    * @param \Drupal\ol_files\Services\OlFolders $folders
+   *   Folders service.
    */
   public function __construct(OlFolders $folders) {
     $this->folders = $folders;
@@ -50,17 +52,17 @@ class DeleteFolderForm extends FormBase {
     $form['folder_id'] = [
       '#type' => 'hidden',
       '#weight' => '0',
-      '#attributes' => array('id' => array('remove-folder-id')),
+      '#attributes' => ['id' => ['remove-folder-id']],
     ];
     $form['markup'] = [
       '#type' => 'markup',
-      '#markup' => '<button type="button" class="btn btn-default" data-dismiss="modal">' .t('Cancel').'</button>',
+      '#markup' => '<button type="button" class="btn btn-default" data-dismiss="modal">' . t('Cancel') . '</button>',
       '#allowed_tags' => ['button'],
     ];
     $form['submit'] = [
       '#type' => 'submit',
       '#weight' => '20',
-      '#attributes' => array('class' => array('btn btn-danger')),
+      '#attributes' => ['class' => ['btn btn-danger']],
       '#value' => t('Yes, Delete Permanently'),
     ];
     return $form;

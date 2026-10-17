@@ -2,14 +2,13 @@
 
 namespace Drupal\ol_main\Form;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Component\Utility\Html;
 use Drupal\ol_main\Services\OlFiles;
 use Drupal\ol_main\Services\OlGroups;
 use Drupal\ol_main\Services\OlSections;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 
 /**
  * Class CheckinConfigForm.
@@ -17,26 +16,35 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class GroupConfigForm extends FormBase {
 
   /**
-   * @var $groups
+   * The OL groups service.
+   *
+   * @var \Drupal\ol_main\Services\OlGroups
    */
   protected $groups;
 
   /**
-   * @var $sections
+   * The OL sections service.
+   *
+   * @var \Drupal\ol_main\Services\OlSections
    */
   protected $sections;
 
   /**
-   * @var $files
+   * The OL files service.
+   *
+   * @var \Drupal\ol_main\Services\OlFiles
    */
   protected $files;
 
   /**
-   * Class constructor.
+   * Constructs a GroupConfigForm instance.
    *
    * @param \Drupal\ol_main\Services\OlGroups $groups
+   *   The OL groups service.
    * @param \Drupal\ol_main\Services\OlSections $sections
+   *   The OL sections service.
    * @param \Drupal\ol_main\Services\OlFiles $files
+   *   The OL files service.
    */
   public function __construct(OlGroups $groups, OlSections $sections, OlFiles $files) {
     $this->groups = $groups;
@@ -49,10 +57,10 @@ class GroupConfigForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('olmain.groups'),
-      $container->get('olmain.sections'),
-      $container->get('olmain.files')
-    );
+          $container->get('olmain.groups'),
+          $container->get('olmain.sections'),
+          $container->get('olmain.files')
+      );
   }
 
   /**
@@ -80,144 +88,146 @@ class GroupConfigForm extends FormBase {
     $options = $this->sections->buildOptionsFromSections($sections);
     // Get enabled sections, for default_value.
     $enabled_sections = $this->sections->getEnabledSections($gid);
-    // Build file location
+    // Build file location.
     $hdd_file_location = $this->files->buildFileLocaton('group_header');
     // Set default header image, if uploaded.
     $current_header_fid = $this->groups->getHeaderImage();
-    $default_fid = (is_numeric($current_header_fid)) ? array($current_header_fid) : '';
+    $default_fid = (is_numeric($current_header_fid)) ? [$current_header_fid] : '';
     // Handle 'group on top' option.
-    // $on_top_title = array( '1' => t('Show on top in group list (in left sidebar)'));
+    // $on_top_title = array(
+    // '1' => t('Show on top')
+    // );
     // $on_top_default = array($this->groups->isOnTop());
     // Handle 'archived'.
-    $archived_title = array( '1' => '');
+    $archived_title = ['1' => ''];
     $is_archived = $this->groups->isArchived();
-    $is_archived = ($is_archived == 1) ? 0 : 1; // Switch, because checked = 1 means archived, but status 0 is archived in dbase.
-    $archived_default = array($is_archived);
-
+    // Switch: checked = 1 means archived, but status 0 is archived in database.
+    $is_archived = ($is_archived == 1) ? 0 : 1;
+    $archived_default = [$is_archived];
 
     $form['name'] = [
       '#prefix' => '<div class="modal-body"><div class="form-group row"><div class="col-sm-8">',
       '#type' => 'textfield',
       '#title' => t('Name'),
-      '#default_value' => $name ,
-      '#required' => true,
-      '#attributes' => array('placeholder' => t('Add a group name...'), 'class' => array('form-control')),
+      '#default_value' => $name,
+      '#required' => TRUE,
+      '#attributes' => ['placeholder' => t('Add a group name...'), 'class' => ['form-control']],
       '#weight' => '10',
-      '#suffix' => '</div></div>'
+      '#suffix' => '</div></div>',
     ];
-    $form['file'] = array(
+    $form['file'] = [
       '#prefix' => '<div class="form-group p-5">',
       '#title' => t('Group image'),
       '#type' => 'managed_file',
       '#required' => FALSE,
       '#default_value' => $default_fid,
-      '#upload_location' => 'private://'.$hdd_file_location,
+      '#upload_location' => 'private://' . $hdd_file_location,
       '#multiple' => FALSE,
       '#progress_indicator' => 'bar',
       '#progress_message' => t('Please wait...'),
-      '#upload_validators' => array(
+      '#upload_validators' => [
         'FileExtension' => $this->files->getAllowedImageExtentions(),
-      ),
+      ],
       '#theme' => 'image_widget',
       '#preview_image_style' => '50x50',
       '#attributes' => [
-        'class' => array('form-control')
+        'class' => ['form-control'],
       ],
       '#weight' => '15',
-      '#suffix' => '</div>'
-    );
+      '#suffix' => '</div>',
+    ];
     $form['sections'] = [
       '#prefix' => '<div class="form-group">',
       '#type' => 'checkboxes',
       '#title' => t('Enabled Sections'),
       '#default_value' => $enabled_sections,
       '#options' => $options,
-      '#required' => true,
+      '#required' => TRUE,
       '#weight' => '20',
-      '#attributes' => array(
+      '#attributes' => [
         'data-toggle' => 'toggle',
         'data-onstyle' => 'success',
         'data-size' => 'xs',
-      ),
-      '#suffix' => '</div>'
+      ],
+      '#suffix' => '</div>',
     ];
     $form['homepage'] = [
       '#prefix' => '<div class="form-group row"><div class="col-sm-6">',
       '#type' => 'select',
       '#title' => t('Group Homepage'),
-      '#default_value' => array($this->groups->getGroupHome($gid)),
+      '#default_value' => [$this->groups->getGroupHome($gid)],
       '#options' => $options,
-      '#attributes' => array('class' => array('form-control')),
+      '#attributes' => ['class' => ['form-control']],
       '#weight' => '30',
-      '#suffix' => '</div></div>'
+      '#suffix' => '</div></div>',
     ];
-/*    $form['on_top'] = array(
-      '#prefix' => '<div class="form-group">',
-      '#title' => t('Show on top'),
-      '#type' => 'checkboxes',
-      '#options' => $on_top_title,
-      '#default_value' => $on_top_default,
-      '#weight' => '40',
-      '#suffix' => '</div>'
+    /*    $form['on_top'] = array(
+    '#prefix' => '<div class="form-group">',
+    '#title' => t('Show on top'),
+    '#type' => 'checkboxes',
+    '#options' => $on_top_title,
+    '#default_value' => $on_top_default,
+    '#weight' => '40',
+    '#suffix' => '</div>'
     );*/
     $form['markup'] = [
       '#type' => 'markup',
       '#markup' => '<div class="form-group">
                         <legend>
-                            <span class="fieldset-legend">' .t('Custom section names') .'</span>
+                            <span class="fieldset-legend">' . t('Custom section names') . '</span>
                         </legend>
                     </div>',
-      '#allowed_tags' => ['div','span','legend'],
+      '#allowed_tags' => ['div', 'span', 'legend'],
       '#weight' => '45',
     ];
     // Section name overrides.
     foreach ($options as $key => $option) {
       /* Activate this to not show override if section is disabled,
-         but this will delete the override names that were entered.
-       if (!in_array($key, $enabled_sections)){
-        continue;
+      but this will delete the override names that were entered.
+      if (!in_array($key, $enabled_sections)){
+      continue;
       }*/
       // If override is present, use that as default value.
       $override_value = (!empty($section_overrides[$key])) ? $section_overrides[$key] : '';
-      $form['override_'.$key] = [
+      $form['override_' . $key] = [
         '#prefix' => '<div class="form-group row">
-                         <div class="col-sm-2 col-form-label">'.$option.'</div>
+                         <div class="col-sm-2 col-form-label">' . $option . '</div>
                       <div class="col-sm-6">',
         '#type' => 'textfield',
         '#default_value' => $override_value,
         '#required' => FALSE,
         '#attributes' => [
           'placeholder' => t('Your custom name...'),
-          'class' => ['form-control']
+          'class' => ['form-control'],
         ],
         '#weight' => '50',
-        '#suffix' => '</div></div>'
+        '#suffix' => '</div></div>',
       ];
     }
-    $form['status'] = array(
+    $form['status'] = [
       '#prefix' => '<div class="form-group">',
       '#title' => t('Published / Archived'),
       '#type' => 'checkboxes',
       '#options' => $archived_title,
       '#default_value' => $archived_default,
       '#weight' => '60',
-      '#attributes' => array(
+      '#attributes' => [
         'data-toggle' => 'toggle',
         'data-onstyle' => 'warning',
         'data-offstyle' => 'success',
         'data-size' => 's',
         'data-off' => t('Published'),
         'data-on' => t('Archived'),
-      ),
-      '#suffix' => '</div>'
-    );
+      ],
+      '#suffix' => '</div>',
+    ];
     $form['submit'] = [
       '#prefix' => '</div><div class="modal-footer">',
       '#type' => 'submit',
       '#weight' => '100',
-      '#attributes' => array('class' => array('btn btn-success')),
+      '#attributes' => ['class' => ['btn btn-success']],
       '#value' => $this->t('Save Settings'),
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
     return $form;
   }
@@ -239,8 +249,10 @@ class GroupConfigForm extends FormBase {
     // Make sure homepage can't be set to disabled section.
     $sections = $form_state->getValue('sections');
     $homepage = $form_state->getValue('homepage');
-    if(empty($sections[$homepage])){
-      //$form_state->setErrorByName('homepage', $this->t('The homepage has to be an enabled section.'));
+    if (empty($sections[$homepage])) {
+      // $form_state->setErrorByName('homepage',
+      // $this->t('Set enabled homepage.')
+      // );
     }
   }
 
@@ -249,7 +261,7 @@ class GroupConfigForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
-    // We need this to save section name overrides, even if they are disabled by user.
+    // Save section name overrides, even if sections are disabled by the user.
     $all_sections = $this->sections->getSectionsData();
     $options = $this->sections->buildOptionsFromSections($all_sections);
     // Save group settings.
@@ -259,11 +271,11 @@ class GroupConfigForm extends FormBase {
     $file = $form_state->getValue('file');
     $current_header_fid = $this->groups->getHeaderImage();
     // If there is no file, remove existing (if any).
-    if(empty($file[0])){
+    if (empty($file[0])) {
       $this->removeExistingHeaderFile();
     }
     // Check if there is a change in file, if so: remove existing and save new.
-    elseif ($current_header_fid != $file[0]){
+    elseif ($current_header_fid != $file[0]) {
       $this->removeExistingHeaderFile();
       $this->files->saveFiles($file, 'group_header');
     }
@@ -279,7 +291,4 @@ class GroupConfigForm extends FormBase {
     }
   }
 
-
 }
-
-

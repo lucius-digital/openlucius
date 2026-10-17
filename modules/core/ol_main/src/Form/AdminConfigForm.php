@@ -40,9 +40,10 @@ class AdminConfigForm extends ConfigFormBase {
     $config = $this->config(static::SETTINGS);
 
     // Toolbar setting.
-    $title = array( '1' => t('Show admin toolbar in frontend theme'));
-    $toolbar_default = array($config->get('show_admin_toolbar'));
-    $toolbar_default = (is_null($toolbar_default)) ? array('0') : $toolbar_default; // Needed for first time form load.
+    $title = ['1' => t('Show admin toolbar in frontend theme')];
+    $toolbar_default = [$config->get('show_admin_toolbar')];
+    // Needed for first time form load.
+    $toolbar_default = (is_null($toolbar_default)) ? ['0'] : $toolbar_default;
 
     $form['global_message'] = [
       '#type' => 'textarea',
@@ -56,12 +57,12 @@ class AdminConfigForm extends ConfigFormBase {
       '#default_value' => $config->get('nodejs_server_url'),
       '#description' => t('For example, local default: http://localhost:3000'),
     ];
-    $form['show_toolbar'] = array(
+    $form['show_toolbar'] = [
       '#title' => t('Show admin toolbar'),
       '#type' => 'checkboxes',
       '#options' => $title,
       '#default_value' => $toolbar_default,
-    );
+    ];
     return parent::buildForm($form, $form_state);
   }
 
@@ -72,7 +73,7 @@ class AdminConfigForm extends ConfigFormBase {
 
     // Retrieve the configuration.
     $this->configFactory->getEditable(static::SETTINGS)
-      // Set the submitted configuration setting.
+        // Set the submitted configuration setting.
       ->set('nodejs_server_url', $form_state->getValue('nodejs_server_url'))
       ->set('show_admin_toolbar', $form_state->getValue('show_toolbar')[1])
       ->set('global_message', $form_state->getValue('global_message'))

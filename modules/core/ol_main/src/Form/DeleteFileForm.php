@@ -7,21 +7,23 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\ol_main\Services\OlFiles;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class DeleteFileForm.
+ * Provides a form for deleting files.
  */
 class DeleteFileForm extends FormBase {
 
   /**
-   * @var $files
+   * The OL files service.
+   *
+   * @var \Drupal\ol_main\Services\OlFiles
    */
   protected $files;
 
   /**
-   * Class constructor.
+   * Constructs a DeleteFileForm instance.
    *
    * @param \Drupal\ol_main\Services\OlFiles $files
+   *   The OL files service.
    */
   public function __construct(OlFiles $files) {
     $this->files = $files;
@@ -32,9 +34,10 @@ class DeleteFileForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('olmain.files')
-    );
+          $container->get('olmain.files')
+      );
   }
+
   /**
    * {@inheritdoc}
    */
@@ -50,22 +53,22 @@ class DeleteFileForm extends FormBase {
     $form['file_id'] = [
       '#type' => 'hidden',
       '#weight' => '0',
-      '#attributes' => array('id' => array('remove-file-id')),
+      '#attributes' => ['id' => ['remove-file-id']],
     ];
     $form['file_type'] = [
       '#type' => 'hidden',
       '#weight' => '0',
-      '#attributes' => array('id' => array('file-type')),
+      '#attributes' => ['id' => ['file-type']],
     ];
     $form['markup'] = [
       '#type' => 'markup',
-      '#markup' => '<button type="button" class="btn btn-default" data-dismiss="modal">' .t('Cancel').'</button>',
+      '#markup' => '<button type="button" class="btn btn-default" data-dismiss="modal">' . t('Cancel') . '</button>',
       '#allowed_tags' => ['button'],
     ];
     $form['submit'] = [
       '#type' => 'submit',
       '#weight' => '20',
-      '#attributes' => array('class' => array('btn btn-danger')),
+      '#attributes' => ['class' => ['btn btn-danger']],
       '#value' => t('Yes, Delete Permanently'),
     ];
     return $form;
@@ -80,7 +83,7 @@ class DeleteFileForm extends FormBase {
     $file_type = $form_state->getValue('file_type');
     if ($file_type == 'file') {
       $fid = $this->files->getFileId($ol_file_id);
-      $this->files->removeOlFileAndFile($fid, false);
+      $this->files->removeOlFileAndFile($fid, TRUE);
     }
   }
 

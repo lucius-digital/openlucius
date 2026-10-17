@@ -2,31 +2,34 @@
 
 namespace Drupal\ol_weblinks\Services;
 
-use Drupal\Core\Url;
-use Drupal\ol_file\Entity\OlFile;
 use Drupal\ol_weblink\Entity\OlWeblink;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Class OlWeblinks.
+ * Service for managing weblinks.
  */
-class OlWeblinks{
+class OlWeblinks {
 
   /**
-  * @var $database
-  */
+   * Database connection service.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
   protected $database;
 
   /**
-   * @var $route
+   * Current route match service.
+   *
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
    */
   protected $route;
 
   /**
    * OlWeblinks constructor.
    *
-   * @param $route
-   * @param $connection
+   * @param \Drupal\Core\Routing\CurrentRouteMatch $route
+   *   The current route match service.
+   * @param \Drupal\Core\Database\Connection $connection
+   *   The database connection service.
    */
   public function __construct($route, $connection) {
     $this->route = $route;
@@ -34,12 +37,18 @@ class OlWeblinks{
   }
 
   /**
+   * Save a new weblink entity.
+   *
    * @param array $params
+   *   The weblink parameters.
+   *
    * @return int
+   *   The result of the entity save operation.
+   *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function saveWeblink(array $params){
-    if($params['weblink'] && $params['link_title']) {
+  public function saveWeblink(array $params) {
+    if ($params['weblink'] && $params['link_title']) {
       $entity = OlWeblink::create([
         'weblink' => $params['weblink'],
         'name' => $params['link_title'],
@@ -52,10 +61,15 @@ class OlWeblinks{
   }
 
   /**
+   * Get weblinks based on filter parameters.
+   *
    * @param array $params
-   * @return mixed
+   *   The filter parameters including gid, entity_id, and entity_type.
+   *
+   * @return array
+   *   Array of weblink data objects.
    */
-  public function getWeblinks(array $params){
+  public function getWeblinks(array $params) {
     $query = \Drupal::database()->select('ol_weblink', 'olw');
     $query->addField('olw', 'created');
     $query->addField('olw', 'id');
@@ -64,7 +78,7 @@ class OlWeblinks{
     $query->addField('olw', 'user_id');
     $query->addField('user', 'name', 'username');
     $query->condition('olw.group_id', $params['gid']);
-    if($params['entity_id']){
+    if ($params['entity_id']) {
       $query->condition('olw.entity_id', $params['entity_id']);
       $query->condition('olw.entity_type', $params['entity_type']);
     }
@@ -74,19 +88,23 @@ class OlWeblinks{
     return $query->execute()->fetchAll();
   }
 
-
   /**
-   * @param $weblinks
-   * @return mixed
+   * Render weblinks to HTML.
+   *
+   * @param array $weblinks
+   *   Array of weblink data objects.
+   *
+   * @return string
+   *   Rendered HTML string for all weblinks.
    */
-  public function renderWeblinks($weblinks){
+  public function renderWeblinks($weblinks) {
     // Initiate html.
     $weblinks_items_html = '';
     // Loop through array and render HTML rows via twig file.
-    foreach ($weblinks as $weblink){
+    foreach ($weblinks as $weblink) {
       // Get board settings of group this weblink is in.
       $vars['id'] = $weblink->id;
-      $vars['created'] =  date('d-M-Y, H:i', $weblink->created);
+      $vars['created'] = date('d-M-Y, H:i', $weblink->created);
       $username = ($weblink->username) ? $weblink->username : t('removed_user');
       $vars['username'] = $username;
       $vars['is_owner'] = $weblink->user_id == \Drupal::currentUser()->id();
@@ -100,24 +118,29 @@ class OlWeblinks{
     $vars['weblinks'] = $weblinks_items_html;
     // Render.
     $render_all = ['#theme' => 'weblinks_wrapper', '#vars' => $vars];
-    // Render them to html
+    // Render them to html.
     return \Drupal::service('renderer')->render($render_all);
   }
 
   /**
-   * @param $ol_weblink_id
+   * Delete a weblink by ID.
+   *
+   * @param int $ol_weblink_id
+   *   The weblink entity ID.
    *
    * @return bool
+   *   True if deleted successfully, false otherwise.
+   *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function deleteWeblink($ol_weblink_id){
+  public function deleteWeblink($ol_weblink_id) {
     $weblink = OlWeblink::load($ol_weblink_id);
     $owner_uid = $weblink->getOwnerId();
-    if($owner_uid == \Drupal::currentUser()->id()) {
+    if ($owner_uid == \Drupal::currentUser()->id()) {
       $weblink->delete();
-      return true;
+      return TRUE;
     }
-    return false;
+    return FALSE;
   }
 
 }

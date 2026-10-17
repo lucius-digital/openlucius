@@ -16,16 +16,22 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class FileDragDropAjaxController extends ControllerBase {
 
   /**
-   * @var $folders
+   * Folders service.
+   *
+   * @var \Drupal\ol_files\Services\OlFolders
    */
   protected $folders;
 
   /**
-   * {@inheritdoc}
+   * FileDragDropAjaxController constructor.
+   *
+   * @param \Drupal\ol_files\Services\OlFolders $folders
+   *   Folders service.
    */
   public function __construct(OlFolders $folders) {
     $this->folders = $folders;
   }
+
   /**
    * {@inheritdoc}
    */
@@ -69,7 +75,7 @@ class FileDragDropAjaxController extends ControllerBase {
     // Update file folder.
     $this->folders->placeFileInFolder($folder_id, $file_id);
 
-    // TODO: get a status returned and provide message to UI.
+    // @todo Get a status returned and provide message to UI.
 /*    if ($status) {
       $this->getLogger('ol_files')->error(
         'File @file_id could not be loaded.',
@@ -84,7 +90,6 @@ class FileDragDropAjaxController extends ControllerBase {
       ], 404);
     }*/
 
-
     $this->getLogger('ol_files')->notice(
       'File @file_id moved to folder @folder_id.',
       [
@@ -93,9 +98,7 @@ class FileDragDropAjaxController extends ControllerBase {
       ]
     );
 
-    /*
-     * Return success to JavaScript.
-     */
+    // Return success to JavaScript.
     return new JsonResponse([
       'success' => TRUE,
       'file_id' => (int) $file_id,

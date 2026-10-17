@@ -2,26 +2,29 @@
 
 namespace Drupal\ol_posts\Form;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Component\Utility\Html;
-use Drupal\ol_post_settings\Entity\OlPostSettings;
 use Drupal\ol_posts\Services\OlPosts;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class PostConfigForm.
+ * Form for configuring post settings.
  */
 class PostConfigForm extends FormBase {
 
   /**
-   * @var $posts
+   * Posts service.
+   *
+   * @var \Drupal\ol_posts\Services\OlPosts
    */
   protected $posts;
 
   /**
-   * Class constructor.
+   * PostConfigForm constructor.
+   *
+   * @param \Drupal\ol_posts\Services\OlPosts $posts
+   *   Posts service.
    */
   public function __construct(OlPosts $posts) {
     $this->posts = $posts;
@@ -46,18 +49,18 @@ class PostConfigForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $post_settings = null) {
+  public function buildForm(array $form, FormStateInterface $form_state, $post_settings = NULL) {
 
     $question = t('What are you working on?');
-    $default_enabled = array('Mon');
+    $default_enabled = ['Mon'];
     $enabled = 1;
-    $id = null;
+    $id = NULL;
 
-    if (!empty($post_settings->id)){
+    if (!empty($post_settings->id)) {
       $id = $post_settings->id;
       $enabled = $post_settings->status;
       $question = $post_settings->question;
-      $default_enabled = json_decode($post_settings->send_days, true);
+      $default_enabled = json_decode($post_settings->send_days, TRUE);
     }
 
     $form['id_post'] = [
@@ -69,21 +72,21 @@ class PostConfigForm extends FormBase {
       '#type' => 'markup',
       '#markup' => '<div class="modal-body">',
       '#weight' => '10',
-      '#allowed_tags' => ['div',],
+      '#allowed_tags' => ['div'],
     ];
-    $form['enabled'] = array(
+    $form['enabled'] = [
       '#prefix' => '<div class="form-group">',
       '#type' => 'checkboxes',
-      '#options' => array( '1' => t('Enable this')),
-      '#default_value' => array($enabled),
+      '#options' => ['1' => t('Enable this')],
+      '#default_value' => [$enabled],
       '#weight' => '20',
-      '#attributes' => array(
+      '#attributes' => [
         'data-toggle' => 'toggle',
         'data-onstyle' => 'success',
         'data-size' => 'xs',
-      ),
-      '#suffix' => '</div>'
-    );
+      ],
+      '#suffix' => '</div>',
+    ];
 
     $form['question'] = [
       '#prefix' => '<div class="form-group">',
@@ -93,15 +96,15 @@ class PostConfigForm extends FormBase {
       '#default_value' => $question,
       '#attributes' => [
         'placeholder' => t('Write your question...'),
-        'class' => ['form-control']
+        'class' => ['form-control'],
       ],
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
-    $form['send_days'] = array(
+    $form['send_days'] = [
       '#prefix' => '<div class="form-group">',
       '#title' => t('Send emails to members with this question every:'),
       '#type' => 'checkboxes',
-      '#options' => array(
+      '#options' => [
         'Mon' => t('Monday'),
         'Tue' => t('Tuesday'),
         'Wed' => t('Wednesday'),
@@ -109,24 +112,24 @@ class PostConfigForm extends FormBase {
         'Fri' => t('Friday'),
         'Sat' => t('Saturday'),
         'Sun' => t('Sunday'),
-      ),
-      '#attributes' => array(
+      ],
+      '#attributes' => [
         'data-toggle' => 'toggle',
         'data-onstyle' => 'success',
         'data-size' => 'xs',
-      ),
+      ],
       '#default_value' => $default_enabled,
       '#weight' => '40',
-      '#suffix' => '</div>'
-    );
+      '#suffix' => '</div>',
+    ];
 
     $form['submit'] = [
       '#prefix' => '</div><div class="modal-footer">',
       '#type' => 'submit',
       '#weight' => '1000',
-      '#attributes' => array('class' => array('btn btn-success')),
+      '#attributes' => ['class' => ['btn btn-success']],
       '#value' => $this->t('Save'),
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
 
     return $form;
@@ -140,6 +143,7 @@ class PostConfigForm extends FormBase {
 
   /**
    * {@inheritdoc}
+   *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
@@ -150,7 +154,7 @@ class PostConfigForm extends FormBase {
     $send_days = $form_state->getValue('send_days');
     $send_days_json = json_encode($send_days);
     // Existing settings, update.
-    if(is_numeric($id)){
+    if (is_numeric($id)) {
       $this->posts->updatePostSettings($id, $question, $send_days_json, $enabled);
     }
     // Save new post settings.
@@ -158,6 +162,7 @@ class PostConfigForm extends FormBase {
       $this->posts->savePostSettings($question, $send_days_json, $enabled);
     }
   }
+
 }
 
 

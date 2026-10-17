@@ -1,5 +1,5 @@
 name: 'OL Message'
 type: module
 description: 'OL Message Entity'
-core_version_requirement: ^9 || ^10 || ^11
+core_version_requirement: ^11
 package: 'OL app'

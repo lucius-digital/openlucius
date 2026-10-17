@@ -1,24 +1,46 @@
-(function ($, Drupal, drupalSettings) {
+/**
+ * Sortable tab settings drag-and-drop behavior.
+ *
+ * @file
+ */
 
-  $(document).ready(function() {
-    const el = document.getElementById('sortable-tab-settings');
-    const sortable_list = Sortable.create(el, {
-      // Element dragging ended.
-      onSort: function (/**Event*/evt) {
-        const orderedItems = sortable_list.toArray();
-        $.ajax({
-          url: Drupal.url('update_home_tabs_positions'),
-          type: 'POST',
-          data: {
-            'orderedItems': orderedItems,
-          },
-          dataType: 'json',
-          success: function (result) {
-            $('#sorted-message').text('Saved')
-          }
-        });
-      },
-    });
-  });
+(function ($, Drupal, once) {
 
-})(jQuery, Drupal, drupalSettings);
+    /**
+     * Sortable tab settings behavior.
+     *
+     * @type {Drupal~behavior}
+     */
+    Drupal.behaviors.olSortable = {
+        attach(context) {
+            // Initialize sortable list once per element.
+            $(once('olSortable', '#sortable-tab-settings', context)).each(
+                function () {
+                    const el = this;
+                    const sortableList = Sortable.create(
+                        el, {
+                            // Element dragging ended.
+                            onSort: function (/* Event */evt) {
+                                const orderedItems = sortableList.toArray();
+                                $.ajax(
+                                    {
+                                        url: Drupal.url('update_home_tabs_positions'),
+                                        type: 'POST',
+                                        data: {
+                                            orderedItems: orderedItems
+                                        },
+                                        dataType: 'json',
+                                        success: function (result) {
+                                            $('#sorted-message').text('Saved');
+                                        }
+                                    }
+                                );
+                            }
+                        }
+                    );
+                }
+            );
+        }
+    };
+
+})(jQuery, Drupal, once);

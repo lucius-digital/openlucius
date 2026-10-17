@@ -7,59 +7,79 @@ use Drupal\ol_folder\Entity\OlFolder;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Class OlMembers.
+ * Service for managing folders.
  */
-class OlFolders{
+class OlFolders {
 
   /**
-   * @var $database
+   * Database connection.
+   *
+   * @var mixed
    */
   protected $database;
 
   /**
-   * @var $route
+   * Current route.
+   *
+   * @var mixed
    */
   protected $route;
 
   /**
-   * @var $messenger
+   * Messenger service.
+   *
+   * @var mixed
    */
   protected $messenger;
 
   /**
-   * @var $current_user
+   * Current user.
+   *
+   * @var mixed
    */
-  protected $current_user;
+  protected $currentUser;
 
   /**
-   * @var $members
+   * Members service.
+   *
+   * @var mixed
    */
   protected $members;
 
   /**
-   * OlFolder constructor.
+   * OlFolders constructor.
    *
-   * @param $route
-   * @param $connection
-   * @param $messenger
-   * @param $current_user
-   * @param $members
-   * @param $files
+   * @param mixed $route
+   *   Current route.
+   * @param mixed $connection
+   *   Database connection.
+   * @param mixed $messenger
+   *   Messenger service.
+   * @param mixed $currentUser
+   *   Current user.
+   * @param mixed $members
+   *   Members service.
    */
-  public function __construct($route, $connection, $messenger, $current_user, $members) {
+  public function __construct($route, $connection, $messenger, $currentUser, $members) {
     $this->route = $route;
     $this->database = $connection;
     $this->messenger = $messenger;
-    $this->current_user = $current_user;
+    $this->currentUser = $currentUser;
     $this->members = $members;
   }
 
   /**
-   * @param $name
+   * Save a new folder.
+   *
+   * @param string $name
+   *   Folder name.
+   *
    * @return int|string|null
+   *   The new folder ID.
+   *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function saveFolder($name){
+  public function saveFolder($name) {
     $gid = $this->route->getParameter('gid');
     $folder = OlFolder::create([
       'name' => $name,
@@ -73,58 +93,70 @@ class OlFolders{
   }
 
   /**
-   * @param null $folder_id
+   * Remove a folder.
+   *
+   * @param int|null $folderId
+   *   The folder ID.
    */
-  public function removeFolder($folder_id = null){
+  public function removeFolder($folderId = NULL) {
     // Get current gid.
     $gid = $this->route->getParameter('gid');
     // Check if current user may remove folder.
-    if($this->canAdminFolder($folder_id)) {
+    if ($this->canAdminFolder($folderId)) {
       // Get folder id, if not provided.
-      $folder_id = (empty($folder_id)) ? $this->route->getParameter('folder_id') : $folder_id;
+      $folderId = (empty($folderId)) ? $this->route->getParameter('folder_id') : $folderId;
       // Get folder name for stream item.
-      $folder_name = $this->getFolderName($folder_id);
+      $folderName = $this->getFolderName($folderId);
       // Delete folder entity.
       \Drupal::database()->delete('ol_folder')
-        ->condition('id', $folder_id, '=')
+        ->condition('id', $folderId, '=')
         ->execute();
       // Delete folder reference from files.
       \Drupal::database()->update('ol_file')
-        ->fields(['folder_id' => null])
-        ->condition('folder_id', $folder_id)
+        ->fields(['folder_id' => NULL])
+        ->condition('folder_id', $folderId)
         ->execute();
       // Add stream item.
-      $stream_body = $folder_name;
+      $streamBody = $folderName;
       $stream = \Drupal::service('olstream.stream');
-      $stream->addStreamItem($gid, 'folder_removed', $stream_body, 'folder', $folder_id);
+      $stream->addStreamItem($gid, 'folder_removed', $streamBody, 'folder', $folderId);
       \Drupal::messenger()->addStatus(t('Folder removed successfully.'));
     }
-    $path = Url::fromRoute('ol_files.group_files',['gid' => $gid, 'folder_id' => $folder_id])->toString();
+    $path = Url::fromRoute('ol_files.group_files', ['gid' => $gid, 'folder_id' => $folderId])->toString();
     $response = new RedirectResponse($path);
     $response->send();
   }
 
   /**
-   * @param $name
-   * @param null $folder_id
+   * Update a folder name.
+   *
+   * @param string $name
+   *   New folder name.
+   * @param int|null $folderId
+   *   The folder ID.
    */
-  public function updateFolder($name, $folder_id = null){
-    // Check if current user may remove folder.
-    if($this->canAdminFolder($folder_id)) {
+  public function updateFolder($name, $folderId = NULL) {
+    // Check if current user may update folder.
+    if ($this->canAdminFolder($folderId)) {
       \Drupal::database()->update('ol_folder')
         ->fields(['name' => $name])
-        ->condition('id', $folder_id)
+        ->condition('id', $folderId)
         ->execute();
     }
   }
 
   /**
-   * @param $gid
+   * Get folder data with file counts.
+   *
+   * @param int $gid
+   *   The group ID.
+   *
    * @return mixed
+   *   Array of folder objects.
    */
-  function getFoldersData($gid){
+  public function getFoldersData($gid) {
     $folders = $this->getFolders($gid);
-    foreach ($folders as $folder){
+    foreach ($folders as $folder) {
       // Needed for badge.
       $folder->count_files = $this->countFilesInFolder($folder->id);
       // Needed to show/hide drop down.
@@ -134,19 +166,24 @@ class OlFolders{
   }
 
   /**
-   * @param null $gid
-   * @param null $get_top
+   * Get folders for a group.
+   *
+   * @param int|null $gid
+   *   The group ID.
+   * @param bool|null $getTop
+   *   Whether to get only the top folder.
    *
    * @return mixed
+   *   Array of folder objects.
    */
-  public function getFolders($gid = null, $get_top = null){
+  public function getFolders($gid = NULL, $getTop = NULL) {
     $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
     $query = \Drupal::database()->select('ol_folder', 'of');
     $query->addField('of', 'id');
     $query->addField('of', 'name');
     $query->condition('of.group_id', $gid);
     $query->condition('of.status', 1);
-    if($get_top) {
+    if ($getTop) {
       $query->range(0, 1);
     }
     $query->orderBy('of.name');
@@ -154,102 +191,135 @@ class OlFolders{
   }
 
   /**
-   * @param $folder_id
-   * @return mixed
+   * Count files in a folder.
+   *
+   * @param int $folderId
+   *   The folder ID.
+   *
+   * @return int
+   *   Number of files.
    */
-  private function countFilesInFolder($folder_id){
+  private function countFilesInFolder($folderId) {
     $query = \Drupal::database()->select('ol_file', 'of');
     $query->addField('of', 'folder_id');
-    $query->condition('of.folder_id', $folder_id);
+    $query->condition('of.folder_id', $folderId);
     $query->condition('of.status', 1);
     return $query->countQuery()->execute()->fetchField();
   }
 
   /**
-   * @param $group_id
+   * Get folders dropdown options.
+   *
+   * @param int|null $groupId
+   *   The group ID.
+   *
    * @return array
+   *   Associative array of folder options.
    */
-  function getFoldersInCurrentGroup($group_id = null){
-    $group_id = (empty($group_id)) ? $this->route->getParameter('gid') : $group_id;
-    $current_folders = $this->getFolders($group_id);
-    $folders = array();
-    $folders[0] = '--'. t('Choose folder') .'--';
-    foreach ($current_folders as $folder){
+  public function getFoldersInCurrentGroup($groupId = NULL) {
+    $groupId = (empty($groupId)) ? $this->route->getParameter('gid') : $groupId;
+    $currentFolders = $this->getFolders($groupId);
+    $folders = [];
+    $folders[0] = '-- ' . t('Choose folder') . ' --';
+    foreach ($currentFolders as $folder) {
       $folders[$folder->id] = $folder->name;
     }
     return $folders;
   }
 
   /**
-   * @param $folder_id
+   * Check if current user can admin a folder.
+   *
+   * @param int|null $folderId
+   *   The folder ID.
+   *
    * @return bool
+   *   TRUE if user can admin the folder.
    */
-  private function canAdminFolder($folder_id = null){
+  private function canAdminFolder($folderId = NULL) {
     // If user is group admin, return true.
-    if(is_numeric($this->members->isGroupAdmin())) {
+    if (is_numeric($this->members->isGroupAdmin())) {
       return TRUE;
     }
     // Get folder id, if not provided.
-    $folder_id = (empty($folder_id)) ? $this->route->getParameter('folder_id') : $folder_id;
+    $folderId = (empty($folderId)) ? $this->route->getParameter('folder_id') : $folderId;
     // User is not group admin of current group, check if user is folder owner.
     $query = \Drupal::database()->select('ol_folder', 'of');
     $query->addField('of', 'user_id');
-    $query->condition('of.id', $folder_id);
+    $query->condition('of.id', $folderId);
     $query->condition('of.status', 1);
-    $uid =  $query->execute()->fetchField();
-    return ($uid == $this->current_user->id());
+    $uid = $query->execute()->fetchField();
+    return ($uid == $this->currentUser->id());
   }
 
   /**
-   * @param $file_id
-   * @param null $group_id
+   * Remove a file from its folder.
+   *
+   * @param int $id
+   *   The file ID.
+   * @param int|null $groupId
+   *   The group ID.
    */
-  function removeFileFromFolder($id, $group_id = null){
-    // Only remove if file owner or group admin
-    if($this->members->isGroupAdmin() || $this->isFileOwner($id) ){
-      $group_id = (empty($group_id)) ? $this->route->getParameter('gid') : $group_id;
+  public function removeFileFromFolder($id, $groupId = NULL) {
+    // Only remove if file owner or group admin.
+    if ($this->members->isGroupAdmin() || $this->isFileOwner($id)) {
+      $groupId = (empty($groupId)) ? $this->route->getParameter('gid') : $groupId;
       \Drupal::database()->update('ol_file')
         ->fields(['folder_id' => 0])
-        ->condition('group_id', $group_id)
+        ->condition('group_id', $groupId)
         ->condition('id', $id)
         ->execute();
       \Drupal::messenger()->addStatus(t('Your file was successfully removed from folder.'));
     }
-    else{
+    else {
       \Drupal::messenger()->addWarning(t('No access.'));
     }
   }
 
   /**
-   * This is duplicate, see files service, to avoid Circular reference.
-   * @param $fid
+   * Check if current user is the file owner.
+   *
+   * @param int $id
+   *   The file ID.
+   *
    * @return bool
+   *   TRUE if user is the file owner.
    */
-  private function isFileOwner($id){
+  private function isFileOwner($id) {
     $query = \Drupal::database()->select('ol_file', 'fr');
     $query->addField('fr', 'user_id');
     $query->condition('fr.id', $id);
     $uid = $query->execute()->fetchField();
-    return ($uid == $this->current_user->id());
+    return ($uid == $this->currentUser->id());
   }
 
   /**
-   * @param $folder_id
-   * @return mixed
+   * Get folder name by ID.
+   *
+   * @param int $folderId
+   *   The folder ID.
+   *
+   * @return string
+   *   The folder name.
    */
-  private function getFolderName($folder_id){
+  private function getFolderName($folderId) {
     $query = \Drupal::database()->select('ol_folder', 'olf');
     $query->addField('olf', 'name');
-    $query->condition('olf.id', $folder_id);
+    $query->condition('olf.id', $folderId);
     return $query->execute()->fetchField();
   }
 
   /**
-   * @param $id_folder
-   * @param $fid
-   * @param null $gid
+   * Place a file in a folder.
+   *
+   * @param int $id_folder
+   *   The folder ID.
+   * @param int $id
+   *   The file ID.
+   * @param int|null $gid
+   *   The group ID.
    */
-  public function placeFileInFolder($id_folder, $id, $gid = null){
+  public function placeFileInFolder($id_folder, $id, $gid = NULL) {
     // Get gid if empty.
     $gid = (empty($gid)) ? $this->route->getParameter('gid') : $gid;
     // Update file record with folder id.

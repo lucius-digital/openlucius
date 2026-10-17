@@ -1,7 +1,7 @@
 .categories .active a,
 .category-left .active a,
-.categories .active .btn-link{
-  color:#fff;
+.categories .active .btn-link {
+  color: #fff;
 }
 table.dataTable thead th,
 table.dataTable thead td,
@@ -17,25 +17,25 @@ table.dataTable.no-footer {
 }
 /* For sortable modal */
 .nested-sortable > div:first-of-type {
-  margin-top:0.4rem;
+  margin-top: 0.4rem;
 }
 /* For pages nav left */
-.text-docs-container .list-group-item{
+.text-docs-container .list-group-item {
   padding: .5rem 0.9rem !important;
   padding-bottom: 0!important;
   background-color: #fff;
   font-size: 0.85rem;
-  border:0;
+  border: 0;
   padding-right: 0 !important;
 }
 a.active.left-menu-link {
   color: #2c2c2c;
   font-weight: bolder;
   text-decoration: underline;
-  background-color:#fff !important;
+  background-color: #fff !important;
 }
-.drag-handle{
-  cursor:grab;
+.drag-handle {
+  cursor: grab;
 }
 .drag-handle:active {
   cursor: grabbing;

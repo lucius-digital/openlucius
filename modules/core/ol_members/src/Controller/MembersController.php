@@ -3,39 +3,47 @@
 namespace Drupal\ol_members\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Form\FormBuilder;
 use Drupal\ol_main\Services\OlSections;
+use Drupal\ol_members\Form\MembersForm;
 use Drupal\ol_members\Services\OlMembers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Form\FormBuilder;
 
 /**
- * Class MembersController.
+ * Controller for managing group members.
  */
 class MembersController extends ControllerBase {
 
   /**
-   * @var $members
+   * Members service.
+   *
+   * @var \Drupal\ol_members\Services\OlMembers
    */
   protected $members;
 
   /**
-   * @var $form_builder
+   * Form builder service.
+   *
+   * @var \Drupal\Core\Form\FormBuilder
    */
-  protected $form_builder;
+  protected $formBuilder;
 
   /**
-   * @var $sections
+   * Sections service.
+   *
+   * @var \Drupal\ol_main\Services\OlSections
    */
   protected $sections;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(OlMembers $members, FormBuilder $form_builder, OlSections $sections) {
+  public function __construct(OlMembers $members, FormBuilder $formBuilder, OlSections $sections) {
     $this->members = $members;
-    $this->form_builder = $form_builder;
+    $this->formBuilder = $formBuilder;
     $this->sections = $sections;
   }
+
   /**
    * {@inheritdoc}
    */
@@ -48,14 +56,19 @@ class MembersController extends ControllerBase {
   }
 
   /**
-   * @param $gid
+   * Render the members page for a specific group.
+   *
+   * @param mixed $gid
+   *   The group identifier.
+   *
    * @return array
+   *   Render array for the members page.
+   *
    * @throws \Exception
    */
-  public function getMembersGroup($gid){
-
+  public function getMembersGroup($gid) {
     $group_admin_uid = $this->members->isGroupAdmin();
-    $members_form = $this->form_builder->getForm(\Drupal\ol_members\Form\MembersForm::class);
+    $members_form = $this->formBuilder->getForm(MembersForm::class);
     $members_list_data = $this->members->getUsersInGroup();
     $member_cards = $this->members->renderMembersCards($members_list_data, $gid, $group_admin_uid);
     $is_user_manager = $this->members->isUserManager();
@@ -76,10 +89,14 @@ class MembersController extends ControllerBase {
   }
 
   /**
+   * Render the all members page.
+   *
    * @return array
+   *   Render array for the all members page.
+   *
    * @throws \Exception
    */
-  public function getMembersAll(){
+  public function getMembersAll() {
     // Get data.
     $members_list_data = $this->members->getAllUsers();
     $member_cards = $this->members->renderMembersCards($members_list_data);
@@ -97,13 +114,17 @@ class MembersController extends ControllerBase {
   }
 
   /**
+   * Render the blocked members page.
+   *
    * @return array
+   *   Render array for the blocked members page.
+   *
    * @throws \Exception
    */
-  public function getMembersAllBlocked(){
+  public function getMembersAllBlocked() {
     // Get data.
     $members_list_data = $this->members->getAllUsers(0);
-    $member_cards = $this->members->renderMembersCards($members_list_data, null, null, TRUE);
+    $member_cards = $this->members->renderMembersCards($members_list_data, NULL, NULL, TRUE);
     $title = t('Blocked users');
     // Build it.
     $theme_vars = [
@@ -118,15 +139,22 @@ class MembersController extends ControllerBase {
   }
 
   /**
-   * @param $gid
-   * @param $uid
+   * Remove a member from a group.
+   *
+   * @param mixed $gid
+   *   The group identifier.
+   * @param mixed $uid
+   *   The user identifier.
    */
-  public function removeMemberFromGroup($gid, $uid){
+  public function removeMemberFromGroup($gid, $uid) {
     $this->members->deleteUserGroupRelation($uid);
   }
 
   /**
-   * @param $uid
+   * Make a user a manager.
+   *
+   * @param mixed $uid
+   *   The user identifier.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
@@ -135,30 +163,39 @@ class MembersController extends ControllerBase {
   }
 
   /**
-   * @param $uid
-   * @throws \Drupal\Core\Entity\EntityStorageException
-   */
-  public function removeUserManager($uid){
-    $this->members->removeUserRole($uid,'manager');
-  }
-
-  /**
-   * @param $uid
+   * Remove manager role from a user.
+   *
+   * @param mixed $uid
+   *   The user identifier.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function blockMember($uid){
+  public function removeUserManager($uid) {
+    $this->members->removeUserRole($uid, 'manager');
+  }
+
+  /**
+   * Block a member user.
+   *
+   * @param mixed $uid
+   *   The user identifier.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function blockMember($uid) {
     $this->members->blockUser($uid);
   }
 
   /**
-   * @param $uid
+   * Unblock a member user.
+   *
+   * @param mixed $uid
+   *   The user identifier.
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function unblockMember($uid){
+  public function unblockMember($uid) {
     $this->members->unblockUser($uid);
   }
-
 
 }

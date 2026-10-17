@@ -1,56 +1,72 @@
-(function ($, Drupal, drupalSettings) {
-  $(document).ready(()=>{
+/**
+ * @file
+ * Text docs sortable list behaviors.
+ */
 
-    // Trigger click on drop down button to uncollapse parents of active link.
-    // Also: uncollapse 1st level children if parent is clicked.
-    $("a.active.left-menu-link").parents('.button-holder').find('.drop-down-toggle:lt(1)').trigger('click');
+(function ($, Drupal, once, drupalSettings) {
 
-    // Handle sortable in modal.
-    var nestedSortables = [].slice.call(document.querySelectorAll('.nested-sortable'));
+  /**
+   * Text docs sortable list behaviors.
+   *
+   * @type {Drupal~behavior}
+   */
+  Drupal.behaviors.textDocsSortable = {
+    attach(context) {
+      // Trigger click on drop down button to uncollapse parents of active link.
+      // Also: uncollapse 1st level children if parent is clicked.
+      $(once('textDocsSortable-menuToggle', 'a.active.left-menu-link', context))
+        .parents('.button-holder')
+        .find('.drop-down-toggle:lt(1)')
+        .trigger('click');
 
-    // Loop through each nested sortable element.
-    if(nestedSortables) {
-      for (var i = 0; i < nestedSortables.length; i++) {
-        new Sortable(nestedSortables[i], {
-          dragoverBubble: true,
-          group: 'nested',
-          animation: 0,
-          fallbackOnBody: true,
-          swapThreshold: 0.7,
-          invertSwap: true,
-          draggable: ".nested-sortable ",
-          onEnd: function ( /**Event*/evt) {
-            $.ajax({
-              url: Drupal.url('group/' + drupalSettings.group_uuid + '/save_text_docs_order'),
-              type: 'POST',
-              data: {
-                'orderedItems': JSON.stringify(getOrder()),
-              },
-              dataType: 'json',
-              success: function (result) {
-                $('#sorted-message').text('Order saved successfully')
-              }
-            });
-          }
-        });
-      }
-      // When drag end, this function gets triggered.
-      // Returns all data we need to save order to dbase.
+      // Handle sortable in modal.
+      const nestedSortables = [].slice.call(
+        $(once('textDocsSortable-nested', '.nested-sortable', context)).get()
+      );
+
+      // When drag ends, this function gets triggered.
+      // Returns all data we need to save order to database.
       function getOrder() {
-        let pages = [];
+        const pages = [];
         $('.nested-sortable.item').each(function (i, e) {
-          let el = $(e);
-          pages.push(
-            {
-              parent_id: +el.parent().attr('id'),
-              id: +el.attr('id'),
-              weight: el.index(),
-            }
-          )
+          const el = $(e);
+          pages.push({
+            parent_id: +el.parent().attr('id'),
+            id: +el.attr('id'),
+            weight: el.index(),
+          });
         });
-        return pages
+        return pages;
+      }
+
+      // Loop through each nested sortable element.
+      if (nestedSortables) {
+        for (let i = 0; i < nestedSortables.length; i++) {
+          new Sortable(nestedSortables[i], {
+            dragoverBubble: true,
+            group: 'nested',
+            animation: 0,
+            fallbackOnBody: true,
+            swapThreshold: 0.7,
+            invertSwap: true,
+            draggable: '.nested-sortable',
+            onEnd: function (/* Event */evt) {
+              $.ajax({
+                url: Drupal.url('group/' + drupalSettings.group_uuid + '/save_text_docs_order'),
+                type: 'POST',
+                data: {
+                  orderedItems: JSON.stringify(getOrder()),
+                },
+                dataType: 'json',
+                success: function (result) {
+                  $('#sorted-message').text('Order saved successfully');
+                }
+              });
+            }
+          });
+        }
       }
     }
-  });
-})(jQuery, Drupal, drupalSettings);
+  };
 
+})(jQuery, Drupal, once, drupalSettings);

@@ -2,9 +2,9 @@
 
 namespace Drupal\ol_stream\Access;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Access\AccessResult;
 
 /**
  * Checks access for displaying configuration translation page.
@@ -16,26 +16,31 @@ class UserProfileAccessChecker implements AccessInterface {
    *
    * @param \Drupal\Core\Session\AccountInterface $account
    *   Run access checks for this account.
+   * @param int $uid
+   *   The user ID to check access for.
    *
-   * @param $uid
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
    */
   public function access(AccountInterface $account, $uid) {
-    // Check permissions and combine that with any custom access checking needed. Pass forward
-    // parameters from the route and/or request as needed.
+    // Check permissions and combine with custom access checking.
+    // Pass forward parameters from the route as needed.
     return ($account->hasPermission('access ol content')
       && $this->checkUserProfileAccess($account, $uid)) ? AccessResult::allowed() : AccessResult::forbidden();
   }
 
   /**
-   * Check if current user can access group, based on group uuid, so group id can not be guessed.
+   * Check if current user can access user profile based on group membership.
    *
-   * @param $account
-   * @param $uid
+   * @param \Drupal\Core\Session\AccountInterface $account
+   *   The account to check.
+   * @param int $uid
+   *   The user ID to check.
+   *
    * @return bool
+   *   TRUE if access is granted.
    */
-  private function checkUserProfileAccess($account, $uid){
+  private function checkUserProfileAccess($account, $uid) {
 
     $stream = \Drupal::service('olstream.stream');
     $current_user_gids = $stream->getUserGroups();

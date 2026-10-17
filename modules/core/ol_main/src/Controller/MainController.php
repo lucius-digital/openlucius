@@ -3,6 +3,7 @@
 namespace Drupal\ol_main\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\ol_main\Form\GroupConfigForm;
 use Drupal\ol_main\Services\OlGroups;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -13,10 +14,11 @@ class MainController extends ControllerBase {
 
 
   /**
-   * @var $groups
+   * The OL groups service.
+   *
+   * @var \Drupal\ol_main\Services\OlGroups
    */
   protected $groups;
-
 
   /**
    * {@inheritdoc}
@@ -24,33 +26,40 @@ class MainController extends ControllerBase {
   public function __construct(OlGroups $groups) {
     $this->groups = $groups;
   }
+
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('olmain.groups')
-    );
+          $container->get('olmain.groups')
+      );
   }
 
   /**
+   * Return the home page based on user role.
+   *
    * @return array
+   *   A renderable array for the home page.
    */
-  public function getHome(){
+  public function getHome() {
     // Get user role.
     $user = \Drupal::currentUser();
-    if($user->hasPermission('access all openlucius content')) {
+    if ($user->hasPermission('access all openlucius content')) {
       return $this->getHomeStandard();
-    } else {
+    }
+    else {
       return $this->getHomeCollaborator();
     }
   }
 
-
   /**
+   * Return the home page for collaborator users.
+   *
    * @return array
+   *   A renderable array for the home page.
    */
-  private function getHomeCollaborator(){
+  private function getHomeCollaborator() {
 
     // Groups block right.
     $groups_data = $this->groups->getGroups(1);
@@ -61,7 +70,7 @@ class MainController extends ControllerBase {
       'label' => 'Group activity',
       'weight' => 20,
       'query_link' => 'activity',
-      'new_badge' => null,
+      'new_badge' => NULL,
       'icon' => 'lni lni-users',
     ];
     // Set active tab static for role collaborators.
@@ -90,9 +99,12 @@ class MainController extends ControllerBase {
   }
 
   /**
+   * Return the home page for standard users.
+   *
    * @return array
+   *   A renderable array for the home page.
    */
-  private function getHomeStandard(){
+  private function getHomeStandard() {
 
     // Groups block right.
     $groups_data = $this->groups->getGroups(1);
@@ -104,10 +116,10 @@ class MainController extends ControllerBase {
     // Get manual tabs order.
     $tabs_order = $this->groups->getHomeTabsPositions();
     // Order tabs when manually ordered before.
-    if(is_array($tabs_order)) {
+    if (is_array($tabs_order)) {
       $tabs = array_merge(array_flip($tabs_order), $tabs);
     }
-    // Content in tabs
+    // Content in tabs.
     $active_tab = \Drupal::request()->query->get('tab');
     $active_tab = (empty($active_tab)) ? $tabs[array_key_first($tabs)]['query_link'] : $active_tab;
 
@@ -133,13 +145,15 @@ class MainController extends ControllerBase {
     ];
   }
 
-
   /**
+   * Return the group settings page.
+   *
    * @return array
+   *   A renderable array for the group settings page.
    */
-  public function getGroupSettings(){
+  public function getGroupSettings() {
     // Get form.
-    $config_form = \Drupal::formBuilder()->getForm(\Drupal\ol_main\Form\GroupConfigForm::class);
+    $config_form = \Drupal::formBuilder()->getForm(GroupConfigForm::class);
     // Build it.
     $theme_vars = [
       'config_form' => $config_form,
@@ -151,10 +165,14 @@ class MainController extends ControllerBase {
   }
 
   /**
+   * Return the archived groups page.
+   *
    * @return array
+   *   A renderable array for the archived groups page.
+   *
    * @throws \Exception
    */
-  public function getArchivedGroups(){
+  public function getArchivedGroups() {
     // Get data.
     $groups_data = $this->groups->getGroups(0);
     $groups = $this->groups->renderArchivedGroupsCards($groups_data);
@@ -167,4 +185,5 @@ class MainController extends ControllerBase {
       '#vars' => $theme_vars,
     ];
   }
+
 }

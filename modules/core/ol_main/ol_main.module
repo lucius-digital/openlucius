@@ -147,7 +147,6 @@ function ol_main_mail($key, &$message, $params) {
     ); */
   // If sender_email not provided, get default.
 
-
   switch ($key) {
     case 'ol_main_mail':
       $message['headers']['Reply-To'] = \Drupal::config('system.site')->get('mail');
@@ -194,7 +193,6 @@ function ol_main_file_download($uri) {
   $query->condition('file_man.uri', $uri);
   $query->condition('file.status', 1);
   $access = $query->execute()->fetchField();
-
 
   // Check if this maybe is a USER PICTURE.
   // Provide access to user picture if current user is somewhere in a group with requested user picture.
@@ -403,7 +401,7 @@ function shortenString($string, $max_characters = 40, $start = 0){
  *
  * From: https://stackoverflow.com/questions/1416697/converting-timestamp-to-time-ago-in-php-e-g-1-day-ago-2-days-ago
  */
-function time_elapsed_string($datetime, $full = false) {
+function time_elapsed_string($datetime, $full = FALSE) {
   $now = new DateTime;
   $ago = new DateTime($datetime);
   $diff = $now->diff($ago);

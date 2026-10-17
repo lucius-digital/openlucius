@@ -1,5 +1,5 @@
 name: 'OL Task'
 type: module
 description: 'OL Task'
-core_version_requirement: ^9 || ^10 || ^11
+core_version_requirement: ^11
 package: 'OL App'

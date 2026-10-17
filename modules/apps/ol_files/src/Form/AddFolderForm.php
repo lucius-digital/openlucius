@@ -8,20 +8,23 @@ use Drupal\Component\Utility\Html;
 use Drupal\ol_files\Services\OlFolders;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class AddFolderForm.
+ * Form for adding a new folder.
  */
 class AddFolderForm extends FormBase {
 
   /**
-   * @var $folders
+   * Folders service.
+   *
+   * @var \Drupal\ol_files\Services\OlFolders
    */
   protected $folders;
 
   /**
-   * Class constructor.
-   * @param \Drupal\ol_main\Services\OlFiles $files
+   * AddFolderForm constructor.
+   *
+   * @param \Drupal\ol_files\Services\OlFolders $folders
+   *   Folders service.
    */
   public function __construct(OlFolders $folders) {
     $this->folders = $folders;
@@ -50,25 +53,28 @@ class AddFolderForm extends FormBase {
 
     $form['folder_id'] = [
       '#type' => 'hidden',
-      '#attributes' => array('id' => array('edit-folder-id')),
+      '#attributes' => ['id' => ['edit-folder-id']],
     ];
 
     $form['name'] = [
       '#prefix' => '<div class="modal-body"><div class="form-group">',
       '#type' => 'textfield',
       '#weight' => '0',
-      '#required' => true,
-      '#attributes' => array('placeholder' => t('Add a folder name...'), 'class' => array('form-control')),
-      '#suffix' => '</div>'
+      '#required' => TRUE,
+      '#attributes' => [
+        'placeholder' => t('Add a folder name...'),
+        'class' => ['form-control'],
+      ],
+      '#suffix' => '</div>',
     ];
 
     $form['submit'] = [
       '#prefix' => '</div><div class="modal-footer">',
       '#type' => 'submit',
       '#weight' => '30',
-      '#attributes' => array('class' => array('btn btn-success')),
+      '#attributes' => ['class' => ['btn btn-success']],
       '#value' => $this->t('Submit'),
-      '#suffix' => '</div>'
+      '#suffix' => '</div>',
     ];
 
     return $form;
@@ -98,11 +104,12 @@ class AddFolderForm extends FormBase {
     $name = Html::escape($form_state->getValue('name'));
     $folder_id = Html::escape($form_state->getValue('folder_id'));
     // Update or add.
-    if(is_numeric($folder_id)){
+    if (is_numeric($folder_id)) {
       // Update Folder.
       $this->folders->updateFolder($name, $folder_id);
-      \Drupal::messenger()->addStatus(t('Your folder was successfully updated to ' .$name));
-    } else {
+      \Drupal::messenger()->addStatus(t('Your folder was successfully updated to ' . $name));
+    }
+    else {
       // Add New Folder.
       $this->folders->saveFolder($name);
       \Drupal::messenger()->addStatus(t('Your folder was added successfully.'));

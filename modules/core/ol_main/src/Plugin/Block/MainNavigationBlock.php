@@ -10,7 +10,7 @@ use Drupal\image\Entity\ImageStyle;
 use Drupal\ol_main\Services\OlGlobalConfig;
 use Drupal\ol_main\Services\OlGroups;
 use Drupal\ol_members\Services\OlMembers;
-use Drupal\user\Entity\User;
+use Drupal\ol_search\Form\OlSearchNavForm;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,56 +21,70 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *  admin_label = @Translation("Main navigation block"),
  * )
  */
-class MainNavigationBlock extends BlockBase  implements ContainerFactoryPluginInterface{
+class MainNavigationBlock extends BlockBase implements ContainerFactoryPluginInterface {
 
   /**
-   * @var $account
+   * The current user account.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
    */
   protected $account;
 
   /**
-   * @var $sections
+   * The OL members service.
+   *
+   * @var \Drupal\ol_members\Services\OlMembers
    */
   protected $members;
 
   /**
-   * @var $groups
+   * The OL groups service.
+   *
+   * @var \Drupal\ol_main\Services\OlGroups
    */
   protected $groups;
 
   /**
-   * @var $config
+   * The global configuration service.
+   *
+   * @var \Drupal\ol_main\Services\OlGlobalConfig
    */
   protected $config;
 
   /**
-   * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-   * @param array $configuration
-   * @param string $plugin_id
-   * @param mixed $plugin_definition
-   *
-   * @return static
+   * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('olmain.groups'),
-      $container->get('current_user'),
-      $container->get('olmembers.members'),
-      $container->get('olmain.global_config')
-    );
+          $configuration,
+          $plugin_id,
+          $plugin_definition,
+          $container->get('olmain.groups'),
+          $container->get('current_user'),
+          $container->get('olmembers.members'),
+          $container->get('olmain.global_config')
+      );
   }
 
   /**
+   * Constructs a MainNavigationBlock instance.
+   *
    * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
+   *   The plugin implementation definition.
    * @param \Drupal\ol_main\Services\OlGroups $groups
-   * @param \Drupal\ol_main\Services\OlFiles $files
+   *   The OL groups service.
+   * @param \Drupal\Core\Session\AccountProxyInterface $account
+   *   The current user account.
+   * @param \Drupal\ol_members\Services\OlMembers $members
+   *   The OL members service.
+   * @param \Drupal\ol_main\Services\OlGlobalConfig $config
+   *   The global configuration service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, OlGroups $groups,  AccountProxyInterface $account, OlMembers $members, OlGlobalConfig $config) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, OlGroups $groups, AccountProxyInterface $account, OlMembers $members, OlGlobalConfig $config) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->groups = $groups;
     $this->account = $account;
@@ -95,7 +109,7 @@ class MainNavigationBlock extends BlockBase  implements ContainerFactoryPluginIn
     // Get search form, if module is installed.
     $search_form = '';
     if (\Drupal::moduleHandler()->moduleExists('ol_search')) {
-      $search_form = \Drupal::formBuilder()->getForm(\Drupal\ol_search\Form\OlSearchNavForm::class);
+      $search_form = \Drupal::formBuilder()->getForm(OlSearchNavForm::class);
     }
     // Get hooked menu items.
     $items = [];
@@ -140,18 +154,22 @@ class MainNavigationBlock extends BlockBase  implements ContainerFactoryPluginIn
     ];
   }
 
-  private function getHomeHeaderImage(){
+  /**
+   * Get the home header image URL if the user has permission.
+   */
+  private function getHomeHeaderImage() {
     // Get home header image.
     $image_url = '';
-    if($this->account->hasPermission('access all openlucius content')) {
+    if ($this->account->hasPermission('access all openlucius content')) {
       $default_fid = $this->config->getHomeHeaderImage();
-      if($default_fid) {
+      if ($default_fid) {
         $file = File::load($default_fid);
-        if($file){
+        if ($file) {
           $image_url = ImageStyle::load('home_header_image')->buildUrl($file->getFileUri());
         }
       }
     }
     return $image_url;
   }
+
 }

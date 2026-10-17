@@ -4,30 +4,29 @@ namespace Drupal\ol_main\Form;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\ol_board\Services\OlTasks;
 use Drupal\ol_main\Services\OlGlobalConfig;
-use Drupal\ol_main\Services\OlGroups;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
- * Class ColorSettingsForm.
+ * Provides a form for configuring color settings.
  */
 class ColorSettingsForm extends FormBase {
 
   /**
-   * @var $config
+   * The global configuration service.
+   *
+   * @var \Drupal\ol_main\Services\OlGlobalConfig
    */
   protected $config;
 
   /**
-   * Class constructor.
+   * Constructs a ColorSettingsForm instance.
    *
-   * @param \Drupal\ol_main\Services\OlGroups $groups
+   * @param \Drupal\ol_main\Services\OlGlobalConfig $config
+   *   The global configuration service.
    */
   public function __construct(OlGlobalConfig $config) {
     $this->config = $config;
@@ -38,8 +37,8 @@ class ColorSettingsForm extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('olmain.global_config')
-    );
+          $container->get('olmain.global_config')
+      );
   }
 
   /**
@@ -55,7 +54,7 @@ class ColorSettingsForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     $color_settings = $this->config->getColorSettings();
-    $color_settings = (empty($color_settings)) ?  $this->config->getDefaultColors() : $color_settings ;
+    $color_settings = (empty($color_settings)) ? $this->config->getDefaultColors() : $color_settings;
 
     // Build form.
     $form['nav_color'] = [
@@ -66,10 +65,10 @@ class ColorSettingsForm extends FormBase {
       '#attributes' => [
         'data-disable-refocus' => 'true',
         'data-huebee' => ' {"notation": "hex"}',
-        'class' => array('form-control', 'color-picker'),
+        'class' => ['form-control', 'color-picker'],
         'onsubmit' => 'return false',
       ],
-      '#suffix' => '</span></div>'
+      '#suffix' => '</span></div>',
     ];
     $form['global_background'] = [
       '#prefix' => '<div class="mt-3 ">',
@@ -79,17 +78,17 @@ class ColorSettingsForm extends FormBase {
       '#attributes' => [
         'data-disable-refocus' => 'true',
         'data-huebee' => ' {"notation": "hex"}',
-        'class' => array('form-control', 'color-picker'),
+        'class' => ['form-control', 'color-picker'],
         'onsubmit' => 'return false',
       ],
-      '#suffix' => '</span></div>'
+      '#suffix' => '</span></div>',
     ];
     $form['submit'] = [
       '#prefix' => '<div class="mt-4 border-top pt-4"><div>',
       '#type' => 'submit',
-      '#attributes' => array('class' => array('btn btn-success')),
+      '#attributes' => ['class' => ['btn btn-success']],
       '#value' => t('Save'),
-      '#suffix' => '</span>'
+      '#suffix' => '</span>',
     ];
     $form['set_defaults'] = [
       '#prefix' => '<span>',
@@ -97,7 +96,7 @@ class ColorSettingsForm extends FormBase {
       '#value' => t('Defaults'),
       '#attributes' => [
         'data-disable-refocus' => 'true',
-        'class' => array('btn btn-light'),
+        'class' => ['btn btn-light'],
         'onsubmit' => 'return false',
       ],
       '#ajax' => [
@@ -109,22 +108,25 @@ class ColorSettingsForm extends FormBase {
           'message' => t('Please wait...'),
         ],
       ],
-      '#suffix' => '</span></div>'
+      '#suffix' => '</span></div>',
     ];
     return $form;
   }
 
+  /**
+   * AJAX callback to reset color pickers to default values.
+   */
   public function callbackSetDefaults(array &$form, FormStateInterface $form_state) {
     // Initiate.
     $response = new AjaxResponse();
     // Get defaults.
     $color_settings = $this->config->getDefaultColors();
     // Change inputs to default colors.
-    $response->addCommand(new InvokeCommand('#edit-nav-color', 'val',[$color_settings->nav]));
-    $response->addCommand(new InvokeCommand('#edit-global-background', 'val',[$color_settings->global_background]));
+    $response->addCommand(new InvokeCommand('#edit-nav-color', 'val', [$color_settings->nav]));
+    $response->addCommand(new InvokeCommand('#edit-global-background', 'val', [$color_settings->global_background]));
     // Clear messages and return response.
     \Drupal::messenger()->deleteAll();
-     return $response;
+    return $response;
   }
 
   /**

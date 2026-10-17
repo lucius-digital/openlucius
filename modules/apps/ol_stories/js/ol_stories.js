@@ -1,24 +1,41 @@
-(function ($, Drupal, drupalSettings) {
+(function ($, Drupal, once) {
 
-  // Source: https://getbootstrap.com/docs/4.1/components/modal/#varying-modal-content
-  $('#showStory').on('show.bs.modal', function (event) {
-    const button = $(event.relatedTarget); // Button that triggered the modal
-    const story_image_url = button.data('story_image_url') // Extract info from data-* attributes
-    const story_body = button.data('story_body') // Extract info from data-* attributes
-    // Update the modal's content via jquery.
-    const modal = $(this)
-    // if (story_image_url != null) {
-      modal.find('#story_image_url').attr("src", story_image_url)
-      modal.find('.story_body').text(story_body)
-    // }
-  })
-  $('#removeStory').on('show.bs.modal', function (event) {
-    const button = $(event.relatedTarget); // Button that triggered the modal
-    const story_id = button.data('story_id') // Extract info from data-* attributes
-    // Update the modal's content via jquery.
-    const modal = $(this)
-    if (story_id != null) {
-      modal.find('#remove-story-id').val(story_id)
+  /**
+   * @file
+   * Story modal behaviors.
+   *
+   * Source: https://getbootstrap.com/docs/4.1/components/modal/#varying-modal-content
+   */
+
+  /**
+   * Story modal behaviors.
+   *
+   * @type {Drupal~behavior}
+   */
+  Drupal.behaviors.olStories = {
+    attach(context) {
+      // Attach showStory modal event handler once per element.
+      $(once('olStories-showStory', '#showStory', context)).on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget);
+        const storyImageUrl = button.data('story_image_url');
+        const storyBody = button.data('story_body');
+        // Update the modal's content via jQuery.
+        const modal = $(this);
+        modal.find('#story_image_url').attr('src', storyImageUrl);
+        modal.find('.story_body').text(storyBody);
+      });
+
+      // Attach removeStory modal event handler once per element.
+      $(once('olStories-removeStory', '#removeStory', context)).on('show.bs.modal', function (event) {
+        const button = $(event.relatedTarget);
+        const storyId = button.data('story_id');
+        // Update the modal's content via jQuery.
+        const modal = $(this);
+        if (storyId != null) {
+          modal.find('#remove-story-id').val(storyId);
+        }
+      });
     }
-  })
-})(jQuery, Drupal, drupalSettings);
+  };
+
+})(jQuery, Drupal, once);
